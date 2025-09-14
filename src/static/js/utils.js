@@ -1,10 +1,23 @@
 // Shared utility functions and configuration
 // Auto-detect environment based on hostname
-const isLocalDev = window.location.hostname === 'localhost' ||
-  window.location.hostname === '127.0.0.1' ||
-  window.location.hostname.startsWith('192.168.');
-const apiUrl = isLocalDev ? 'http://127.0.0.1:5001' : 'https://api.checklist.spoi.org.in';
-// const apiUrl = 'https://avighna.pythonanywhere.com';
+// const isLocalDev = window.location.hostname === 'localhost' ||
+//   window.location.hostname === '127.0.0.1' ||
+//   window.location.hostname.startsWith('192.168.');
+// const apiUrl = isLocalDev ? 'http://127.0.0.1:5001' : 'https://api.checklist.spoi.org.in';
+const apiUrl = '';
+
+function check_session() {
+  (async () => {
+    let res = await fetch(`${apiUrl}/auth/check`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: localStorage.getItem('sessionToken') })
+    });
+    if (!res.ok) {
+      window.location.href = 'home';
+    }
+  })();
+}
 
 const olympiadIds = [
   'APIO', 'EGOI', 'INOI', 'ZCO', 'IOI', 'JOISC', 'JOIOC', 'IOITC', 'NOISEL',

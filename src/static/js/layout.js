@@ -17,15 +17,8 @@ window.onload = async () => {
   const sessionToken = localStorage.getItem('sessionToken');
 
   // Verify login
-  const res = await fetch(`${apiUrl}/api/whoami`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: { 'Authorization': `Bearer ${sessionToken}` }
-  });
-
-  if (!res.ok) return window.location.href = 'home';
-
-  const { username } = await res.json();
+  check_session();
+  const username = localStorage.getItem('username');
   document.getElementById('welcome-message').textContent = `Welcome, ${username}`;
 
   // Load user settings
@@ -125,19 +118,19 @@ function saveOlympiadOrder() {
       hidden: hidden
     })
   })
-  .then(response => response.json())
-  .then(result => {
-    if (result.success) {
-      messageBox.textContent = 'Olympiad order saved!';
-      messageBox.style.color = 'green';
-    } else {
+    .then(response => response.json())
+    .then(result => {
+      if (result.success) {
+        messageBox.textContent = 'Olympiad order saved!';
+        messageBox.style.color = 'green';
+      } else {
+        messageBox.textContent = `Error saving order: ${result.error || 'unknown error'}`;
+        messageBox.style.color = 'red';
+      }
+    })
+    .catch(err => {
+      console.error('Save failed:', err);
       messageBox.textContent = `Error saving order: ${result.error || 'unknown error'}`;
       messageBox.style.color = 'red';
-    }
-  })
-  .catch(err => {
-    console.error('Save failed:', err);
-    messageBox.textContent = `Error saving order: ${result.error || 'unknown error'}`;
-    messageBox.style.color = 'red';
-  });
+    });
 }

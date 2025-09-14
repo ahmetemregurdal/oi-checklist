@@ -1,18 +1,8 @@
 window.onload = async () => {
-  const sessionToken = localStorage.getItem('sessionToken');
-  let res = await fetch(`${apiUrl}/api/whoami`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: { 'Authorization': `Bearer ${sessionToken}` }
-  });
-
-  if (!res.ok) return window.location.href = 'home';
-
-  const { username } = await res.json();
-  // Store username globally
+  check_session();
+  const username = localStorage.getItem('username');
   window.currentUsername = username;
-  document.getElementById('welcome-message').textContent =
-    `Welcome, ${username}`;
+  document.getElementById('welcome-message').textContent = `Welcome, ${username}`;
 };
 
 document.addEventListener('DOMContentLoaded', function () {

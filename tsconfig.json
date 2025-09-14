@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "@db": ["backend/db"],
+      "@routes/*": ["backend/routes/*"]
+    },
+    "esModuleInterop": true
+  }
+}

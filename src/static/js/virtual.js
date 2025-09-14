@@ -54,15 +54,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   scoreEntry.style.display = 'none';
 
   // If we're not logged in, redirect to the home page
-  const whooamires = await fetch(`${apiUrl}/api/whoami`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: { 'Authorization': `Bearer ${sessionToken}` }
-  });
-  if (!whooamires.ok) {
-    return window.location.href = 'home';
-  }
-  const { username } = await whooamires.json();
+  check_session();
+  const username = localStorage.getItem('username');
   // Also show the welcome message
   document.getElementById('welcome-message').innerHTML = `Welcome, ${username}`;
   const currentUserName = username;

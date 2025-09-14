@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>OI Checklist - 404</title>
+  <base href="/">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="preload" href="css/style.css" as="style">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/404.css">
+  <script src="js/init_darkmode.js"></script>
+</head>
+
+<body>
+  <div class="error-container">
+    <h1 class="error-code">404</h1>
+    <h2 class="error-title">Page Not Found</h2>
+    <p class="error-description">
+      The page you're looking for doesn't exist or has been moved.
+    </p>
+    <a href="/" class="home-button">Go Home</a>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const theme = localStorage.getItem('theme');
+      if (theme === 'dark-mode') {
+        document.body.classList.add('dark-mode');
+      }
+    });
+  </script>
+</body>
+
+</html>

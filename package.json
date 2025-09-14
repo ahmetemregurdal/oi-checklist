@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "@fastify/static": "^8.2.0",
+    "@prisma/client": "^6.16.1",
+    "better-sqlite3": "^12.2.0",
+    "fastify": "^5.6.0",
+    "http-errors": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/http-errors": "^2.0.5",
+    "@types/node": "^24.3.2",
+    "prisma": "^6.16.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.9.2"
+  },
+  "scripts": {
+    "dev": "ts-node -r tsconfig-paths/register src/backend/app.ts"
+  }
+}

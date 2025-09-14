@@ -8,7 +8,7 @@ document.getElementById('register-form')
 
       const sessionToken = localStorage.getItem('sessionToken');
       try {
-        const res = await fetch(apiUrl + '/api/register', {
+        const res = await fetch(apiUrl + '/auth/register', {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -24,7 +24,7 @@ document.getElementById('register-form')
           window.location.href = 'login';
         } else {
           errorBox.style.display = 'block';
-          errorBox.innerText = result.error || 'Registration failed';
+          errorBox.innerText = result.message || 'Registration failed';
         }
       } catch (error) {
         errorBox.style.display = 'block';

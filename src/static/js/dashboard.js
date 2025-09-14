@@ -1194,23 +1194,9 @@ window.onload = async () => {
       ['USACOPLATINUM', 'USACOGOLD', 'USACOSILVER', 'USACOBRONZE'] :
       id);
 
-  // Fetch user info
-  const whoamiRes = await fetch(`${apiUrl}/api/whoami`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: { 'Authorization': `Bearer ${sessionToken}` }
-  });
-
-  let username = '';
-  if (whoamiRes.ok) {
-    const { username: uname } = await whoamiRes.json();
-    username = uname;
-  }
-
-  if (!isProfilePage && !whoamiRes.ok) {
-    return window.location.href = 'home';
-  }
-
+  // Check session
+  check_session();
+  const username = localStorage.getItem('username');
   // Attempt to fetch saved order
   try {
     let req = `${apiUrl}/api/user-settings`;

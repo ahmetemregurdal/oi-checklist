@@ -2,12 +2,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const session_token = localStorage.getItem('sessionToken');
 
   /* -------- whoami + checklist visibility -------- */
-  let whoamires = await fetch(`${apiUrl}/api/whoami`, {
-    method: 'GET', credentials: 'include',
-    headers: { 'Authorization': `Bearer ${session_token}` }
-  });
-  if (!whoamires.ok) return window.location.href = 'home';
-  const { username } = await whoamires.json();
+  check_session();
+  const username = localStorage.getItem('username');
   document.getElementById('welcome-message').textContent = `Welcome, ${username}`;
   document.getElementById('checklist-visibility-description').innerHTML =
     `Click to toggle your checklist's visibility at <a href='/profile/${username}' target='_blank' class='profile-link'>/profile/${username}</a>.`;
