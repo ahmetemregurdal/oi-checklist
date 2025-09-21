@@ -4,7 +4,7 @@ import { Olympiads, Platforms } from '@config';
 import { FastifyInstance } from 'fastify';
 
 export async function settings(app: FastifyInstance) {
-  app.post<{ Body: { token?: string, updated?: string, username?: string } }>('/settings', async (req) => {
+  app.post<{ Body: { token?: string, updated?: Record<string, any>, username?: string } }>('/settings', async (req) => {
     const { token, username } = req.body;
     if (token) {
       let session = await db.session.findUnique({ where: { id: token } });
@@ -18,32 +18,31 @@ export async function settings(app: FastifyInstance) {
           return user.settings ?? {};
         }
         try {
-          let data = JSON.parse(updated);
           let params: Record<string, any> = {};
           for (const i of ['checklistPublic', 'ascSort', 'darkMode'] as const) {
-            if (i in data) {
-              params[i] = Boolean(data[i]);
+            if (i in updated) {
+              params[i] = Boolean(updated[i]);
             }
           }
           for (const i of ['olympiadOrder', 'hiddenOlympiads', 'platformPref'] as const) {
-            if (!(i in data)) {
+            if (!(i in updated)) {
               continue;
             }
-            if (!Array.isArray(data[i])) {
+            if (!Array.isArray(updated[i])) {
               throw new createError.BadRequest(`${i} must be an array`);
             }
-            if (new Set(data[i]).size !== data[i].length) {
+            if (new Set(updated[i]).size !== updated[i].length) {
               throw new createError.BadRequest(`${i} must not contain duplicates`);
             }
-            for (const j of data[i]) {
+            for (const j of updated[i]) {
               if (!(i == 'platformPref' ? Platforms : Olympiads).has(j)) {
                 throw new createError.BadRequest(`Invalid value "${j}" in ${i}`);
               }
             }
-            params[i] = data[i];
+            params[i] = updated[i];
           }
-          if ('platformUsernames' in data) {
-            const names = data.platformUsernames;
+          if ('platformUsernames' in updated) {
+            const names = updated.platformUsernames;
             if (typeof names != 'object' || names === null || Array.isArray(names)) {
               throw new createError.BadRequest('platformUsernames must be an object');
             }

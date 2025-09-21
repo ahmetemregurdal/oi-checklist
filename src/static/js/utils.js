@@ -214,13 +214,19 @@ function handleCellClick(cell, name, source, year, e) {
   }
 
   currentCell = cell;
-  currentStatus = parseInt(cell.dataset.status || '0');
+  let parsedStatus = Number.parseInt(cell.dataset.status ?? '0', 10);
+  if (!Number.isFinite(parsedStatus) || parsedStatus < 0 || parsedStatus >= statuses.length) {
+    parsedStatus = 0;
+    cell.dataset.status = '0';
+  }
+  currentStatus = parsedStatus;
 
-  popupStatus.textContent = statuses[currentStatus].label;
-  popupStatus.dataset.status = statuses[currentStatus].label;
+  const statusObj = statuses[currentStatus] ?? statuses[0];
+  popupStatus.textContent = statusObj.label;
+  popupStatus.dataset.status = statusObj.label;
   popupStatus.classList.remove('green', 'yellow', 'red', 'white');
-  if (statuses[currentStatus].className != 'white') {
-    popupStatus.classList.add(statuses[currentStatus].className);
+  if (statusObj.className !== 'white') {
+    popupStatus.classList.add(statusObj.className);
   }
 
   popupScore.textContent = cell.dataset.score || '0';
@@ -290,20 +296,17 @@ function handleCellClick(cell, name, source, year, e) {
     // Only sync to server if not in virtual contest mode
     if (!window.isVirtualContestMode) {
       const sessionToken = localStorage.getItem('sessionToken');
-      fetch(apiUrl + '/api/update-problem-score', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
-        },
-        body: JSON.stringify({
-          problem_name: thisName,
-          source: thisSource,
-          year: thisYear,
-          score: score
-        })
-      });
+      const problemId = Number.parseInt(cell.dataset.id, 10);
+      if (Number.isFinite(problemId)) {
+        fetch(apiUrl + '/user/problems', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ token: sessionToken, id: problemId, score })
+        });
+      }
     }
   };
 
@@ -328,9 +331,9 @@ function handleCellClick(cell, name, source, year, e) {
 }
 
 function updateStatus(status, cell, name, source, year) {
-  const statusObj = statuses[status];
+  const statusObj = statuses[status] ?? statuses[0];
 
-  cell.dataset.status = status;
+  cell.dataset.status = String(status);
 
   cell.classList.remove('green', 'yellow', 'red', 'white');
   if (statusObj.className) {
@@ -353,16 +356,17 @@ function updateStatus(status, cell, name, source, year) {
   // Only sync to server if not in virtual contest mode
   if (!window.isVirtualContestMode) {
     const sessionToken = localStorage.getItem('sessionToken');
-    fetch(apiUrl + '/api/update-problem-status', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionToken}`
-      },
-      body: JSON.stringify(
-        { problem_name: name, source: source, year: year, status: status })
-    });
+    const problemId = Number.parseInt(cell.dataset.id, 10);
+    if (Number.isFinite(problemId)) {
+      fetch(apiUrl + '/user/problems', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token: sessionToken, id: problemId, status })
+      });
+    }
   }
 }
 
@@ -370,17 +374,20 @@ function handlePopupClose(cell) {
   if (isProfileMode) return;
 
   const score = parseFloat(cell.dataset.score) || 0;
-  const status = parseInt(cell.dataset.status || '0');
+  let status = Number.parseInt(cell.dataset.status ?? '0', 10);
+  if (!Number.isFinite(status)) status = 0;
   const name = cell.dataset.problemId;
   const source = cell.dataset.source;
   const year = parseInt(cell.dataset.year);
+  const problemId = Number.parseInt(cell.dataset.id, 10);
+  if (!Number.isFinite(problemId)) return;
 
   if (status === 2 || status === 0) {
     const finalScore = status === 2 ? 100 : 0;
     if (Math.abs(parseFloat(cell.dataset.score) - finalScore) < 0.001) { // Handle floating point comparison
       return;
     }
-    cell.dataset.score = finalScore;
+    cell.dataset.score = String(finalScore);
 
     const popupScore = document.getElementById('popup-score');
     if (popupScore) {
@@ -390,15 +397,13 @@ function handlePopupClose(cell) {
     // Only sync to server if not in virtual contest mode
     if (!window.isVirtualContestMode) {
       const sessionToken = localStorage.getItem('sessionToken');
-      fetch(apiUrl + '/api/update-problem-score', {
+      fetch(apiUrl + '/user/problems', {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(
-          { problem_name: name, source: source, year: year, score: finalScore })
+        body: JSON.stringify({ token: sessionToken, id: problemId, score: finalScore })
       });
     }
   }

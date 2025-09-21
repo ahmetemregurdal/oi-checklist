@@ -260,6 +260,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           );
           if (problem) {
             problemData.push({
+              id: problem.id,
               name: problem.name,
               link: chooseProblemUrl(problem) || '#',
               source: prob.source,
@@ -270,6 +271,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
           } else {
             problemData.push({
+              id: problem.id,
               name: `Problem ${index + 1}`,
               link: '#',
               source: prob.source,
@@ -281,6 +283,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
         } else {
           problemData.push({
+            id: problem.id,
             name: `Problem ${index + 1}`,
             link: '#',
             source: prob.source,
@@ -295,6 +298,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Fallback to generic names
       for (let i = 1; i <= problemCount; i++) {
         problemData.push({
+          id: -1,
           name: `Problem ${i}`,
           link: '#',
           source: 'Unknown',
@@ -333,6 +337,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     problemData.forEach((problem, index) => {
       const cell = document.createElement('td');
       cell.className = `problem-cell ${getStatusColor(problem.status)}`;
+      cell.dataset.id = problem.id.toString();
       cell.dataset.status = problem.status.toString();
       cell.dataset.problemId = problem.name;
       cell.dataset.source = problem.source;
@@ -1510,52 +1515,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Update individual problem statuses and scores
       for (let i = 0; i < problemCells.length; i++) {
         const cell = problemCells[i];
+        const id = parseInt(cell.dataset.id);
         const problemName = cell.dataset.problemId;
-        const source = cell.dataset.source;
-        const year = parseInt(cell.dataset.year);
         const score = parseFloat(cell.dataset.score) || 0;
         const status = parseInt(cell.dataset.status) || 0;
 
-        // Update problem status
-        const statusResponse = await fetch(`${apiUrl}/api/update-problem-status`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            'Authorization': `Bearer ${sessionToken}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            problem_name: problemName,
-            source: source,
-            year: year,
-            status: status
-          })
-        });
-
-        if (!statusResponse.ok) {
-          const error = await statusResponse.json();
-          showMessage(`Failed to update status for ${problemName}: ${error.error}`);
-          return;
-        }
-
         // Update problem score
-        const scoreResponse = await fetch(`${apiUrl}/api/update-problem-score`, {
+        const updateResponse = await fetch(`${apiUrl}/user/update`, {
           method: 'POST',
           credentials: 'include',
-          headers: {
-            'Authorization': `Bearer ${sessionToken}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            problem_name: problemName,
-            source: source,
-            year: year,
-            score: score
-          })
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: sessionToken, id, status, score })
         });
 
-        if (!scoreResponse.ok) {
-          const error = await scoreResponse.json();
+        if (!updateResponse.ok) {
+          const error = await updateResponse.json();
           showMessage(`Failed to update score for ${problemName}: ${error.error}`);
           return;
         }

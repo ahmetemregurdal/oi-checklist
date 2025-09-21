@@ -406,42 +406,23 @@ function applyInlineFormat(kind) {
   if (kind === 'link') return wrap('[', '](https://example.com)');
 }
 
-const NOTE_ENDPOINT = '/api/note';
-
-async function openNoteEditor(cell) {
+function openNoteEditor(cell) {
   if (!areNotesEnabled()) return;
   if (!cell) return;
-  const name = cell.dataset.problemId;
-  const source = cell.dataset.source;
-  const year = cell.dataset.year;
   const overlay = document.getElementById('note-overlay');
-  const sessionToken = localStorage.getItem('sessionToken');
-  // Load current note
-  try {
-    const params = new URLSearchParams({ problem_name: name, source, year });
-    const res = await fetch(apiUrl + NOTE_ENDPOINT + '?' + params.toString(), {
-      method: 'GET',
-      credentials: 'include',
-      headers: { 'Authorization': `Bearer ${sessionToken}` }
-    });
-    const data = res.ok ? await res.json() : { note: '' };
-    const raw = (data.note || '').replace(/\r/g, '');
-    document.getElementById('note-raw').value = raw;
-    const ta = document.getElementById('md-textarea');
-    if (ta) ta.value = raw;
-  } catch (_) {
-    document.getElementById('note-raw').value = '';
-    const ta = document.getElementById('md-textarea');
-    if (ta) ta.value = '';
-  }
-  // show overlay ABOVE the status popup
+  const id = Number.parseInt(cell.dataset.id, 10);
+  if (!Number.isFinite(id)) return;
+  const entry = getProblemEntry(id);
+  const raw = typeof entry?.problem?.note === 'string' ? entry.problem.note : '';
+  document.getElementById('note-raw').value = raw;
+  const ta = document.getElementById('md-textarea');
+  if (ta) ta.value = raw;
+  noteLines = raw ? raw.split('\n') : [''];
+  renderAllLines();
   overlay.style.display = 'flex';
   requestAnimationFrame(() => overlay.classList.add('active'));
-  // stash identity on hidden input for save
   const hidden = document.getElementById('note-raw');
-  hidden.dataset.problemName = name;
-  hidden.dataset.source = source;
-  hidden.dataset.year = year;
+  hidden.dataset.problemId = String(id);
 }
 
 function closeNoteEditor() {
@@ -450,31 +431,19 @@ function closeNoteEditor() {
   setTimeout(() => overlay.style.display = 'none', 150);
 }
 
-async function refreshNoteIconState() {
+function refreshNoteIconState() {
   if (!areNotesEnabled()) return;
   const btn = document.getElementById('note-button');
   const cell = currentCellForNotes;
   if (!btn || !cell) return;
-  const sessionToken = localStorage.getItem('sessionToken');
-  try {
-    const params = new URLSearchParams({
-      problem_name: cell.dataset.problemId,
-      source: cell.dataset.source,
-      year: cell.dataset.year
-    });
-    const res = await fetch(apiUrl + NOTE_ENDPOINT + '?' + params.toString(), {
-      method: 'GET',
-      credentials: 'include',
-      headers: { 'Authorization': `Bearer ${sessionToken}` }
-    });
-    const data = res.ok ? await res.json() : { note: '' };
-    if (data.note && String(data.note).trim())
-      btn.classList.add('has-note');
-    else
-      btn.classList.remove('has-note');
-  } catch (_) {
+  const id = Number.parseInt(cell.dataset.id, 10);
+  if (!Number.isFinite(id)) {
     btn.classList.remove('has-note');
+    return;
   }
+  const entry = getProblemEntry(id);
+  const note = entry?.problem?.note ?? '';
+  btn.classList.toggle('has-note', typeof note === 'string' && note.trim().length > 0);
 }
 
 // Note editor wiring
@@ -503,28 +472,29 @@ async function refreshNoteIconState() {
   if (saveBtn) {
     saveBtn.addEventListener('click', async () => {
       const hidden = document.getElementById('note-raw');
-      const name = hidden.dataset.problemName;
-      const source = hidden.dataset.source;
-      const year = hidden.dataset.year;
+      const id = Number.parseInt(hidden.dataset.problemId, 10);
+      if (!Number.isFinite(id)) return;
       const ta = document.getElementById('md-textarea');
       const markdown = ta ? ta.value : '';
       const sessionToken = localStorage.getItem('sessionToken');
-      await fetch(apiUrl + NOTE_ENDPOINT, {
+      await fetch(apiUrl + '/user/problems', {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ problem_name: name, source, year, note: markdown })
+        body: JSON.stringify({ token: sessionToken, id, note: markdown })
       });
+      const entry = getProblemEntry(id);
+      if (entry?.problem) {
+        entry.problem.note = markdown;
+      }
       closeNoteEditor();
       // update icon state to reflect presence/absence
       const btn = document.getElementById('note-button');
-      if (markdown.trim())
-        btn.classList.add('has-note');
-      else
-        btn.classList.remove('has-note');
+      if (btn) {
+        btn.classList.toggle('has-note', markdown.trim().length > 0);
+      }
     });
   }
   if (toggleBtn) {
@@ -748,10 +718,16 @@ document.querySelectorAll('.problem-cell').forEach(cell => {
   const year = cell.dataset.year?.trim();
   if (!name || !source || !year) return;
 
-  const statusIndex = parseInt(cell.dataset.status || '0');
+  let statusIndex = Number.parseInt(cell.dataset.status ?? '0', 10);
+  if (!Number.isFinite(statusIndex) || statusIndex < 0 || statusIndex >= statuses.length) {
+    statusIndex = 0;
+    cell.dataset.status = '0';
+  }
   const statusObj = statuses[statusIndex];
-  count.update(statusObj.className, 1);
-  if (statusObj?.className && statusObj.className != 'white') {
+  if (statusObj?.className) {
+    count.update(statusObj.className, 1);
+  }
+  if (statusObj?.className && statusObj.className !== 'white') {
     cell.classList.add(statusObj.className);
   }
 
@@ -766,26 +742,27 @@ document.querySelectorAll('.problem-cell').forEach(cell => {
 
 function updateStatusWithCount(status, cell, name, source, year) {
   const sessionToken = localStorage.getItem('sessionToken');
-  const statusObj = statuses[status];
+  const statusObj = statuses[status] ?? statuses[0];
+  const id = Number.parseInt(cell.dataset.id, 10);
+  if (!Number.isFinite(id)) return;
 
-  const oldStatus = statuses[parseInt(cell.dataset.status || '0')];
-  if (oldStatus) count.update(oldStatus.className, -1);
+  const oldStatusIndex = Number.parseInt(cell.dataset.status ?? '0', 10);
+  const oldStatus = Number.isFinite(oldStatusIndex) ? statuses[oldStatusIndex] : statuses[0];
+  if (oldStatus?.className) count.update(oldStatus.className, -1);
 
   // Use the shared updateStatus function
   updateStatus(status, cell, name, source, year);
 
   // Update count for dashboard
-  count.update(statusObj.className, 1);
+  if (statusObj?.className) count.update(statusObj.className, 1);
 
-  fetch(apiUrl + '/api/update-problem-status', {
+  fetch(apiUrl + '/user/problems', {
     method: 'POST',
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${sessionToken}`
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify(
-      { problem_name: name, source: source, year: year, status: status })
+    body: JSON.stringify({ token: sessionToken, id, status })
   });
 }
 
@@ -793,10 +770,13 @@ function handlePopupCloseWithServer(cell) {
   if (isProfileMode) return;
 
   const score = parseFloat(cell.dataset.score) || 0;
-  const status = parseInt(cell.dataset.status || '0');
+  let status = Number.parseInt(cell.dataset.status ?? '0', 10);
+  if (!Number.isFinite(status)) status = 0;
   const name = cell.dataset.problemId;
   const source = cell.dataset.source;
   const year = parseInt(cell.dataset.year);
+  const id = Number.parseInt(cell.dataset.id, 10);
+  if (!Number.isFinite(id)) return;
 
   // Use the shared handlePopupClose function
   handlePopupClose(cell);
@@ -809,20 +789,57 @@ function handlePopupCloseWithServer(cell) {
     }
 
     const sessionToken = localStorage.getItem('sessionToken');
-    fetch(apiUrl + '/api/update-problem-score', {
+    fetch(apiUrl + '/user/problems', {
       method: 'POST',
       credentials: 'include',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionToken}`
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify(
-        { problem_name: name, source: source, year: year, score: finalScore })
+      body: JSON.stringify({ token: sessionToken, id, score: finalScore })
     });
   }
 }
 
 let cachedProblemsData = null;
+let problemLookup = new Map();
+
+function buildProblemLookup() {
+  problemLookup = new Map();
+  if (!cachedProblemsData) return;
+  for (const [sourceKey, yearMap] of Object.entries(cachedProblemsData)) {
+    if (!yearMap) continue;
+    for (const [yearKey, problems] of Object.entries(yearMap)) {
+      if (!Array.isArray(problems)) continue;
+      problems.forEach((problem) => {
+        if (!problem) return;
+        const problemId = Number(problem.id);
+        if (!Number.isFinite(problemId)) return;
+        const normalizedSource = problem.source ?? sourceKey;
+        problem.source = normalizedSource;
+        const normalizedStatus = Number.isFinite(problem.status) ? problem.status : 0;
+        const normalizedScore = Number.isFinite(problem.score) ? problem.score : 0;
+        problem.status = normalizedStatus;
+        problem.score = normalizedScore;
+        if (typeof problem.note !== 'string') {
+          problem.note = '';
+        }
+        const normalizedYear = Number.isFinite(Number(yearKey)) ? Number(yearKey) : yearKey;
+        problemLookup.set(problemId, {
+          source: normalizedSource,
+          year: normalizedYear,
+          problem
+        });
+      });
+    }
+  }
+}
+
+function getProblemEntry(id) {
+  if (id == null) return undefined;
+  const numericId = typeof id === 'string' ? Number.parseInt(id, 10) : id;
+  if (!Number.isFinite(numericId)) return undefined;
+  return problemLookup.get(numericId);
+}
 async function loadProblems(from) {
   const yearMap = cachedProblemsData[from] || {};
   const container = document.getElementById(`${from.toLowerCase()}-container`);
@@ -929,7 +946,8 @@ async function loadProblems(from) {
             const cell = document.createElement('td');
             cell.className = 'problem-cell';
 
-            const status = statuses.find(s => s.value === problem.status);
+            const statusValue = Number.isFinite(problem.status) ? problem.status : 0;
+            const status = statuses.find(s => s.value === statusValue);
             if (status?.className) {
               cell.classList.add(status.className);
               count.update(status.className, 1);
@@ -939,11 +957,13 @@ async function loadProblems(from) {
               }
             }
 
-            cell.dataset.status = problem.status;
+            const scoreValue = Number.isFinite(problem.score) ? problem.score : 0;
+            cell.dataset.id = String(problem.id);
+            cell.dataset.status = String(statusValue);
             cell.dataset.problemId = problem.name;
-            cell.dataset.source = problem.source;
+            cell.dataset.source = problem.source ?? from;
             cell.dataset.year = problem.year;
-            cell.dataset.score = problem.score;
+            cell.dataset.score = String(scoreValue);
 
             const link = document.createElement('a');
             link.href = problem.link;
@@ -974,7 +994,8 @@ async function loadProblems(from) {
             const cell = document.createElement('td');
             cell.className = 'problem-cell';
 
-            const status = statuses.find(s => s.value === problem.status);
+            const statusValue = Number.isFinite(problem.status) ? problem.status : 0;
+            const status = statuses.find(s => s.value === statusValue);
             if (status?.className) {
               cell.classList.add(status.className);
               count.update(status.className, 1);
@@ -984,11 +1005,13 @@ async function loadProblems(from) {
               }
             }
 
-            cell.dataset.status = problem.status;
+            const scoreValue = Number.isFinite(problem.score) ? problem.score : 0;
+            cell.dataset.id = String(problem.id);
+            cell.dataset.status = String(statusValue);
             cell.dataset.problemId = problem.name;
-            cell.dataset.source = problem.source;
+            cell.dataset.source = problem.source ?? from;
             cell.dataset.year = problem.year;
-            cell.dataset.score = problem.score;
+            cell.dataset.score = String(scoreValue);
 
             const link = document.createElement('a');
             link.href = problem.link;
@@ -1023,7 +1046,8 @@ async function loadProblems(from) {
         const cell = document.createElement('td');
         cell.className = 'problem-cell';
 
-        const status = statuses.find(s => s.value === problem.status);
+        const statusValue = Number.isFinite(problem.status) ? problem.status : 0;
+        const status = statuses.find(s => s.value === statusValue);
         if (status?.className) {
           cell.classList.add(status.className);
           count.update(status.className, 1);
@@ -1035,11 +1059,13 @@ async function loadProblems(from) {
           }
         }
 
-        cell.dataset.status = problem.status;
+        const scoreValue = Number.isFinite(problem.score) ? problem.score : 0;
+        cell.dataset.id = String(problem.id);
+        cell.dataset.status = String(statusValue);
         cell.dataset.problemId = problem.name;
-        cell.dataset.source = problem.source;
+        cell.dataset.source = problem.source ?? from;
         cell.dataset.year = problem.year;
-        cell.dataset.score = problem.score;
+        cell.dataset.score = String(scoreValue);
 
         const link = document.createElement('a');
         link.href = problem.link;
@@ -1111,7 +1137,8 @@ function loadProblemsWithDay(source, numDays, problemsPerDay = 3) {
         cell.className = 'problem-cell';
 
         if (problem) {
-          const status = statuses.find(s => s.value === problem.status);
+          const statusValue = Number.isFinite(problem.status) ? problem.status : 0;
+          const status = statuses.find(s => s.value === statusValue);
           if (status?.className) {
             cell.classList.add(status.className);
             count.update(status.className, 1);
@@ -1123,11 +1150,13 @@ function loadProblemsWithDay(source, numDays, problemsPerDay = 3) {
             }
           }
 
-          cell.dataset.status = problem.status;
+          const scoreValue = Number.isFinite(problem.score) ? problem.score : 0;
+          cell.dataset.id = String(problem.id);
+          cell.dataset.status = String(statusValue);
           cell.dataset.problemId = problem.name;
-          cell.dataset.source = problem.source;
+          cell.dataset.source = problem.source ?? source;
           cell.dataset.year = problem.year;
-          cell.dataset.score = problem.score;
+          cell.dataset.score = String(scoreValue);
 
           const link = document.createElement('a');
           link.href = problem.link;
@@ -1223,6 +1252,12 @@ window.onload = async () => {
       if (Array.isArray(platformPref)) {
         localStorage.setItem('platformPref', JSON.stringify(platformPref));
       }
+    } else if (isProfilePage && resp.status === 403) {
+      const uname = relativePath.split('/')[1];
+      document.body.innerHTML = `<h2 style="text-align:center;margin-top:2em;">
+        ${uname}'s checklist is private.
+      </h2>`;
+      return;
     }
   } catch (err) {
     console.error('Failed to fetch user settings:', err);
@@ -1323,7 +1358,27 @@ window.onload = async () => {
     count.update('white', 0);
 
     isProfileMode = true;
-    cachedProblemsData = profileData.problems;
+    let problemsPayload = profileData.problems;
+    try {
+      const probRes = await fetch(`${apiUrl}/data/problems`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sources: sources.map(i => i.toLowerCase()),
+          username: uname,
+          token: sessionToken
+        })
+      });
+      if (probRes.ok) {
+        problemsPayload = await probRes.json();
+      }
+    } catch (err) {
+      console.error('Failed to fetch profile problems data:', err);
+    }
+
+    cachedProblemsData = problemsPayload;
+    buildProblemLookup();
 
     sources.forEach(src => {
       let tbl;
@@ -1384,6 +1439,7 @@ window.onload = async () => {
     if (!res.ok) return window.location.href = 'home';
 
     cachedProblemsData = await res.json();
+    buildProblemLookup();
 
     sources.forEach(src => {
       let tbl;

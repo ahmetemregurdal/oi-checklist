@@ -18,35 +18,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle demo login
     loginBtn.addEventListener('click', async () => {
         hideError();
-        
+
         // Disable button and show loading state
         loginBtn.disabled = true;
         loginBtn.innerHTML = '<div class="loading-text"><span>Launching Demo</span><span class="loading-dots"></span></div>';
 
         try {
-            const response = await fetch(`${apiUrl}/api/demo-login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include'
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.success) {
-                // Store the session token in localStorage
-                localStorage.setItem('sessionToken', data.token);
-                
-                // Redirect to main dashboard
-                window.location.href = '/';
-            } else {
-                throw new Error(data.error || 'Demo login failed');
-            }
+            localStorage.setItem('username', 'demo-user');
+            localStorage.setItem('sessionToken', 'demo-session-fixed-token-123456789');
+            window.location.href = '/';
         } catch (error) {
             console.error('Demo login error:', error);
             showError('Failed to launch demo. Please try again.');
-            
+
             // Re-enable button
             loginBtn.disabled = false;
             loginBtn.innerHTML = 'Launch Demo';

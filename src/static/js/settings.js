@@ -12,13 +12,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   const visibilityBadge = document.getElementById('visibility-badge');
 
   try {
-    const response = await fetch(`${apiUrl}/api/settings`, {
-      method: 'GET', credentials: 'include',
-      headers: { 'Authorization': `Bearer ${session_token}` }
+    const response = await fetch(`${apiUrl}/user/settings`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: session_token })
     });
     if (response.ok) {
       const data = await response.json();
-      updateVisibilityUI(checklistVisibilityItem, visibilityBadge, data.checklist_public);
+      updateVisibilityUI(checklistVisibilityItem, visibilityBadge, data.checklistPublic);
     }
   } catch { }
 
@@ -27,10 +29,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nextPublic = !current;
     updateVisibilityUI(checklistVisibilityItem, visibilityBadge, nextPublic);
     try {
-      const response = await fetch(`${apiUrl}/api/settings`, {
+      const response = await fetch(`${apiUrl}/user/settings`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session_token}` },
-        body: JSON.stringify({ checklist_public: nextPublic })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: session_token, updated: { checklistPublic: nextPublic } })
       });
       if (!response.ok) updateVisibilityUI(checklistVisibilityItem, visibilityBadge, current);
     } catch { updateVisibilityUI(checklistVisibilityItem, visibilityBadge, current); }
@@ -93,7 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       try {
-        const [newResSettled, legacyResSettled] = await Promise.allSettled([
+        const [newResSettled] = await Promise.allSettled([
           fetch(`${apiUrl}/user/settings`, {
             method: 'POST',
             credentials: 'include',
@@ -101,20 +103,10 @@ document.addEventListener('DOMContentLoaded', async () => {
               'Content-Type': 'application/json'
             },
             body: JSON.stringify(newPayload),
-          }),
-          fetch(`${apiUrl}/api/settings/sync`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${session_token}`,
-            },
-            body: JSON.stringify({ local_storage: JSON.stringify(localStorageData) }),
-          }),
+          })
         ]);
 
         const okNew = newResSettled.status === 'fulfilled' && newResSettled.value.ok;
-        const okLegacy = legacyResSettled.status === 'fulfilled' && legacyResSettled.value.ok;
 
         if (okNew && newPayload.updated.platformPref) {
           // Reflect platform prefs locally if server accepted them
@@ -122,9 +114,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         syncSettingsButton.textContent =
-          okNew && okLegacy ? 'Settings Synced!' :
-            (okNew || okLegacy) ? 'Partially Synced' :
-              'Sync Failed';
+          okNew ? 'Settings Synced!' : 'Sync Failed';
       } catch {
         syncSettingsButton.textContent = 'Sync Failed';
       } finally {

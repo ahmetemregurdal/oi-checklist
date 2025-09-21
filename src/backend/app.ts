@@ -2,6 +2,7 @@ import fastify from 'fastify';
 import fastifyStatic from '@fastify/static';
 import path from 'path';
 import fs from 'fs';
+import createError from 'http-errors';
 import { auth } from './routes/auth';
 import { user } from './routes/user';
 import { data } from './routes/data';
@@ -40,8 +41,12 @@ for (const i of ['js', 'css', 'images']) {
 }
 
 app.setErrorHandler((error, req, reply) => {
-  console.error('Unhandled error:', error);
-  reply.status(500).send({ error: 'Internal Server Error' });
+  if (createError.isHttpError(error)) {
+    reply.status(error.statusCode).send({ error: error.message });
+    return;
+  }
+  console.error("Unhandled error:", error);
+  reply.status(500).send({ error: "Internal Server Error" });
 });
 
 app.listen({ port: 5501 }).then(() => {
