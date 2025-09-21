@@ -83,20 +83,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Build new endpoint payload
       const newPayload = {
-        asc_sort: (typeof yearSortOrder === 'string' ? yearSortOrder : '').toLowerCase() === 'asc',
+        token: session_token,
+        updated: {
+          ascSort: (typeof yearSortOrder === 'string' ? yearSortOrder : '').toLowerCase() === 'asc'
+        }
       };
       if (Array.isArray(platformPrefDraft) && platformPrefDraft.length > 0) {
-        newPayload.platform_pref = platformPrefDraft;
+        newPayload.updated.platformPref = platformPrefDraft;
       }
 
       try {
         const [newResSettled, legacyResSettled] = await Promise.allSettled([
-          fetch(`${apiUrl}/api/user-settings`, {
+          fetch(`${apiUrl}/user/settings`, {
             method: 'POST',
             credentials: 'include',
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${session_token}`,
+              'Content-Type': 'application/json'
             },
             body: JSON.stringify(newPayload),
           }),
@@ -114,9 +116,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const okNew = newResSettled.status === 'fulfilled' && newResSettled.value.ok;
         const okLegacy = legacyResSettled.status === 'fulfilled' && legacyResSettled.value.ok;
 
-        if (okNew && newPayload.platform_pref) {
+        if (okNew && newPayload.updated.platformPref) {
           // Reflect platform prefs locally if server accepted them
-          try { platformPref = [...newPayload.platform_pref]; } catch { }
+          try { platformPref = [...newPayload.updated.platformPref]; } catch { }
         }
 
         syncSettingsButton.textContent =
@@ -133,7 +135,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  /* -------- Platform Preference (clean final) -------- */
   const knownPlatforms = [
     { key: 'oj.uz', label: 'oj.uz', icon: 'images/ojuz-logo.ico' },
     { key: 'qoj.ac', label: 'qoj.ac', icon: 'images/dummy-icon.svg' },
@@ -196,12 +197,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   // load saved order
   (async () => {
     try {
-      const res = await fetch(`${apiUrl}/api/user-settings?username=${username}`, { method: 'GET', credentials: 'include' });
+      const res = await fetch(`${apiUrl}/user/settings`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: session_token }) });
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data.platform_pref)) platformPref = data.platform_pref;
-        if (typeof data.asc_sort === "boolean") {
-          yearSortOrder = data.asc_sort ? "asc" : "desc";
+        if (Array.isArray(data.platformPref)) platformPref = data.platformPref;
+        if (typeof data.ascSort === "boolean") {
+          yearSortOrder = data.ascSort ? "asc" : "desc";
           document.getElementById('year-sort-toggle').textContent = yearSortOrder === 'asc' ? 'Earlier first' : 'Later first';
         }
       }

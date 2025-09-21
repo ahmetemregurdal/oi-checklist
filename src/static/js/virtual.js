@@ -402,13 +402,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   let problemsData = {};
 
   // Always fetch problems data (we need it for contest problem names)
-  const problemsResponse = await fetch(`${apiUrl}/api/problems?names=${contestSources.join(',')}`, {
-    method: 'GET',
+  const problemsResponse = await fetch(`${apiUrl}/data/problems`, {
+    method: 'POST',
     credentials: 'include',
-    headers: {
-      'Authorization': `Bearer ${sessionToken}`,
-      'X-All-Problem-Links': 'true'
-    }
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sources: contestSources.map(i => i.toLowerCase()),
+      token: sessionToken,
+      allLinks: true
+    })
   });
 
   if (problemsResponse.ok) {
@@ -606,16 +608,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     return map;
   }
 
-  async function fetchActiveUsernamesForSync(username, token) {
+  async function fetchActiveUsernamesForSync(token) {
     try {
-      const settingsRes = await fetch(`${apiUrl}/api/user-settings?username=${encodeURIComponent(username)}`, {
-        method: 'GET',
+      const settingsRes = await fetch(`${apiUrl}/user/settings`, {
+        method: 'POST',
         credentials: 'include',
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ token })
       });
       if (!settingsRes.ok) return {};
       const settings = await settingsRes.json();
-      return (settings && typeof settings.platform_usernames === 'object') ? settings.platform_usernames : {};
+      return (settings && typeof settings.platformUsernames === 'object') ? settings.platformUsernames : {};
     } catch (e) {
       console.error('Failed to fetch active platform usernames', e);
       return {};
@@ -633,7 +638,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const isCompleted = contestKey ? (completedContestKeys.has(contestKey) || (completionWarning?.dataset?.reason === 'completed')) : false;
     if (isCompleted) return;
 
-    const _active = await fetchActiveUsernamesForSync(currentUserName, sessionToken);
+    const _active = await fetchActiveUsernamesForSync(sessionToken);
     const activeUsernames = (_active && typeof _active === 'object') ? _active : {};
     // If no auto-synced usernames are set, do not show inline warning; popup will be shown on Start
     const hasAnyUsername = Array.isArray(auto_synced_platforms) && auto_synced_platforms.some(p => activeUsernames && activeUsernames[p]);
@@ -737,7 +742,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const platformIndexMap = buildPlatformIndexMap(lastRenderedContest, lastRenderedOlympiad);
-    const activeUsernames = await fetchActiveUsernamesForSync(currentUserName, sessionToken);
+    const activeUsernames = await fetchActiveUsernamesForSync(sessionToken);
     renderPlatformSyncCard(lastProblemCount, platformIndexMap, activeUsernames);
   }
 
@@ -1062,14 +1067,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     let platformUsernames = {};
     if (wantsAutoTrack) {
       try {
-        const settingsRes = await fetch(`${apiUrl}/api/user-settings?username=${encodeURIComponent(currentUserName)}`, {
-          method: 'GET',
+        const settingsRes = await fetch(`${apiUrl}/user/settings`, {
+          method: 'POST',
           credentials: 'include',
-          headers: { 'Authorization': `Bearer ${sessionToken}` }
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ token: sessionToken })
         });
         if (settingsRes.ok) {
           const settings = await settingsRes.json();
-          platformUsernames = settings && settings.platform_usernames ? settings.platform_usernames : {};
+          platformUsernames = settings && settings.platformUsernames ? settings.platformUsernames : {};
         }
       } catch (e) {
         console.error('Failed to fetch user settings for platform usernames', e);

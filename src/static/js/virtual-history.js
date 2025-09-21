@@ -34,10 +34,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Fetch problems data for all contest sources
       const contestSources = Object.keys(contestData);
-      const problemsResponse = await fetch(`${apiUrl}/api/problems?names=${contestSources.join(',')}`, {
-        method: 'GET',
+      const problemsResponse = await fetch(`${apiUrl}/data/problems`, {
+        method: 'POST',
         credentials: 'include',
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: sessionToken,
+          sources: contestSources.map(i => i.toLowerCase())
+        })
       });
 
       if (problemsResponse.ok) {

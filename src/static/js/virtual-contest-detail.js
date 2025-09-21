@@ -69,11 +69,14 @@ async function fetchAdditionalData(contest) {
 
       // Fetch problems data
       const contestSources = Object.keys(contestDataAll);
-      const problemsResponse = await fetch(
-        `${apiUrl}/api/problems?names=${contestSources.join(',')}`, {
-        method: 'GET',
+      const problemsResponse = await fetch(`${apiUrl}/data/problems`, {
+        method: 'POST',
         credentials: 'include',
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: sessionToken,
+          sources: contestSources.map(i => i.toLowerCase())
+        })
       });
 
       if (problemsResponse.ok) {
@@ -338,8 +341,8 @@ function displayContestDetails(
           ${contestMetadata.location || contestMetadata.website ?
       `<div class="vc-detail-location">${contestMetadata.location || ''}${contestMetadata.location && contestMetadata.website ? ' | ' :
         ''}${contestMetadata.website ?
-        `<a href="${contestMetadata.website}" target="_blank">${contestMetadata.website}</a>` :
-        ''}</div>` :
+          `<a href="${contestMetadata.website}" target="_blank">${contestMetadata.website}</a>` :
+          ''}</div>` :
       ''}
         </div>
         ${medalClass ? `<div class="vc-detail-medal-ribbon ${medalClass}"></div>` :

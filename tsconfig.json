@@ -3,6 +3,7 @@
     "baseUrl": "src",
     "paths": {
       "@db": ["backend/db"],
+      "@config": ["config"],
       "@routes/*": ["backend/routes/*"]
     },
     "esModuleInterop": true

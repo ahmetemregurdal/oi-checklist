@@ -39,11 +39,12 @@ model Problem {
   number Int?
   source String?
   year Int?
-  extra String?
+  extra String
   problemLinks ProblemLink[]
   userProblemsData UserProblemData[]
   contests ContestProblem[]
   @@unique([source, year, number, extra])
+  @@unique([name, source, year, extra])
   @@map("problems")
 }
 

@@ -3,10 +3,14 @@ import fastifyStatic from '@fastify/static';
 import path from 'path';
 import fs from 'fs';
 import { auth } from './routes/auth';
+import { user } from './routes/user';
+import { data } from './routes/data';
 
 const app = fastify();
 
 app.register(auth, { prefix: '/auth' });
+app.register(user, { prefix: '/user' });
+app.register(data, { prefix: '/data' });
 
 app.register(fastifyStatic, {
   root: path.join(__dirname, '../static/html'),
@@ -35,6 +39,14 @@ for (const i of ['js', 'css', 'images']) {
   });
 }
 
-app.listen({ port: 5501 }, () => {
-  console.log(`Running at http://localhost:5501`);
+app.setErrorHandler((error, req, reply) => {
+  console.error('Unhandled error:', error);
+  reply.status(500).send({ error: 'Internal Server Error' });
+});
+
+app.listen({ port: 5501 }).then(() => {
+  console.log('Running at http://localhost:5501');
+}).catch((err) => {
+  console.error(err);
+  process.exit(1);
 });

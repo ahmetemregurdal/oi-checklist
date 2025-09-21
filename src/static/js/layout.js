@@ -22,22 +22,25 @@ window.onload = async () => {
   document.getElementById('welcome-message').textContent = `Welcome, ${username}`;
 
   // Load user settings
-  const user_settings = await fetch(`${apiUrl}/api/user-settings?username=${username}`, {
-    method: 'GET',
+  const user_settings = await fetch(`${apiUrl}/user/settings`, {
+    method: 'POST',
     credentials: 'include',
-    headers: { 'Authorization': `Bearer ${sessionToken}` }
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ token: sessionToken })
   });
 
   if (user_settings.ok) {
     const data = await user_settings.json();
-    if (data.olympiad_order && Array.isArray(data.olympiad_order)) {
-      applyOlympiadOrder(data.olympiad_order);
+    if (data.olympiadOrder && Array.isArray(data.olympiadOrder)) {
+      applyOlympiadOrder(data.olympiadOrder);
     }
     if (data.hidden && Array.isArray(data.hidden)) {
       applyHiddenOlympiads(data.hidden);
     }
-    if (typeof data.asc_order === "boolean") {
-      localStorage.setItem('yearSortOrder', data.asc_order ? "asc" : "desc");
+    if (typeof data.ascSort === "boolean") {
+      localStorage.setItem('yearSortOrder', data.ascSort ? "asc" : "desc");
     }
   }
 
@@ -106,15 +109,15 @@ function saveOlympiadOrder() {
   messageBox.style.display = 'block';
   let currentTheme = localStorage.getItem('theme') || 'light-mode';
   messageBox.color = currentTheme == 'light-mode' ? 'black' : 'white';
-  fetch(apiUrl + '/api/user-settings', {
+  fetch(apiUrl + '/user/settings', {
     method: 'POST',
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${sessionToken}`
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      olympiad_order: order,
+      token: sessionToken,
+      olympiadOrder: order,
       hidden: hidden
     })
   })

@@ -55,10 +55,18 @@ function showProviderPopup(title, contentHTML) {
 }
 
 // Fetch user settings helper for username
-async function fetchUserSettings(username) {
+async function fetchUserSettings() {
   try {
-    const res = await fetch(`${apiUrl}/api/user-settings?username=${encodeURIComponent(username)}`);
-    if (!res.ok) return null;
+    const res = await fetch(`${apiUrl}/user/settings`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ token: localStorage.getItem('sessionToken') })
+    });
+    if (!res.ok) {
+      return null;
+    }
     return await res.json();
   } catch (e) {
     console.error('Failed to fetch user settings:', e);
@@ -137,8 +145,8 @@ function showOjuzPopup() {
     try {
       const uname = window.currentUsername;
       if (!uname) return;
-      const settings = await fetchUserSettings(uname);
-      const existing = settings && settings.platform_usernames && settings.platform_usernames['oj.uz'];
+      const settings = await fetchUserSettings();
+      const existing = settings && settings.platformUsernames && settings.platformUsernames['oj.uz'];
       const input = document.getElementById('ojuz-username');
       const note = document.getElementById('ojuz-username-note');
       if (existing) {
@@ -553,27 +561,14 @@ async function onSubmitOjuzUsername(e) {
   }
 
   try {
-    // 1) Read current platform_usernames via GET /api/user-settings?username=...
-    const uname = window.currentUsername;
-    let current = {};
-    if (uname) {
-      const settings = await fetchUserSettings(uname);
-      if (settings && settings.platform_usernames && typeof settings.platform_usernames === 'object') {
-        current = { ...settings.platform_usernames };
-      }
-    }
-
-    // 2) Modify only the oj.uz field
-    current['oj.uz'] = username;
-
-    // 3) Send back the merged object as a JSON string in platform_usernames
-    const res = await fetch(`${apiUrl}/api/user-settings`, {
+    const res = await fetch(`${apiUrl}/user/settings`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionToken}`
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ platform_usernames: JSON.stringify(current) })
+      body: JSON.stringify({
+        token: sessionToken, platformUsernames: { 'oj.uz': username }
+      })
     });
 
     const body = await res.json();
@@ -665,8 +660,8 @@ function showQojPopup() {
     try {
       const uname = window.currentUsername;
       if (!uname) return;
-      const settings = await fetchUserSettings(uname);
-      const existing = settings && settings.platform_usernames && settings.platform_usernames['qoj.ac'];
+      const settings = await fetchUserSettings();
+      const existing = settings && settings.platformUsernames && settings.platformUsernames['qoj.ac'];
       const input = document.getElementById('qoj-username');
       const note = document.getElementById('qoj-username-note');
       if (existing) {
@@ -777,27 +772,12 @@ async function onSubmitQojUsername(e) {
   }
 
   try {
-    // 1) Read current platform_usernames via GET /api/user-settings?username=...
-    const uname = window.currentUsername;
-    let current = {};
-    if (uname) {
-      const settings = await fetchUserSettings(uname);
-      if (settings && settings.platform_usernames && typeof settings.platform_usernames === 'object') {
-        current = { ...settings.platform_usernames };
-      }
-    }
-
-    // 2) Modify only the qoj.ac field
-    current['qoj.ac'] = username;
-
-    // 3) Send back the merged object as a JSON string in platform_usernames
-    const res = await fetch(`${apiUrl}/api/user-settings`, {
+    const res = await fetch(`${apiUrl}/user/settings`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionToken}`
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ platform_usernames: JSON.stringify(current) })
+      body: JSON.stringify({ token: sessionToken, platformUsernames: { 'qoj.ac': username } })
     });
 
     const body = await res.json();

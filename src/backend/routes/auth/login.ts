@@ -1,4 +1,4 @@
-import createError from "http-errors";
+import createError from 'http-errors';
 import crypto from 'crypto';
 import { db } from '@db';
 import { FastifyInstance } from 'fastify';

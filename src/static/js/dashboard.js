@@ -1199,25 +1199,29 @@ window.onload = async () => {
   const username = localStorage.getItem('username');
   // Attempt to fetch saved order
   try {
-    let req = `${apiUrl}/api/user-settings`;
-    const uname = isProfilePage ? relativePath.split('/')[1] : username;
-    req += `?username=${uname}`;
-
-    const resp = await fetch(req, {
-      method: 'GET',
+    let body = { token: sessionToken };
+    if (isProfilePage) {
+      body['username'] = relativePath.split('/')[1];
+    }
+    const resp = await fetch(`${apiUrl}/user/settings`, {
+      method: 'POST',
       credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
     });
 
     if (resp.ok) {
-      const { olympiad_order, asc_sort, platform_pref } = await resp.json();
-      if (Array.isArray(olympiad_order)) {
-        sources = olympiad_order.map(id => id.toUpperCase());
+      const { olympiadOrder, ascSort, platformPref } = await resp.json();
+      if (Array.isArray(olympiadOrder)) {
+        sources = olympiadOrder.map(id => id.toUpperCase());
       }
-      if (typeof asc_sort === "boolean") {
-        yearSortOrder = asc_sort ? "asc" : "desc";
+      if (typeof ascSort === "boolean") {
+        yearSortOrder = ascSort ? "asc" : "desc";
       }
-      if (Array.isArray(platform_pref)) {
-        localStorage.setItem('platformPref', JSON.stringify(platform_pref));
+      if (Array.isArray(platformPref)) {
+        localStorage.setItem('platformPref', JSON.stringify(platformPref));
       }
     }
   } catch (err) {
@@ -1367,12 +1371,15 @@ window.onload = async () => {
       return;
     }
 
-    const res =
-      await fetch(`${apiUrl}/api/problems?names=${sources.join(',')}`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
-      });
+    const res = await fetch(`${apiUrl}/data/problems`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        token: sessionToken,
+        sources: sources.map(i => i.toLowerCase())
+      })
+    });
 
     if (!res.ok) return window.location.href = 'home';
 

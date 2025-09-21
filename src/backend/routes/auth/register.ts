@@ -15,7 +15,8 @@ export async function register(app: FastifyInstance) {
     await db.user.create({
       data: {
         username,
-        password: crypto.createHash('sha256').update(password).digest('hex')
+        password: crypto.createHash('sha256').update(password).digest('hex'),
+        settings: { create: {} }
       }
     });
     return { success: true };
