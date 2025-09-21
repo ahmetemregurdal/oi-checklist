@@ -42,12 +42,29 @@ document.getElementById('login-form')
     }
   });
 
+async function beginOAuth(provider) {
+  try {
+    const res = await fetch(`${apiUrl}/auth/${provider}/start`, {
+      credentials: 'include'
+    });
+    const data = await res.json();
+    if (res.ok && data?.redirect) {
+      window.location.href = data.redirect;
+    } else {
+      throw new Error(data?.error || 'Unexpected response');
+    }
+  } catch (err) {
+    console.error(`Failed to start ${provider} login:`, err);
+    alert(`Failed to start ${provider} login. Please try again.`);
+  }
+}
+
 document.getElementById('github-continue').addEventListener('click', () => {
-  window.location.href = `${apiUrl}/auth/github/start`;
+  beginOAuth('github');
 });
 
 document.getElementById('discord-continue').addEventListener('click', () => {
-  window.location.href = `${apiUrl}/auth/discord/start`;
+  beginOAuth('discord');
 });
 
 document.getElementById('google-continue').addEventListener('click', () => {

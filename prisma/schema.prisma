@@ -176,3 +176,11 @@ model ScraperAuthToken {
   token String
   @@map("scraper_auth_tokens")
 }
+
+model OAuthState {
+  id String @id
+  userId Int?
+  redirectUri String?
+  createdAt DateTime @default(now())
+  @@map("oauth_states")
+}

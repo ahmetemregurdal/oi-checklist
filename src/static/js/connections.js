@@ -186,26 +186,27 @@ async function handleGithubClick() {
   );
 
   try {
-    const res = await fetch(`${apiUrl}/api/github/status`, {
+    const res = await fetch(`${apiUrl}/auth/github/status`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
     if (res.status === 200) {
-      const { github_username } = await res.json();
+      const { username } = await res.json();
       const linkEl = document.getElementById('github-link');
       const placeholderEl = document.getElementById('github-placeholder');
       if (linkEl && placeholderEl) {
-        linkEl.href = `https://github.com/${github_username}`;
-        placeholderEl.textContent = `@${github_username}`;
+        linkEl.href = `https://github.com/${username}`;
+        placeholderEl.textContent = `@${username}`;
       }
 
       document.getElementById('unlink-github-button').onclick = async () => {
         const messageBox = document.getElementById('popup-message');
         messageBox.style.display = 'block';
         try {
-          const unlinkRes = await fetch(`${apiUrl}/api/github/unlink`, {
+          const unlinkRes = await fetch(`${apiUrl}/auth/github/unlink`, {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token })
           });
 
           const resBody = await unlinkRes.json();
@@ -240,8 +241,12 @@ async function handleGithubClick() {
         const state = crypto.randomUUID();
         localStorage.setItem('oauth_github_state', state);
         const sessionToken = localStorage.getItem('sessionToken');
+        if (!sessionToken) {
+          showGithubError('You are not logged in.');
+          return;
+        }
         const currentPage = encodeURIComponent(window.location.pathname);
-        window.location.href = `${apiUrl}/auth/github/link?state=${state}&session_id=${sessionToken}&redirect_to=${currentPage}`;
+        window.location.href = `${apiUrl}/auth/github/link?state=${state}&token=${sessionToken}&redirectTo=${currentPage}`;
       };
     }
   } catch (err) {
@@ -257,7 +262,6 @@ async function handleDiscordClick() {
     return;
   }
 
-  // Immediately show popup with loading spinner
   showProviderPopup(
     'Discord Connection',
     `
@@ -275,42 +279,42 @@ async function handleDiscordClick() {
   );
 
   try {
-    const res = await fetch(`${apiUrl}/api/discord/status`, {
+    const res = await fetch(`${apiUrl}/auth/discord/status`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
     if (res.status === 200) {
-      const { discord_username, provider_user_id } = await res.json();
+      const { username, providerUserId } = await res.json();
       const linkEl = document.getElementById('discord-link');
       const placeholderEl = document.getElementById('discord-placeholder');
       if (linkEl && placeholderEl) {
-        linkEl.href = `https://discord.com/users/${provider_user_id}`;
-        placeholderEl.textContent = `${discord_username}`;
+        if (providerUserId) linkEl.href = `https://discord.com/users/${providerUserId}`;
+        placeholderEl.textContent = username || 'Linked';
       }
 
       document.getElementById('unlink-discord-button').onclick = async () => {
         const messageBox = document.getElementById('popup-message');
         messageBox.style.display = 'block';
         try {
-          const unlinkRes = await fetch(`${apiUrl}/api/discord/unlink`, {
+          const unlinkRes = await fetch(`${apiUrl}/auth/discord/unlink`, {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token })
           });
 
           const resBody = await unlinkRes.json();
 
           if (unlinkRes.ok) {
-            messageBox.textContent =
-              resBody.message || 'Discord unlinked successfully.';
+            messageBox.textContent = resBody.message || 'Discord unlinked successfully.';
             messageBox.style.color = 'green';
             setTimeout(closeProviderPopup, 1000);
           } else {
-            messageBox.textContent =
-              resBody.error || 'Failed to unlink Discord.';
+            messageBox.textContent = resBody.error || 'Failed to unlink Discord.';
             messageBox.style.color = 'red';
           }
         } catch (err) {
           console.error(err);
+          const messageBox = document.getElementById('popup-message');
           messageBox.textContent = 'Unexpected error occurred.';
           messageBox.style.color = 'red';
         }
@@ -329,6 +333,10 @@ async function handleDiscordClick() {
         const state = crypto.randomUUID();
         localStorage.setItem('oauth_discord_state', state);
         const sessionToken = localStorage.getItem('sessionToken');
+        if (!sessionToken) {
+          showDiscordError('You are not logged in.');
+          return;
+        }
         const currentPage = encodeURIComponent(window.location.pathname);
         window.location.href = `${apiUrl}/auth/discord/link?state=${state}&session_id=${sessionToken}&redirect_to=${currentPage}`;
       };
@@ -367,10 +375,10 @@ async function handleGoogleClick() {
     });
 
     if (res.status === 200) {
-      const { google_display_name } = await res.json();
+      const { username } = await res.json();
       const placeholderEl = document.getElementById('google-placeholder');
       if (placeholderEl) {
-        placeholderEl.textContent = google_display_name ? `${google_display_name}` : 'Linked';
+        placeholderEl.textContent = username ? `${username}` : 'Linked';
       }
 
       document.getElementById('unlink-google-button').onclick = async () => {
@@ -430,22 +438,16 @@ function showGithubError(message) {
   const messageBox = document.getElementById('popup-message');
   if (!messageBox) return;
   messageBox.style.display = 'block';
-  messageBox.textContent = message;
-  messageBox.style.color =
-    (localStorage.getItem('theme') || 'light-mode') === 'light-mode' ?
-      'black' :
-      'white';
+  messageBox.textContent = `Error: ${message}`;
+  messageBox.style.color = 'red';
 }
 
 function showDiscordError(message) {
   const messageBox = document.getElementById('popup-message');
   if (!messageBox) return;
   messageBox.style.display = 'block';
-  messageBox.textContent = message;
-  messageBox.style.color =
-    (localStorage.getItem('theme') || 'light-mode') === 'light-mode' ?
-      'black' :
-      'white';
+  messageBox.textContent = `Error: ${message}`;
+  messageBox.style.color = 'red';
 }
 
 function showGoogleError(message) {
