@@ -58,5 +58,5 @@ document.getElementById('discord-continue').addEventListener('click', () => {
 });
 
 document.getElementById('google-continue').addEventListener('click', () => {
-  window.location.href = `${apiUrl}/auth/google/start`;
+  beginOAuth('google');
 });

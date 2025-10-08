@@ -370,7 +370,7 @@ async function handleGoogleClick() {
   );
 
   try {
-    const res = await fetch(`${apiUrl}/api/google/status`, {
+    const res = await fetch(`${apiUrl}/auth/google/status`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
@@ -385,9 +385,10 @@ async function handleGoogleClick() {
         const messageBox = document.getElementById('popup-message');
         messageBox.style.display = 'block';
         try {
-          const unlinkRes = await fetch(`${apiUrl}/api/google/unlink`, {
+          const unlinkRes = await fetch(`${apiUrl}/auth/google/unlink`, {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token })
           });
 
           const resBody = await unlinkRes.json();
@@ -424,6 +425,10 @@ async function handleGoogleClick() {
         const state = crypto.randomUUID();
         localStorage.setItem('oauth_google_state', state);
         const sessionToken = localStorage.getItem('sessionToken');
+        if (!sessionToken) {
+          showGoogleError('You are not logged in.');
+          return;
+        }
         const currentPage = encodeURIComponent(window.location.pathname);
         window.location.href = `${apiUrl}/auth/google/link?state=${state}&session_id=${sessionToken}&redirect_to=${currentPage}`;
       };
