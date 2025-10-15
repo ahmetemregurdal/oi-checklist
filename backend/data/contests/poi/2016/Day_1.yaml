@@ -1,0 +1,19 @@
+- name: POI 2016
+  location: Warsaw, Poland
+  duration_minutes: 300
+  website: https://oi.edu.pl/l/23oi_aktualnosci/
+  link: https://qoj.ac/contest/74
+  problems:
+    - source: POI
+      year: 2016
+      number: 1
+    - source: POI
+      year: 2016
+      number: 2
+    - source: POI
+      year: 2016
+      number: 3
+  medal_cutoffs:
+    - gold: 300
+      silver: 261
+      bronze: 132
