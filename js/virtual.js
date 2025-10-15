@@ -218,12 +218,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         totalScoreStat.className = 'stat-item';
         totalScoreStat.innerHTML = `
           <span class="stat-label">Total Score:</span>
-          <span class="stat-value" id="total-score-value">${totalScore}/300</span>
+          <span class="stat-value" id="total-score-value">${totalScore}/${problemCount * 100}</span>
         `;
         completionStats.appendChild(totalScoreStat);
       } else {
         // Update existing stat
-        document.getElementById('total-score-value').textContent = `${totalScore}/300`;
+        document.getElementById('total-score-value').textContent = `${totalScore}/${problemCount * 100}`;
       }
     }
 
@@ -566,11 +566,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         month: 'short',
         day: 'numeric'
       });
+      
+      // Calculate problem count for this contest
+      let pastContestProblemCount = 3; // fallback
+      for (const [olympiad, years] of Object.entries(contestData)) {
+        for (const [year, contests] of Object.entries(years)) {
+          const foundContest = contests.find(c => c.name === contest.contest_name &&
+            (contest.contest_stage ? c.stage === contest.contest_stage : c.stage == null));
+          if (foundContest && foundContest.problems) {
+            pastContestProblemCount = foundContest.problems.length;
+            break;
+          }
+        }
+        if (pastContestProblemCount !== 3) break;
+      }
+      
       item.innerHTML = `
-              <div class="past-vc-title">${contest.contest_source} ${contest.contest_year}${contest.contest_stage ? ` ${contest.contest_stage}` : ''}</div>
-              <div class="past-vc-score">${contest.total_score || 0}/300</div>
-              <div class="past-vc-date">${formattedDate}</div>
-          `;
+            <div class="past-vc-title">${contest.contest_source} ${contest.contest_year}${contest.contest_stage ? ` ${contest.contest_stage}` : ''}</div>
+            <div class="past-vc-score">${contest.total_score || 0}/${pastContestProblemCount * 100}</div>
+            <div class="past-vc-date">${formattedDate}</div>
+        `;
       item.addEventListener('click', (e) => {
         if (e.target.tagName === 'A' || e.target.closest('a')) {
           return;
