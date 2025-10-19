@@ -4,7 +4,6 @@ import readline from 'readline/promises';
 import { stdin, stdout } from 'process';
 import { root, HostnameToPlatform } from '@config';
 import { db } from '@db';
-import { Prisma } from '@prisma/client';
 import YAML from 'yaml';
 
 interface ProblemYAML {

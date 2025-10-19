@@ -33,7 +33,7 @@ export async function github(app: FastifyInstance) {
       throw new createError.Forbidden('Invalid state');
     }
     await db.oAuthState.delete({ where: { id: state } });
-    const redirTo = dbState.redirectUri ?? `${RootUrl}`;
+    const redirTo = dbState.redirectUri ?? RootUrl;
     const request = await fetch(tokenUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
