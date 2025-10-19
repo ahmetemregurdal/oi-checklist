@@ -203,6 +203,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       scoreSubtitle.textContent = 'Click on each problem to set your score.';
     }
 
+    // Get the contest data to find problems - MOVED UP BEFORE FIRST USE
+    const contestName = currentActiveContest.contest_name;
+    const contestStage = currentActiveContest.contest_stage;
+
+    // Find the contest in contestData to get problems
+    let contestProblems = [];
+    let problemCount = 3; // fallback
+
+    // Search through all olympiads and years to find this contest
+    for (const [olympiad, years] of Object.entries(contestData)) {
+      for (const [year, contests] of Object.entries(years)) {
+        const contest = contests.find(c => c.name === contestName &&
+          (contestStage ? c.stage === contestStage : c.stage == null));
+        if (contest && contest.problems) {
+          contestProblems = contest.problems;
+          problemCount = contest.problems.length;
+          break;
+        }
+      }
+      if (contestProblems.length > 0) break;
+    }
+
     // Calculate total score for oj.uz mode and update completion stats
     if (isReadOnly && currentActiveContest.ojuz_data) {
       const totalScore = currentActiveContest.ojuz_data.reduce((sum, submission) => sum + submission.score, 0);
@@ -230,28 +252,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Generate score table with actual problem names using main page cell system
     const scoreTbody = document.getElementById('score-problems-tbody');
     scoreTbody.innerHTML = '';
-
-    // Get the contest data to find problems
-    const contestName = currentActiveContest.contest_name;
-    const contestStage = currentActiveContest.contest_stage;
-
-    // Find the contest in contestData to get problems
-    let contestProblems = [];
-    let problemCount = 3; // fallback
-
-    // Search through all olympiads and years to find this contest
-    for (const [olympiad, years] of Object.entries(contestData)) {
-      for (const [year, contests] of Object.entries(years)) {
-        const contest = contests.find(c => c.name === contestName &&
-          (contestStage ? c.stage === contestStage : c.stage == null));
-        if (contest && contest.problems) {
-          contestProblems = contest.problems;
-          problemCount = contest.problems.length;
-          break;
-        }
-      }
-      if (contestProblems.length > 0) break;
-    }
 
     // Get actual problem names and links
     const problemData = [];
