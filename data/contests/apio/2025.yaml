@@ -1,19 +1,19 @@
-- name: APIO 2025
-  location: Uzbekistan
-  duration_minutes: 300
-  website: https://apio2025.uz/
-  link: https://oj.uz/problems/source/apio2025
-  problems:
-  - source: APIO
-    year: 2025
-    number: 1
-  - source: APIO
-    year: 2025
-    number: 2
-  - source: APIO
-    year: 2025
-    number: 3
-  medal_cutoffs:
-  - gold: 224.1
-    silver: 163.1
-    bronze: 108
+name: APIO 2025
+location: Uzbekistan
+duration: 300
+website: https://apio2025.uz/
+link: https://oj.uz/problems/source/apio2025
+problems:
+- source: apio
+  year: 2025
+  number: 1
+- source: apio
+  year: 2025
+  number: 2
+- source: apio
+  year: 2025
+  number: 3
+medalCutoffs:
+- gold: 224.1
+  silver: 163.1
+  bronze: 108

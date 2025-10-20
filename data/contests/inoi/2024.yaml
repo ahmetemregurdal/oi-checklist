@@ -1,19 +1,19 @@
-- name: INOI 2024
-  location: India
-  duration_minutes: 180
-  website: https://www.iarcs.org.in/inoi/2024/
-  link: https://codedrills.io/contests/inoi-2024-final
-  problems:
-  - source: INOI
-    year: 2024
-    number: 1
-  - source: INOI
-    year: 2024
-    number: 2
-  - source: INOI
-    year: 2024
-    number: 3
-  medal_cutoffs:
-  - gold: 156
-    silver: 128
-    bronze: 78
+name: INOI 2024
+location: India
+duration: 180
+website: https://www.iarcs.org.in/inoi/2024/
+link: https://codedrills.io/contests/inoi-2024-final
+problems:
+- source: inoi
+  year: 2024
+  number: 1
+- source: inoi
+  year: 2024
+  number: 2
+- source: inoi
+  year: 2024
+  number: 3
+medalCutoffs:
+- gold: 156
+  silver: 128
+  bronze: 78

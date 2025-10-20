@@ -1,19 +1,19 @@
-- name: CEOI 2024
-  location: Brno, Czechia
-  duration_minutes: 300
-  website: https://ceoi2024.fi.muni.cz/
-  link: https://oj.uz/problems/source/ceoi2024day2
-  problems:
-  - source: CEOI
-    year: 2024
-    number: 4
-  - source: CEOI
-    year: 2024
-    number: 5
-  - source: CEOI
-    year: 2024
-    number: 6
-  medal_cutoffs:
-  - gold: 265.0
-    silver: 191.0
-    bronze: 127.0
+name: CEOI 2024
+location: Brno, Czechia
+duration: 300
+website: https://ceoi2024.fi.muni.cz/
+link: https://oj.uz/problems/source/ceoi2024day2
+problems:
+- source: ceoi
+  year: 2024
+  number: 4
+- source: ceoi
+  year: 2024
+  number: 5
+- source: ceoi
+  year: 2024
+  number: 6
+medalCutoffs:
+- gold: 265.0
+  silver: 191.0
+  bronze: 127.0

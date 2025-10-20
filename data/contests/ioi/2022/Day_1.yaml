@@ -1,19 +1,19 @@
-- name: IOI 2022
-  location: Yogyakarta, Indonesia
-  duration_minutes: 300
-  website: https://ioi2022.id/
-  link: https://oj.uz/problems/source/ioi2022day1
-  problems:
-  - source: IOI
-    year: 2022
-    number: 1
-  - source: IOI
-    year: 2022
-    number: 2
-  - source: IOI
-    year: 2022
-    number: 3
-  medal_cutoffs:
-  - gold: 207.0
-    silver: 135.5
-    bronze: 79.0
+name: IOI 2022
+location: Yogyakarta, Indonesia
+duration: 300
+website: https://ioi2022.id/
+link: https://oj.uz/problems/source/ioi2022day1
+problems:
+- source: ioi
+  year: 2022
+  number: 1
+- source: ioi
+  year: 2022
+  number: 2
+- source: ioi
+  year: 2022
+  number: 3
+medalCutoffs:
+- gold: 207.0
+  silver: 135.5
+  bronze: 79.0

@@ -1,25 +1,25 @@
-- name: ROI 2018
-  location: Ulyanovsk, Russia
-  duration_minutes: 300
-  website: https://olimpiada.ru/vos2018/iikt
-  link: https://codeforces.com/gym/102154
-  problems:
-  - source: ROI
-    year: 2018
-    number: 1
-    extra: Day 2
-  - source: ROI
-    year: 2018
-    number: 2
-    extra: Day 2
-  - source: ROI
-    year: 2018
-    number: 3
-    extra: Day 2
-  - source: ROI
-    year: 2018
-    number: 4
-    extra: Day 2
-  medal_cutoffs:
-  - gold: 287
-    prizer: 236
+name: ROI 2018
+location: Ulyanovsk, Russia
+duration: 300
+website: https://olimpiada.ru/vos2018/iikt
+link: https://codeforces.com/gym/102154
+problems:
+- source: roi
+  year: 2018
+  number: 1
+  extra: Day 2
+- source: roi
+  year: 2018
+  number: 2
+  extra: Day 2
+- source: roi
+  year: 2018
+  number: 3
+  extra: Day 2
+- source: roi
+  year: 2018
+  number: 4
+  extra: Day 2
+medalCutoffs:
+- gold: 287
+  prizer: 236

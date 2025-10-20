@@ -1,22 +1,22 @@
-- name: EJOI 2023
-  location: Kutaisi, Georgia
-  duration_minutes: 240
-  website: https://ejoi2023.kiu.edu.ge/
-  link: https://qoj.ac/contest/1693
-  problems:
-  - source: EJOI
-    year: 2023
-    number: 1
-    extra: Day 1
-  - source: EJOI
-    year: 2023
-    number: 2
-    extra: Day 1
-  - source: EJOI
-    year: 2023
-    number: 3
-    extra: Day 1
-  medal_cutoffs:
-  - gold: 125
-    silver: 102
-    bronze: 69
+name: EJOI 2023
+location: Kutaisi, Georgia
+duration: 240
+website: https://ejoi2023.kiu.edu.ge/
+link: https://qoj.ac/contest/1693
+problems:
+- source: ejoi
+  year: 2023
+  number: 1
+  extra: Day 1
+- source: ejoi
+  year: 2023
+  number: 2
+  extra: Day 1
+- source: ejoi
+  year: 2023
+  number: 3
+  extra: Day 1
+medalCutoffs:
+- gold: 125
+  silver: 102
+  bronze: 69

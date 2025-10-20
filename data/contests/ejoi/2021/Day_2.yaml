@@ -1,22 +1,22 @@
-- name: EJOI 2021
-  location: Ploiești, Romania (online)
-  duration_minutes: 240
-  website: https://sepi.ro/ejoi/2021
-  link: https://qoj.ac/contest/1969
-  problems:
-  - source: EJOI
-    year: 2021
-    number: 1
-    extra: Day 2
-  - source: EJOI
-    year: 2021
-    number: 2
-    extra: Day 2
-  - source: EJOI
-    year: 2021
-    number: 3
-    extra: Day 2
-  medal_cutoffs:
-  - gold: 196
-    silver: 123
-    bronze: 53
+name: EJOI 2021
+location: Ploiești, Romania (online)
+duration: 240
+website: https://sepi.ro/ejoi/2021
+link: https://qoj.ac/contest/1969
+problems:
+- source: ejoi
+  year: 2021
+  number: 1
+  extra: Day 2
+- source: ejoi
+  year: 2021
+  number: 2
+  extra: Day 2
+- source: ejoi
+  year: 2021
+  number: 3
+  extra: Day 2
+medalCutoffs:
+- gold: 196
+  silver: 123
+  bronze: 53

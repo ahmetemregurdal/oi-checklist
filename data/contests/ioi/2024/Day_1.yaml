@@ -1,19 +1,19 @@
-- name: IOI 2024
-  location: Alexandria, Egypt
-  duration_minutes: 300
-  website: https://ioi2024.eg/
-  link: https://oj.uz/problems/source/ioi2024day1
-  problems:
-  - source: IOI
-    year: 2024
-    number: 1
-  - source: IOI
-    year: 2024
-    number: 2
-  - source: IOI
-    year: 2024
-    number: 3
-  medal_cutoffs:
-  - gold: 204.88
-    silver: 171.19
-    bronze: 122.65
+name: IOI 2024
+location: Alexandria, Egypt
+duration: 300
+website: https://ioi2024.eg/
+link: https://oj.uz/problems/source/ioi2024day1
+problems:
+- source: ioi
+  year: 2024
+  number: 1
+- source: ioi
+  year: 2024
+  number: 2
+- source: ioi
+  year: 2024
+  number: 3
+medalCutoffs:
+- gold: 204.88
+  silver: 171.19
+  bronze: 122.65

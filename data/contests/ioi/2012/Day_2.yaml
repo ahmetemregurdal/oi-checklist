@@ -1,19 +1,19 @@
-- name: IOI 2012
-  location: Sirmione, Italy
-  duration_minutes: 300
-  website: http://www.ioi2012.org/
-  link: https://oj.uz/problems/source/ioi2012day2
-  problems:
-  - source: IOI
-    year: 2012
-    number: 4
-  - source: IOI
-    year: 2012
-    number: 5
-  - source: IOI
-    year: 2012
-    number: 6
-  medal_cutoffs:
-  - gold: 172.0
-    silver: 104.0
-    bronze: 49.0
+name: IOI 2012
+location: Sirmione, Italy
+duration: 300
+website: http://www.ioi2012.org/
+link: https://oj.uz/problems/source/ioi2012day2
+problems:
+- source: ioi
+  year: 2012
+  number: 4
+- source: ioi
+  year: 2012
+  number: 5
+- source: ioi
+  year: 2012
+  number: 6
+medalCutoffs:
+- gold: 172.0
+  silver: 104.0
+  bronze: 49.0

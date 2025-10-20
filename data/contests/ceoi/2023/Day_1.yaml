@@ -1,19 +1,19 @@
-- name: CEOI 2023
-  location: Magdeburg, Germany
-  duration_minutes: 300
-  website: https://ceoi2023.de/
-  link: https://oj.uz/problems/source/ceoi2023day1
-  problems:
-  - source: CEOI
-    year: 2023
-    number: 1
-  - source: CEOI
-    year: 2023
-    number: 2
-  - source: CEOI
-    year: 2023
-    number: 3
-  medal_cutoffs:
-  - gold: 205.0
-    silver: 130.0
-    bronze: 100.0
+name: CEOI 2023
+location: Magdeburg, Germany
+duration: 300
+website: https://ceoi2023.de/
+link: https://oj.uz/problems/source/ceoi2023day1
+problems:
+- source: ceoi
+  year: 2023
+  number: 1
+- source: ceoi
+  year: 2023
+  number: 2
+- source: ceoi
+  year: 2023
+  number: 3
+medalCutoffs:
+- gold: 205.0
+  silver: 130.0
+  bronze: 100.0

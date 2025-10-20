@@ -40,13 +40,17 @@ for (const i of ['js', 'css', 'images']) {
   });
 }
 
-app.setErrorHandler((error, req, reply) => {
-  if (createError.isHttpError(error)) {
-    reply.status(error.statusCode).send({ error: error.message });
+app.setErrorHandler((err, req, res) => {
+  if (err.validation) {
+    res.status(400).send({ error: 'Bad request', message: err.message, details: err.validation });
     return;
   }
-  console.error("Unhandled error:", error);
-  reply.status(500).send({ error: "Internal Server Error" });
+  if (createError.isHttpError(err)) {
+    res.status(err.statusCode).send({ error: err.message });
+    return;
+  }
+  console.error('Unhandled error: ', err);
+  res.status(500).send({ error: 'Internal server error' });
 });
 
 app.listen({ port: 5501 }).then(() => {

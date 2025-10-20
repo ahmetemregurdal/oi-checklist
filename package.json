@@ -20,7 +20,8 @@
   },
   "scripts": {
     "dev": "ts-node -r tsconfig-paths/register src/backend/app.ts",
-    "sync": "ts-node -r tsconfig-paths/register src/sync/problems.ts"
+    "syncProblems": "ts-node -r tsconfig-paths/register src/sync/problems.ts",
+    "syncContests": "ts-node -r tsconfig-paths/register src/sync/contests.ts"
   },
   "prisma": {
     "seed": "ts-node -r tsconfig-paths/register prisma/seed.ts"

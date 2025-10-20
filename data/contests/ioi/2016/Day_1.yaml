@@ -1,19 +1,19 @@
-- name: IOI 2016
-  location: Kazan, Russia
-  duration_minutes: 300
-  website: http://ioi2016.ru/
-  link: https://oj.uz/problems/source/ioi2016day1
-  problems:
-  - source: IOI
-    year: 2016
-    number: 1
-  - source: IOI
-    year: 2016
-    number: 2
-  - source: IOI
-    year: 2016
-    number: 3
-  medal_cutoffs:
-  - gold: 172.0
-    silver: 157.0
-    bronze: 111.0
+name: IOI 2016
+location: Kazan, Russia
+duration: 300
+website: http://ioi2016.ru/
+link: https://oj.uz/problems/source/ioi2016day1
+problems:
+- source: ioi
+  year: 2016
+  number: 1
+- source: ioi
+  year: 2016
+  number: 2
+- source: ioi
+  year: 2016
+  number: 3
+medalCutoffs:
+- gold: 172.0
+  silver: 157.0
+  bronze: 111.0

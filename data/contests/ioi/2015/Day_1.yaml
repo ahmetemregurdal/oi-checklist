@@ -1,19 +1,19 @@
-- name: IOI 2015
-  location: Almaty, Kazakhstan
-  duration_minutes: 300
-  website: http://www.ioi2015.kz/
-  link: https://oj.uz/problems/source/ioi2015day1
-  problems:
-  - source: IOI
-    year: 2015
-    number: 1
-  - source: IOI
-    year: 2015
-    number: 2
-  - source: IOI
-    year: 2015
-    number: 3
-  medal_cutoffs:
-  - gold: 205.42
-    silver: 179.45
-    bronze: 95.45
+name: IOI 2015
+location: Almaty, Kazakhstan
+duration: 300
+website: http://www.ioi2015.kz/
+link: https://oj.uz/problems/source/ioi2015day1
+problems:
+- source: ioi
+  year: 2015
+  number: 1
+- source: ioi
+  year: 2015
+  number: 2
+- source: ioi
+  year: 2015
+  number: 3
+medalCutoffs:
+- gold: 205.42
+  silver: 179.45
+  bronze: 95.45

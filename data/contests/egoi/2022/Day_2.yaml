@@ -1,22 +1,22 @@
-- name: EGOI 2022
-  location: Antalya, Turkey
-  duration_minutes: 300
-  website: https://ubilo.tubitak.gov.tr/egoi2022/
-  link: https://codeforces.com/gym/104230
-  problems:
-  - source: EGOI
-    year: 2022
-    number: 5
-  - source: EGOI
-    year: 2022
-    number: 6
-  - source: EGOI
-    year: 2022
-    number: 7
-  - source: EGOI
-    year: 2022
-    number: 8
-  medal_cutoffs:
-  - gold: 282.0
-    silver: 167.0
-    bronze: 141.0
+name: EGOI 2022
+location: Antalya, Turkey
+duration: 300
+website: https://ubilo.tubitak.gov.tr/egoi2022/
+link: https://codeforces.com/gym/104230
+problems:
+- source: egoi
+  year: 2022
+  number: 5
+- source: egoi
+  year: 2022
+  number: 6
+- source: egoi
+  year: 2022
+  number: 7
+- source: egoi
+  year: 2022
+  number: 8
+medalCutoffs:
+- gold: 282.0
+  silver: 167.0
+  bronze: 141.0

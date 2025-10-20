@@ -1,19 +1,19 @@
-- name: IOI 2013
-  location: Brisbane, Australia
-  duration_minutes: 300
-  website: http://www.ioi2013.org/
-  link: https://oj.uz/problems/source/ioi2013day1
-  problems:
-  - source: IOI
-    year: 2013
-    number: 1
-  - source: IOI
-    year: 2013
-    number: 2
-  - source: IOI
-    year: 2013
-    number: 3
-  medal_cutoffs:
-  - gold: 242.0
-    silver: 173.0
-    bronze: 91.0
+name: IOI 2013
+location: Brisbane, Australia
+duration: 300
+website: http://www.ioi2013.org/
+link: https://oj.uz/problems/source/ioi2013day1
+problems:
+- source: ioi
+  year: 2013
+  number: 1
+- source: ioi
+  year: 2013
+  number: 2
+- source: ioi
+  year: 2013
+  number: 3
+medalCutoffs:
+- gold: 242.0
+  silver: 173.0
+  bronze: 91.0

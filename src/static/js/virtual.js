@@ -1,4 +1,85 @@
 // Virtual Contest JavaScript
+
+// converts the data sent by the backend to the format expected by the frontend
+function convertData(newData) {
+  if (!newData) return null;
+
+  // convert contests
+  const contestsDict = {};
+  for (const contest of newData.contests || []) {
+    const source = contest.source?.toUpperCase?.() || contest.source || "";
+    const year = contest.year;
+    if (!contestsDict[source]) contestsDict[source] = {};
+    if (!contestsDict[source][year]) contestsDict[source][year] = [];
+
+    // build contest object in old shape
+    const c = {
+      name: contest.name,
+      stage: contest.stage || null,
+      source,
+      year,
+      duration_minutes: contest.duration ?? null,
+      location: contest.location ?? "",
+      website: contest.website ?? "",
+      link: contest.link ?? "",
+      date: contest.date ?? "",
+      notes: contest.note ?? "",
+      problems: (contest.problems || []).map((p) => ({
+        source: source,
+        year: contest.year,
+        number: p.problemIndex + 1,
+        index: p.problemIndex + 1,
+        ...(p.extra ? { extra: p.extra } : {})
+      }))
+    };
+
+    contestsDict[source][year].push(c);
+  }
+
+  // convert active contest
+  let activeContest = null;
+  if (newData.activeContest) {
+    const ac = newData.activeContest;
+    activeContest = {
+      contest_name: ac.contest_name ?? ac.name ?? "",
+      contest_stage: ac.contest_stage ?? ac.stage ?? "",
+      start_time: ac.start_time ?? ac.startedAt ?? null,
+      end_time: ac.end_time ?? ac.endedAt ?? null,
+      autosynced: ac.autosynced ?? false,
+      duration_minutes: ac.duration ?? ac.duration_minutes ?? null,
+      location: ac.location ?? "",
+      website: ac.website ?? "",
+      link: ac.link ?? ""
+    };
+  }
+
+  // convert recent contests 
+  const recent = (newData.recent || []).map(v => ({
+    contest_name: v.contest?.name ?? v.name ?? "",
+    contest_stage: v.contest?.stage ?? v.stage ?? "",
+    contest_source: v.contest?.source ?? v.source ?? "",
+    contest_year: v.contest?.year ?? v.year ?? "",
+    started_at: v.started_at ?? v.startedAt ?? null,
+    score: v.total_score ?? v.score ?? null,
+    per_problem_scores: v.per_problem_scores ?? v.perProblemScores ?? null,
+    platform: v.platform ?? (v.contest?.link?.includes("oj.uz") ? "oj.uz" : "manual")
+  }));
+
+  // completed contests
+  const completed_contests = newData.completedContests || [];
+
+  // final shape
+  const result = {
+    contests: contestsDict,
+    recent,
+    completed_contests
+  };
+
+  if (activeContest) result.active_contest = activeContest;
+
+  return result;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   // --- Platform sync preview state holders ---
   let lastRenderedContest = null;
@@ -61,10 +142,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const currentUserName = username;
 
   // Fetch contest data from API
-  const response = await fetch(`${apiUrl}/api/virtual-contests`, {
-    method: 'GET',
+  const response = await fetch(`${apiUrl}/data/virtual/recent`, {
+    method: 'POST',
     credentials: 'include',
-    headers: { 'Authorization': `Bearer ${sessionToken}` }
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ token: sessionToken })
   });
 
   if (!response.ok) {
@@ -74,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  const data = await response.json();
+  const data = convertData(await response.json());
   const contestData = data.contests;
   const completedContestKeys = new Set((data.completed_contests || []).map(String));
   let currentActiveContest = null; // Store active contest data
@@ -866,6 +950,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Get platforms from the problems data we already fetched
         let platforms = ['Unknown'];
+        console.log(problemsData[selectedOlympiad]);
         if (contest.problems && problemsData[selectedOlympiad]) {
           const platformSet = new Set();
           contest.problems.forEach(prob => {

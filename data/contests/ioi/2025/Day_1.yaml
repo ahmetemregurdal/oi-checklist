@@ -1,19 +1,19 @@
-- name: IOI 2025
-  location: Sucre, Bolivia
-  duration_minutes: 300
-  website: https://ioi2025.bo/
-  link: https://oj.uz/problems/source/ioi2025day1
-  problems:
-  - source: IOI
-    year: 2025
-    number: 1
-  - source: IOI
-    year: 2025
-    number: 2
-  - source: IOI
-    year: 2025
-    number: 3
-  medal_cutoffs:
-  - gold: 231.5
-    silver: 181.29
-    bronze: 140.65
+name: IOI 2025
+location: Sucre, Bolivia
+duration: 300
+website: https://ioi2025.bo/
+link: https://oj.uz/problems/source/ioi2025day1
+problems:
+- source: ioi
+  year: 2025
+  number: 1
+- source: ioi
+  year: 2025
+  number: 2
+- source: ioi
+  year: 2025
+  number: 3
+medalCutoffs:
+- gold: 231.5
+  silver: 181.29
+  bronze: 140.65

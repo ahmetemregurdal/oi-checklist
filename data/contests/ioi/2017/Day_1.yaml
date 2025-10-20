@@ -1,19 +1,19 @@
-- name: IOI 2017
-  location: Tehran, Iran
-  duration_minutes: 300
-  website: https://ioi2017.ir/
-  link: https://oj.uz/problems/source/ioi2017day1
-  problems:
-  - source: IOI
-    year: 2017
-    number: 1
-  - source: IOI
-    year: 2017
-    number: 2
-  - source: IOI
-    year: 2017
-    number: 3
-  medal_cutoffs:
-  - gold: 163.59
-    silver: 105.0
-    bronze: 54.56
+name: IOI 2017
+location: Tehran, Iran
+duration: 300
+website: https://ioi2017.ir/
+link: https://oj.uz/problems/source/ioi2017day1
+problems:
+- source: ioi
+  year: 2017
+  number: 1
+- source: ioi
+  year: 2017
+  number: 2
+- source: ioi
+  year: 2017
+  number: 3
+medalCutoffs:
+- gold: 163.59
+  silver: 105.0
+  bronze: 54.56

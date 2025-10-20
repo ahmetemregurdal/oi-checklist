@@ -1,22 +1,22 @@
-- name: EGOI 2024
-  location: Veldhoven, Netherlands
-  duration_minutes: 300
-  website: https://wiki.egoi2024.nl/
-  link: https://oj.uz/problems/source/egoi2024day2
-  problems:
-  - source: EGOI
-    year: 2024
-    number: 5
-  - source: EGOI
-    year: 2024
-    number: 6
-  - source: EGOI
-    year: 2024
-    number: 7
-  - source: EGOI
-    year: 2024
-    number: 8
-  medal_cutoffs:
-  - gold: 270.0
-    silver: 200.0
-    bronze: 136.0
+name: EGOI 2024
+location: Veldhoven, Netherlands
+duration: 300
+website: https://wiki.egoi2024.nl/
+link: https://oj.uz/problems/source/egoi2024day2
+problems:
+- source: egoi
+  year: 2024
+  number: 5
+- source: egoi
+  year: 2024
+  number: 6
+- source: egoi
+  year: 2024
+  number: 7
+- source: egoi
+  year: 2024
+  number: 8
+medalCutoffs:
+- gold: 270.0
+  silver: 200.0
+  bronze: 136.0

@@ -1,19 +1,19 @@
-- name: IOI 2023
-  location: Szeged, Hungary
-  duration_minutes: 300
-  website: https://ioi2023.hu/
-  link: https://oj.uz/problems/source/ioi2023day1
-  problems:
-  - source: IOI
-    year: 2023
-    number: 1
-  - source: IOI
-    year: 2023
-    number: 2
-  - source: IOI
-    year: 2023
-    number: 3
-  medal_cutoffs:
-  - gold: 186.0
-    silver: 116.5
-    bronze: 71.0
+name: IOI 2023
+location: Szeged, Hungary
+duration: 300
+website: https://ioi2023.hu/
+link: https://oj.uz/problems/source/ioi2023day1
+problems:
+- source: ioi
+  year: 2023
+  number: 1
+- source: ioi
+  year: 2023
+  number: 2
+- source: ioi
+  year: 2023
+  number: 3
+medalCutoffs:
+- gold: 186.0
+  silver: 116.5
+  bronze: 71.0

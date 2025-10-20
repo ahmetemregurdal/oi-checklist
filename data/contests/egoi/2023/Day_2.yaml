@@ -1,22 +1,22 @@
-- name: EGOI 2023
-  location: Lund, Sweden
-  duration_minutes: 300
-  website: https://egoi23.se/
-  link: https://qoj.ac/contest/1355
-  problems:
-  - source: EGOI
-    year: 2023
-    number: 5
-  - source: EGOI
-    year: 2023
-    number: 6
-  - source: EGOI
-    year: 2023
-    number: 7
-  - source: EGOI
-    year: 2023
-    number: 8
-  medal_cutoffs:
-  - gold: 264.0
-    silver: 182.0
-    bronze: 120.0
+name: EGOI 2023
+location: Lund, Sweden
+duration: 300
+website: https://egoi23.se/
+link: https://qoj.ac/contest/1355
+problems:
+- source: egoi
+  year: 2023
+  number: 5
+- source: egoi
+  year: 2023
+  number: 6
+- source: egoi
+  year: 2023
+  number: 7
+- source: egoi
+  year: 2023
+  number: 8
+medalCutoffs:
+- gold: 264.0
+  silver: 182.0
+  bronze: 120.0

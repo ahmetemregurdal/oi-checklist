@@ -1,19 +1,19 @@
-- name: IOI 2018
-  location: Tsukuba, Japan
-  duration_minutes: 300
-  website: https://ioi2018.jp/
-  link: https://oj.uz/problems/source/ioi2018day1
-  problems:
-  - source: IOI
-    year: 2018
-    number: 1
-  - source: IOI
-    year: 2018
-    number: 2
-  - source: IOI
-    year: 2018
-    number: 3
-  medal_cutoffs:
-  - gold: 186.0
-    silver: 166.0
-    bronze: 129.0
+name: IOI 2018
+location: Tsukuba, Japan
+duration: 300
+website: https://ioi2018.jp/
+link: https://oj.uz/problems/source/ioi2018day1
+problems:
+- source: ioi
+  year: 2018
+  number: 1
+- source: ioi
+  year: 2018
+  number: 2
+- source: ioi
+  year: 2018
+  number: 3
+medalCutoffs:
+- gold: 186.0
+  silver: 166.0
+  bronze: 129.0

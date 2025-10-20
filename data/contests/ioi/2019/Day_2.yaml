@@ -1,19 +1,19 @@
-- name: IOI 2019
-  location: Baku, Azerbaijan
-  duration_minutes: 300
-  website: https://ioi2019.az/
-  link: https://oj.uz/problems/source/ioi2019day2
-  problems:
-  - source: IOI
-    year: 2019
-    number: 4
-  - source: IOI
-    year: 2019
-    number: 5
-  - source: IOI
-    year: 2019
-    number: 6
-  medal_cutoffs:
-  - gold: 194.3
-    silver: 151.2
-    bronze: 106.91
+name: IOI 2019
+location: Baku, Azerbaijan
+duration: 300
+website: https://ioi2019.az/
+link: https://oj.uz/problems/source/ioi2019day2
+problems:
+- source: ioi
+  year: 2019
+  number: 4
+- source: ioi
+  year: 2019
+  number: 5
+- source: ioi
+  year: 2019
+  number: 6
+medalCutoffs:
+- gold: 194.3
+  silver: 151.2
+  bronze: 106.91

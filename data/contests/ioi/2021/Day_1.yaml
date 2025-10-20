@@ -1,20 +1,20 @@
-- name: IOI 2021
-  location: Singapore (online)
-  duration_minutes: 300
-  website: https://ioi2021.sg/
-  link: https://oj.uz/problems/source/ioi2021day1
-  notes: IOI 2021 was held online by NUS due to COVID-19.
-  problems:
-  - source: IOI
-    year: 2021
-    number: 1
-  - source: IOI
-    year: 2021
-    number: 2
-  - source: IOI
-    year: 2021
-    number: 3
-  medal_cutoffs:
-  - gold: 174.0
-    silver: 118.0
-    bronze: 63.0
+name: IOI 2021
+location: Singapore (online)
+duration: 300
+website: https://ioi2021.sg/
+link: https://oj.uz/problems/source/ioi2021day1
+notes: IOI 2021 was held online by NUS due to COVID-19.
+problems:
+- source: ioi
+  year: 2021
+  number: 1
+- source: ioi
+  year: 2021
+  number: 2
+- source: ioi
+  year: 2021
+  number: 3
+medalCutoffs:
+- gold: 174.0
+  silver: 118.0
+  bronze: 63.0

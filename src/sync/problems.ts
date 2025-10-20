@@ -84,8 +84,8 @@ async function main() {
         where: {
           OR: missing.map(i => {
             return i.number ? { source: i.source, year: i.year, number: i.number, extra: i.extra ?? '' } : { name: i.name, source: i.source, year: i.year, extra: i.extra ?? '' };
-          }),
-        },
+          })
+        }
       });
       console.log(`Deleted ${missing.length} problems`);
     }
@@ -101,12 +101,12 @@ async function main() {
     };
     const problem = i.number ? await db.problem.upsert({
       where: {
-        source_year_number_extra: { source: i.source, year: i.year, number: i.number, extra: i.extra ?? '' },
+        source_year_number_extra: { source: i.source, year: i.year, number: i.number, extra: i.extra ?? '' }
       },
       update, create: update
     }) : await db.problem.upsert({
       where: {
-        name_source_year_extra: { name: i.name, source: i.source, year: i.year, extra: i.extra ?? '' },
+        name_source_year_extra: { name: i.name, source: i.source, year: i.year, extra: i.extra ?? '' }
       },
       update, create: update
     });

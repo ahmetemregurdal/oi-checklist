@@ -1,22 +1,22 @@
-- name: EGOI 2025
-  location: Bonn, Germany
-  duration_minutes: 300
-  website: https://egoi2025.de/
-  link: https://qoj.ac/contest/2343
-  problems:
-  - source: EGOI
-    year: 2025
-    number: 1
-  - source: EGOI
-    year: 2025
-    number: 2
-  - source: EGOI
-    year: 2025
-    number: 3
-  - source: EGOI
-    year: 2025
-    number: 4
-  medal_cutoffs:
-  - gold: 260.0
-    silver: 216.0
-    bronze: 165.0
+name: EGOI 2025
+location: Bonn, Germany
+duration: 300
+website: https://egoi2025.de/
+link: https://qoj.ac/contest/2343
+problems:
+- source: egoi
+  year: 2025
+  number: 1
+- source: egoi
+  year: 2025
+  number: 2
+- source: egoi
+  year: 2025
+  number: 3
+- source: egoi
+  year: 2025
+  number: 4
+medalCutoffs:
+- gold: 260.0
+  silver: 216.0
+  bronze: 165.0
