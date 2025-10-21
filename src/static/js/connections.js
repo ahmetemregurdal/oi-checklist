@@ -492,14 +492,13 @@ async function onSubmitOjuzCookie(e) {
   }
 
   try {
-    const verifyRes = await fetch(`${apiUrl}/api/verify-ojuz`, {
+    const verifyRes = await fetch(`${apiUrl}/user/link/ojuz/verify`, {
       method: 'POST',
       credentials: 'include',
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionToken}`
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ cookie: oidcAuth })
+      body: JSON.stringify({ token: sessionToken, cookie: oidcAuth })
     });
 
     if (!verifyRes.ok) {
@@ -514,14 +513,13 @@ async function onSubmitOjuzCookie(e) {
       messageBox.textContent = `Cookie is valid. Username: ${verifyResult.username}. Your problems will be updated shortly.`;
       messageBox.style.color = 'green';
 
-      fetch(`${apiUrl}/api/update-ojuz`, {
+      fetch(`${apiUrl}/user/link/ojuz/update`, {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ cookie: oidcAuth })
+        body: JSON.stringify({ token: sessionToken, cookie: oidcAuth })
       })
         .then(res => res.json())
         .then(result => {

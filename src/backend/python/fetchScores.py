@@ -75,7 +75,7 @@ def main():
 
   scores_out = []
   for problem, new_score in results:
-    scores_out.append({'id': problem.get('id'), 'score': new_score})
+    scores_out.append({'problemId': problem.get('id'), 'score': new_score})
 
   sys.stdout.write(json.dumps({'scores': scores_out}))
   sys.exit(0)
