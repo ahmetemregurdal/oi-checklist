@@ -69,7 +69,7 @@ function validatePython() {
   }
   if (verify.status != 0) {
     console.error(verify.stderr);
-    throw new Error('python dependency check failed');
+    throw new Error('Python dependency check failed');
   }
   console.log(verify.stdout);
 }

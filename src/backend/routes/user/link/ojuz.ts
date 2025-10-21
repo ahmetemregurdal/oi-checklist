@@ -52,7 +52,7 @@ export async function ojuz(app: FastifyInstance) {
     if (!settings.platformUsernames || !settings.platformUsernames['oj.uz']) {
       throw new createError.BadRequest('oj.uz username not set');
     }
-    let results = await ojuzApi.fetchScores(cookie, settings.platformUsernames['oj.uz'], problems);
+    let results = await ojuzApi.fetchProblemScores(cookie, settings.platformUsernames['oj.uz'], problems);
     if (results.error) {
       throw new createError.Forbidden(results.error);
     }

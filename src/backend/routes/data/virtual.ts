@@ -23,7 +23,11 @@ export async function virtual(app: FastifyInstance) {
     const user = await db.user.findUnique({
       where: { id: session.userId },
       include: {
-        activeVirtualContest: true,
+        activeVirtualContest: {
+          include: {
+            contest: true
+          }
+        },
         virtualContests: {
           include: { contest: true },
           orderBy: { endedAt: 'desc' }

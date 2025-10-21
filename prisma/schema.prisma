@@ -107,6 +107,7 @@ model Contest {
   scores ContestScores?
   problems ContestProblem[]
   userVirtualContests UserVirtualContest[]
+  activeVirtualContests ActiveVirtualContest[]
   @@unique([name, stage])
   @@map("contests")
 }
@@ -168,6 +169,7 @@ model ActiveVirtualContest {
   endedAt DateTime?
   autosynced Boolean @default(false)  
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
   @@map("active_virtual_contests")
 }
 

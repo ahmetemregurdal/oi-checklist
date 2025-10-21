@@ -41,15 +41,15 @@ function convertData(newData) {
   if (newData.activeContest) {
     const ac = newData.activeContest;
     activeContest = {
-      contest_name: ac.contest_name ?? ac.name ?? "",
-      contest_stage: ac.contest_stage ?? ac.stage ?? "",
-      start_time: ac.start_time ?? ac.startedAt ?? null,
-      end_time: ac.end_time ?? ac.endedAt ?? null,
+      contest_name: ac.contest.name ?? "",
+      contest_stage: ac.contest.stage ?? "",
+      start_time: ac.startedAt ?? null,
+      end_time: ac.endedAt ?? null,
       autosynced: ac.autosynced ?? false,
-      duration_minutes: ac.duration ?? ac.duration_minutes ?? null,
-      location: ac.location ?? "",
-      website: ac.website ?? "",
-      link: ac.link ?? ""
+      duration_minutes: ac.contest.duration ?? null,
+      location: ac.contest.location ?? "",
+      website: ac.contest.website ?? "",
+      link: ac.contest.link ?? ""
     };
   }
 
@@ -1208,16 +1208,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Start the virtual contest in the database
     try {
-      const startResponse = await fetch(`${apiUrl}/api/virtual-contests/start`, {
+      const startResponse = await fetch(`${apiUrl}/user/virtual/start`, {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${sessionToken}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          contest_name: contestName,
-          contest_stage: finalStage,
+          token: sessionToken,
+          name: contestName,
+          stage: finalStage,
           autosynced: !!wantsAutoTrack
         })
       });
