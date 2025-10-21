@@ -61,7 +61,7 @@ function validatePython() {
     throw new Error('`python3` not found. Please ensure `python3` is installed and available in PATH');
   }
   const version = `v${check.stdout.toString().trim().split(' ')[1]}`;
-  console.log(`[ok] python3 runtime detected: ${version}`);
+  console.log(`[ok] python3 runtime: ${version}`);
   // check deps
   const verify = spawnSync('python3', [path.resolve(root, 'src/verify.py')], { encoding: 'utf8' });
   if (verify.error) {
