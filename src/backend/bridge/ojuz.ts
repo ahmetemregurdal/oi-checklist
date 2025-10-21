@@ -7,7 +7,7 @@ export const ojuz = {
   async verify(cookie: string) {
     return new Promise<{ error?: string, username?: string }>(res => {
       const proc = spawn('python3',
-        [path.resolve(root, 'src/backend/python/verifyOjuz.py'), cookie],
+        [path.resolve(root, 'src/backend/python/ojuz/verify.py'), cookie],
         { stdio: ['ignore', 'pipe', 'pipe'] }
       );
       let out = '';
@@ -22,7 +22,7 @@ export const ojuz = {
   async fetchProblemScores(cookie: string, username: string, problems: Prisma.ProblemGetPayload<{ include: { problemLinks: true } }>[]) {
     return new Promise<{ error?: string, scores?: UserProblemData[] }>(res => {
       const proc = spawn('python3',
-        [path.resolve(root, 'src/backend/python/fetchProblemScores.py')],
+        [path.resolve(root, 'src/backend/python/ojuz/fetchProblemScores.py')],
         { stdio: ['pipe', 'pipe', 'pipe'] }
       );
       proc.stdin.write(JSON.stringify({ cookie, username, problems }));
@@ -53,7 +53,7 @@ export const ojuz = {
   }>) {
     return new Promise<{ error?: string, submissions?: VirtualSubmission[] }>(res => {
       const proc = spawn('python3',
-        [path.resolve(root, 'src/backend/python/fetchContestScores.py')],
+        [path.resolve(root, 'src/backend/python/ojuz/fetchContestScores.py')],
         { stdio: ['pipe', 'pipe', 'pipe'] }
       );
       proc.stdin.write(JSON.stringify({ username, contest }));

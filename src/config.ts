@@ -51,6 +51,8 @@ export const GoogleClientId      = validateEnv('GOOGLE_CLIENT_ID');
 export const GoogleClientSecret  = validateEnv('GOOGLE_CLIENT_SECRET');
 export const DiscordClientId     = validateEnv('DISCORD_CLIENT_ID');
 export const DiscordClientSecret = validateEnv('DISCORD_CLIENT_SECRET');
+export const QojUsername         = validateEnv('QOJ_USER');
+export const QojPassword         = validateEnv('QOJ_PASS');
 
 export const RootUrl = validateEnv('ROOT_URL');
 
