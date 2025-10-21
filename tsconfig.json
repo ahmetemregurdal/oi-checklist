@@ -4,6 +4,7 @@
     "paths": {
       "@db": ["backend/db"],
       "@config": ["config"],
+      "@bridge": ["backend/bridge"],
       "@routes/*": ["backend/routes/*"]
     },
     "esModuleInterop": true

@@ -17,6 +17,6 @@ problems:
   year: 2025
   number: 4
 medalCutoffs:
-- gold: 260.0
+  gold: 260.0
   silver: 216.0
   bronze: 165.0

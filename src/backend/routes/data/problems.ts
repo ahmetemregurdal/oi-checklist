@@ -1,6 +1,6 @@
 import createError from 'http-errors';
 import { db } from '@db';
-import { Olympiads } from 'config';
+import { Olympiads } from '@config';
 import { FastifyInstance } from 'fastify';
 import { Prisma, ProblemLink } from '@prisma/client';
 

@@ -674,7 +674,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!contest || !contest.problems || !problemsData[selectedOlympiad]) return map;
     contest.problems.forEach((prob) => {
       const yearProblems = problemsData[selectedOlympiad][prob.year] || [];
-      const problem = yearProblems.find(p => p.source === prob.source && p.year === prob.year && p.number === prob.number);
+      const problem = yearProblems.find(p => p.year === prob.year && p.number === prob.number);
       if (problem) {
         if (problem && problem.links && typeof problem.links === 'object') {
           Object.keys(problem.links).forEach(plat => {
@@ -736,7 +736,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (contest?.problems && problemsData[selectedOlympiad]) {
       for (const prob of contest.problems) {
         const yearProblems = problemsData[selectedOlympiad][prob.year] || [];
-        const problem = yearProblems.find(p => p.source === prob.source && p.year === prob.year && p.number === prob.number);
+        const problem = yearProblems.find(p => p.year === prob.year && p.number === prob.number);
         if (problem) {
           let availablePlats = [];
           if (problem.links && typeof problem.links === 'object') {
@@ -950,12 +950,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Get platforms from the problems data we already fetched
         let platforms = ['Unknown'];
-        console.log(problemsData[selectedOlympiad]);
         if (contest.problems && problemsData[selectedOlympiad]) {
           const platformSet = new Set();
           contest.problems.forEach(prob => {
             const yearProblems = problemsData[selectedOlympiad][prob.year] || [];
-            const problem = yearProblems.find(p => p.source === prob.source && p.year === prob.year && p.number === prob.number);
+            const problem = yearProblems.find(p => p.year === prob.year && p.number === prob.number);
             if (problem) {
               if (problem.links && typeof problem.links === 'object') {
                 Object.keys(problem.links).forEach(plat => platformSet.add(plat));
@@ -1059,7 +1058,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const platformSet = new Set();
         contest.problems.forEach(prob => {
           const yearProblems = problemsData[selectedOlympiad][prob.year] || [];
-          const problem = yearProblems.find(p => p.source === prob.source && p.year === prob.year && p.number === prob.number);
+          const problem = yearProblems.find(p => p.year === prob.year && p.number === prob.number);
           if (problem) {
             if (problem.links && typeof problem.links === 'object') {
               Object.keys(problem.links).forEach(plat => platformSet.add(plat));
@@ -1186,7 +1185,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (contest.problems && problemsData[selectedOlympiad]) {
         for (const prob of contest.problems) {
           const yearProblems = problemsData[selectedOlympiad][prob.year] || [];
-          const problem = yearProblems.find(p => p.source === prob.source && p.year === prob.year && p.number === prob.number);
+          const problem = yearProblems.find(p => p.year === prob.year && p.number === prob.number);
           if (problem) {
             // Collect platforms available for this problem
             let availablePlats = [];

@@ -17,6 +17,6 @@ problems:
   number: 3
   extra: Day 2
 medalCutoffs:
-- gold: 174.27
+  gold: 174.27
   silver: 111
   bronze: 55

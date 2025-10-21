@@ -17,6 +17,6 @@ problems:
   year: 2022
   number: 4
 medalCutoffs:
-- gold: 265.0
+  gold: 265.0
   silver: 169.0
   bronze: 126.0

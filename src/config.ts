@@ -1,5 +1,6 @@
 import path from 'path';
 import dotenv from 'dotenv';
+import { spawnSync } from 'child_process';
 
 export const Olympiads = new Set([
   'apio',        'bkoi',        'boi',       'ceoi',
@@ -52,3 +53,25 @@ export const DiscordClientId     = validateEnv('DISCORD_CLIENT_ID');
 export const DiscordClientSecret = validateEnv('DISCORD_CLIENT_SECRET');
 
 export const RootUrl = validateEnv('ROOT_URL');
+
+function validatePython() {
+  // check runtime
+  const check = spawnSync('python3', ['--version']);
+  if (check.error) {
+    throw new Error('`python3` not found. Please ensure `python3` is installed and available in PATH');
+  }
+  const version = `v${check.stdout.toString().trim().split(' ')[1]}`;
+  console.log(`[ok] python3 runtime detected: ${version}`);
+  // check deps
+  const verify = spawnSync('python3', [path.resolve(root, 'src/verify.py')], { encoding: 'utf8' });
+  if (verify.error) {
+    throw new Error('Failed to run verify.py. Does the file exist?');
+  }
+  if (verify.status != 0) {
+    console.error(verify.stderr);
+    throw new Error('python dependency check failed');
+  }
+  console.log(verify.stdout);
+}
+
+validatePython();

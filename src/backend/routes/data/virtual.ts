@@ -52,4 +52,15 @@ export async function virtual(app: FastifyInstance) {
 
     return data;
   });
+
+  // todo fix in frontend
+  app.post<{ Body: { token: string } }>('/virtual/history', { schema }, async (req) => {
+    const { token } = req.body;
+    const session = await db.session.findUnique({ where: { id: token } });
+    if (!session) {
+      throw createError.Unauthorized('Invalid token');
+    }
+    const userContests = await db.userVirtualContest.findMany({ where: { userId: session.userId }, orderBy: { endedAt: 'desc' } });
+    return userContests;
+  });
 }

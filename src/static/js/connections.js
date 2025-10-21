@@ -574,7 +574,7 @@ async function onSubmitOjuzUsername(e) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        token: sessionToken, platformUsernames: { 'oj.uz': username }
+        token: sessionToken, updated: { platformUsernames: { 'oj.uz': username } }
       })
     });
 
@@ -784,7 +784,7 @@ async function onSubmitQojUsername(e) {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ token: sessionToken, platformUsernames: { 'qoj.ac': username } })
+      body: JSON.stringify({ token: sessionToken, updated: { platformUsernames: { 'qoj.ac': username } } })
     });
 
     const body = await res.json();

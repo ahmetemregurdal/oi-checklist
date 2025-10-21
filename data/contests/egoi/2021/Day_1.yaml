@@ -17,6 +17,6 @@ problems:
   year: 2021
   number: 4
 medalCutoffs:
-- gold: 300.0
+  gold: 300.0
   silver: 199.0
   bronze: 123.0

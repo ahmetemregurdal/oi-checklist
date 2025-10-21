@@ -17,6 +17,6 @@ problems:
   year: 2024
   number: 8
 medalCutoffs:
-- gold: 270.0
+  gold: 270.0
   silver: 200.0
   bronze: 136.0
