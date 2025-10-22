@@ -1,0 +1,12 @@
+- name: The Running Man
+  number: 1
+  links:
+    - https://www.acmicpc.net/problem/7093
+- name: Task Execution
+  number: 2
+  links: 
+    - https://www.acmicpc.net/problem/7094
+- name: Factorials
+  number: 3
+  links: 
+    - https://www.acmicpc.net/problem/7095

@@ -1,0 +1,12 @@
+- name: Street Network
+  number: 1
+  links: 
+    - https://www.acmicpc.net/problem/7096
+- name: Cycle Detection
+  number: 2
+  links: 
+    - https://www.acmicpc.net/problem/7097
+- name: QuadTrees
+  number: 3
+  links: 
+    - https://www.acmicpc.net/problem/7098

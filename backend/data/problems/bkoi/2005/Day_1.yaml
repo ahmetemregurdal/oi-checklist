@@ -1,0 +1,12 @@
+- name: CPU
+  number: 1
+  links:
+    - https://www.acmicpc.net/problem/7083
+- name: Requests
+  number: 2
+  links: 
+    - https://www.acmicpc.net/problem/7084
+- name: Couples
+  number: 3
+  links: 
+    - https://www.acmicpc.net/problem/7085

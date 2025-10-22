@@ -1,0 +1,12 @@
+- name: Sailing race
+  number: 1
+  links: 
+    - https://www.acmicpc.net/problem/7086
+- name: Tickets
+  number: 2
+  links: 
+    - https://www.acmicpc.net/problem/7087
+- name: Word counting
+  number: 3
+  links: 
+    - https://www.acmicpc.net/problem/7088
