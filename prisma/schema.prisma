@@ -151,12 +151,14 @@ model UserVirtualContest {
 
 model VirtualSubmission {
   id Int @id @default(autoincrement())
-  virtualContestId Int
+  virtualContestId Int?
+  activeVirtualContestUserId Int?
   contestProblemId Int
   time DateTime
   score Float
   subtaskScores Json
-  contest UserVirtualContest @relation(fields: [virtualContestId], references: [id], onDelete: Cascade)
+  contest UserVirtualContest? @relation(fields: [virtualContestId], references: [id], onDelete: Cascade)
+  activeContest ActiveVirtualContest? @relation(fields: [activeVirtualContestUserId], references: [userId], onDelete: Cascade)
   problem ContestProblem @relation(fields: [contestProblemId], references: [id], onDelete: Cascade)
   @@map("virtual_submissions")
 }
@@ -168,6 +170,9 @@ model ActiveVirtualContest {
   startedAt DateTime @default(now())
   endedAt DateTime?
   autosynced Boolean @default(false)  
+  score Float?
+  perProblemScores Json?
+  submissions VirtualSubmission[]
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
   @@map("active_virtual_contests")

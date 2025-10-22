@@ -41,6 +41,7 @@ function convertData(newData) {
   if (newData.activeContest) {
     const ac = newData.activeContest;
     activeContest = {
+      id: ac.contestId,
       contest_name: ac.contest.name ?? "",
       contest_stage: ac.contest.stage ?? "",
       start_time: ac.startedAt ?? null,
@@ -75,7 +76,10 @@ function convertData(newData) {
     completed_contests
   };
 
-  if (activeContest) result.active_contest = activeContest;
+  if (activeContest) {
+    activeContest.problems = newData.contests.find(i => i.id == activeContest.id).problems;
+    result.active_contest = activeContest;
+  }
 
   return result;
 }
@@ -338,7 +342,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const olympiadProblems = problemsData[prob.source];
         if (olympiadProblems && olympiadProblems[prob.year]) {
           const problem = olympiadProblems[prob.year].find(p =>
-            p.source === prob.source &&
             p.year === prob.year &&
             p.number === prob.number
           );
@@ -394,15 +397,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
 
+    // populate currentActiveContest.ojuz_data[i].problemIndex
+    currentActiveContest.ojuz_data = currentActiveContest.ojuz_data.map(i => {
+      const problem = currentActiveContest.problems.find(j => j.id == i.contestProblemId);
+      i.problemIndex = problem.problemIndex;
+      return i;
+    });
+
     // If we have oj.uz data, populate scores
     if (isReadOnly && currentActiveContest.ojuz_data) {
       const ojuzData = currentActiveContest.ojuz_data;
       ojuzData.forEach(submission => {
-        const problemIndex = problemData.findIndex(p => p.index === submission.problem_index);
+        const problemIndex = submission.problemIndex;
         if (problemIndex !== -1) {
           problemData[problemIndex].score = submission.score;
-          problemData[problemIndex].subtask_scores = submission.subtask_scores;
-          problemData[problemIndex].submission_time = submission.submission_time;
+          problemData[problemIndex].subtaskScores = submission.subtaskScores;
+          problemData[problemIndex].time = submission.time;
           // Set status based on score
           if (submission.score === 100) {
             problemData[problemIndex].status = 2; // solved
@@ -431,8 +441,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Store additional data for read-only mode
       if (isReadOnly) {
-        cell.dataset.subtaskScores = JSON.stringify(problem.subtask_scores || []);
-        cell.dataset.submissionTime = problem.submission_time || '';
+        cell.dataset.subtaskScores = JSON.stringify(problem.subtaskScores || []);
+        cell.dataset.submissionTime = problem.time || '';
       }
 
       const cellContent = document.createElement('div');
@@ -1299,14 +1309,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('ojuz-sync-loading').style.display = 'flex';
       }
 
-      const response = await fetch(`${apiUrl}/api/virtual-contests/end`, {
+      const response = await fetch(`${apiUrl}/user/virtual/end`, {
         method: 'POST',
         credentials: 'include',
         headers: {
-          'Authorization': `Bearer ${sessionToken}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({})
+        body: JSON.stringify({ token: sessionToken })
       });
 
       // Hide loading spinner and restore UI
@@ -1321,6 +1330,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           // Show score entry with oj.uz data in read-only mode
           localStorage.setItem('contest_ongoing', 'false');
           localStorage.setItem('is_synced', 'true');
+
+          // we need to populate result.submissions with problemIndex ourselves
+          // result.submissions = result.submissions.map(i => {
+          //   i.problemIndex = currentActiveContest
+          // });
 
           // Store oj.uz data in localStorage for persistence across refreshes
           localStorage.setItem('ojuz_data', JSON.stringify(result.submissions));
