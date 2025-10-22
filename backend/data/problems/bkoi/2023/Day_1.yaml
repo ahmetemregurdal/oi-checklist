@@ -1,0 +1,12 @@
+- name: Car Race
+  number: 1
+  links:
+    - https://eolymp.com/en/compete/t26aup2g590ur5168tirg6k000/problem/1
+- name: Weights
+  number: 2
+  links:
+    - https://eolymp.com/en/compete/t26aup2g590ur5168tirg6k000/problem/2
+- name: Permutations
+  number: 3
+  links:
+    - https://eolymp.com/en/compete/t26aup2g590ur5168tirg6k000/problem/3
