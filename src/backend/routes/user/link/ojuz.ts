@@ -73,12 +73,13 @@ export async function ojuz(app: FastifyInstance) {
       let oldScore = progressMap.get(problem.id)?.score ?? 0;
       let score = Math.max(oldScore, resultsMap.get(problem.id)?.score ?? 0);
       let status = score == 100 ? 2 : score > 0 ? 1 : 0;
-      if (score != oldScore)
+      if (score != oldScore) {
         await db.userProblemData.upsert({
           where: { userId_problemId: { userId, problemId: problem.id } },
           create: { userId, problemId: problem.id, score, status },
           update: { score, status }
         });
+      }
     }
 
     return { success: true };

@@ -13,7 +13,7 @@ export async function virtual(app: FastifyInstance) {
       }
     }
   };
-  app.post<{ Body: { token: string } }>('/virtual/recent', { schema }, async (req) => {
+  app.post<{ Body: { token: string } }>('/virtual/summary', { schema }, async (req) => {
     const { token } = req.body;
     const session = await db.session.findUnique({ where: { id: token } });
     if (!session) {

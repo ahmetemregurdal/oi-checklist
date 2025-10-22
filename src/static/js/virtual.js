@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const currentUserName = username;
 
   // Fetch contest data from API
-  const response = await fetch(`${apiUrl}/data/virtual/recent`, {
+  const response = await fetch(`${apiUrl}/data/virtual/summary`, {
     method: 'POST',
     credentials: 'include',
     headers: {
