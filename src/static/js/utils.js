@@ -419,21 +419,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Send entire localStorage as JSON
     const token = localStorage.getItem('sessionToken');
-    localStorage.removeItem('sessionToken'); // we don't really need to send this
-    const localStorageData = {};
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      localStorageData[key] = localStorage.getItem(key);
-    }
+    localStorage.removeItem('sessionToken');
 
-    const res = await fetch(`${apiUrl}/api/logout`, {
+    const res = await fetch(`${apiUrl}/auth/logout`, {
       method: 'POST',
       credentials: 'include',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ local_storage: JSON.stringify(localStorageData) })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token })
     });
 
     if (res.status === 200) {

@@ -76,18 +76,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   const syncSettingsButton = document.getElementById('sync-settings-button');
   if (syncSettingsButton) {
     syncSettingsButton.addEventListener('click', async () => {
-      // Build legacy payload: snapshot all localStorage except sessionToken
-      const localStorageData = {};
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key !== 'sessionToken') localStorageData[key] = localStorage.getItem(key);
-      }
-
-      // Build new endpoint payload
+      // Build endpoint payload
       const newPayload = {
         token: session_token,
         updated: {
-          ascSort: (typeof yearSortOrder === 'string' ? yearSortOrder : '').toLowerCase() === 'asc'
+          ascSort: (typeof yearSortOrder === 'string' ? yearSortOrder : '').toLowerCase() === 'asc',
+          darkMode: localStorage.getItem('theme') == 'dark-mode'
         }
       };
       if (Array.isArray(platformPrefDraft) && platformPrefDraft.length > 0) {

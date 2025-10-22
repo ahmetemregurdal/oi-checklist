@@ -4,12 +4,15 @@ import { Olympiads, Platforms } from '@config';
 import { FastifyInstance } from 'fastify';
 
 export async function settings(app: FastifyInstance) {
+  // special edge case for usaco since it's the only one that's grouped
+  const olympiads = new Set(Array.from(Olympiads).map(i => i.startsWith('usaco') ? 'usaco' : i));
+
   app.post<{ Body: { token?: string, updated?: Record<string, any>, username?: string } }>('/settings', async (req) => {
     const { token, username } = req.body;
     if (token) {
       let session = await db.session.findUnique({ where: { id: token } });
       if (!session) {
-        throw new createError.Unauthorized('Invalid session');
+        throw createError.Unauthorized('Invalid session');
       }
       let user = await db.user.findUnique({ where: { id: session.userId }, include: { settings: true } });
       if (!username || user.username == username) {
@@ -29,14 +32,14 @@ export async function settings(app: FastifyInstance) {
               continue;
             }
             if (!Array.isArray(updated[i])) {
-              throw new createError.BadRequest(`${i} must be an array`);
+              throw createError.BadRequest(`${i} must be an array`);
             }
             if (new Set(updated[i]).size !== updated[i].length) {
-              throw new createError.BadRequest(`${i} must not contain duplicates`);
+              throw createError.BadRequest(`${i} must not contain duplicates`);
             }
             for (const j of updated[i]) {
-              if (!(i == 'platformPref' ? Platforms : Olympiads).has(j)) {
-                throw new createError.BadRequest(`Invalid value "${j}" in ${i}`);
+              if (!(i == 'platformPref' ? Platforms : olympiads).has(j)) {
+                throw createError.BadRequest(`Invalid value "${j}" in ${i}`);
               }
             }
             params[i] = updated[i];
@@ -44,19 +47,19 @@ export async function settings(app: FastifyInstance) {
           if ('platformUsernames' in updated) {
             const names = updated.platformUsernames;
             if (typeof names != 'object' || names === null || Array.isArray(names)) {
-              throw new createError.BadRequest('platformUsernames must be an object');
+              throw createError.BadRequest('platformUsernames must be an object');
             }
             const existing = (user.settings?.platformUsernames ?? {}) as Record<string, string>;
             for (const [i, j] of Object.entries(names)) {
               if (!Platforms.has(i)) {
-                throw new createError.BadRequest(`Invalid platform "${i}" in platformUsernames`);
+                throw createError.BadRequest(`Invalid platform "${i}" in platformUsernames`);
               }
               if (j === null) {
                 delete existing[i];
                 continue;
               }
               if (typeof j != 'string') {
-                throw new createError.BadRequest(`Invalid username for platform "${i}"`);
+                throw createError.BadRequest(`Invalid username for platform "${i}"`);
               }
               existing[i] = j;
             }
@@ -66,19 +69,19 @@ export async function settings(app: FastifyInstance) {
           return { success: true };
         } catch (e) {
           if (e instanceof SyntaxError) {
-            throw new createError.BadRequest('Invalid JSON in "updated"');
+            throw createError.BadRequest('Invalid JSON in "updated"');
           }
-          throw new createError.InternalServerError('Something went wrong; are your updated settings correct?');
+          throw createError.BadRequest((e as Error).message);
         }
       }
     }
     if (username) {
       let user = await db.user.findUnique({ where: { username }, include: { settings: true } });
       if (!user?.settings?.checklistPublic) {
-        throw new createError.Forbidden('User missing or checklist private');
+        throw createError.Forbidden('User missing or checklist private');
       }
       return user.settings ?? {};
     }
-    throw new createError.BadRequest('Username unspecified');
+    throw createError.BadRequest('Username unspecified');
   });
 }

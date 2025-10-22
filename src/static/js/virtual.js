@@ -661,8 +661,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         day: 'numeric'
       });
       item.innerHTML = `
-              <div class="past-vc-title">${contest.contest_source} ${contest.contest_year}${contest.contest_stage ? ` ${contest.contest_stage}` : ''}</div>
-              <div class="past-vc-score">${contest.total_score || 0}/300</div>
+              <div class="past-vc-title">${contest.contest_source.toUpperCase()} ${contest.contest_year}${contest.contest_stage ? ` ${contest.contest_stage}` : ''}</div>
+              <div class="past-vc-score">${contest.score}/300</div>
               <div class="past-vc-date">${formattedDate}</div>
           `;
       item.addEventListener('click', (e) => {
@@ -1560,13 +1560,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (isAutosynced) {
       // autosynced mode - just confirm the contest completion
       try {
-        const confirmResponse = await fetch(`${apiUrl}/api/virtual-contests/confirm`, {
+        const confirmResponse = await fetch(`${apiUrl}/user/virtual/confirm`, {
           method: 'POST',
           credentials: 'include',
-          headers: {
-            'Authorization': `Bearer ${sessionToken}`,
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: sessionToken })
         });
 
         if (!confirmResponse.ok) {
@@ -1634,17 +1632,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       // Submit the virtual contest scores
-      const submitResponse = await fetch(`${apiUrl}/api/virtual-contests/submit`, {
+      const submitResponse = await fetch(`${apiUrl}/user/virtual/submit`, {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          'Authorization': `Bearer ${sessionToken}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          scores: scores,
-          total_score: totalScore
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: sessionToken, scores: scores })
       });
 
       if (!submitResponse.ok) {

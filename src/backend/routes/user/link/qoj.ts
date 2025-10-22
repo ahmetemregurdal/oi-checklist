@@ -1,9 +1,9 @@
 import createError from 'http-errors';
 import { db } from '@db';
 import { FastifyInstance } from 'fastify';
-import { ojuz as ojuzApi } from '@bridge';
+import { qoj as qojApi } from '@bridge';
 
-export async function ojuz(app: FastifyInstance) {
+export async function qoj(app: FastifyInstance) {
   const schema = {
     body: {
       type: 'object',
@@ -21,14 +21,14 @@ export async function ojuz(app: FastifyInstance) {
       throw new createError.Unauthorized('Invalid token');
     }
     const userId = session.userId;
-    let res = await ojuzApi.verify(cookie);
+    let res = await qojApi.verify(cookie);
     if (res.error) {
       throw new createError.Unauthorized(res.error);
     }
     // persist into db
     let settings = await db.settings.findUnique({ where: { userId }, select: { platformUsernames: true } });
     let existing = settings.platformUsernames ?? {};
-    existing['oj.uz'] = res.username;
+    existing['qoj.ac'] = res.username;
     await db.settings.update({ where: { userId }, data: { platformUsernames: existing } });
     return { valid: true, username: res.username };
   });
@@ -42,17 +42,17 @@ export async function ojuz(app: FastifyInstance) {
     const userId = session.userId;
     let problems = (
       await db.problemLink.findMany({
-        where: { platform: 'oj.uz' },
+        where: { platform: 'qoj.ac' },
         include: { problem: { include: { problemLinks: true } } },
         orderBy: { problemId: 'asc' }
       })
     ).map(i => i.problem);
 
     let settings = await db.settings.findUnique({ where: { userId }, select: { platformUsernames: true } });
-    if (!settings.platformUsernames || !settings.platformUsernames['oj.uz']) {
-      throw new createError.BadRequest('oj.uz username not set');
+    if (!settings.platformUsernames || !settings.platformUsernames['qoj.ac']) {
+      throw new createError.BadRequest('qoj.ac username not set');
     }
-    let results = await ojuzApi.fetchProblemScores(cookie, settings.platformUsernames['oj.uz'], problems);
+    let results = await qojApi.fetchProblemScores(cookie, settings.platformUsernames['qoj.ac'], problems);
     if (results.error) {
       throw new createError.Forbidden(results.error);
     }

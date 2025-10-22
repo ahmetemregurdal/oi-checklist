@@ -22,10 +22,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     // Fetch virtual contest data to get contest metadata
-    const vcResponse = await fetch(`${apiUrl}/api/virtual-contests`, {
-      method: 'GET',
+    const vcResponse = await fetch(`${apiUrl}/data/virtual/summary`, {
+      method: 'POST',
       credentials: 'include',
-      headers: { 'Authorization': `Bearer ${sessionToken}` }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: sessionToken })
     });
 
     if (vcResponse.ok) {
@@ -33,15 +34,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       contestData = vcData.contests;
 
       // Fetch problems data for all contest sources
-      const contestSources = Object.keys(contestData);
+      const contestSources = [...new Set(contestData.map(i => i.source))];
       const problemsResponse = await fetch(`${apiUrl}/data/problems`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token: sessionToken,
-          sources: contestSources.map(i => i.toLowerCase())
-        })
+        body: JSON.stringify({ token: sessionToken, sources: contestSources })
       });
 
       if (problemsResponse.ok) {
@@ -54,10 +52,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Fetch virtual contest history
   try {
-    const response = await fetch(`${apiUrl}/api/virtual-contests/history`, {
-      method: 'GET',
+    const response = await fetch(`${apiUrl}/data/virtual/history`, {
+      method: 'POST',
       credentials: 'include',
-      headers: { 'Authorization': `Bearer ${sessionToken}` }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: sessionToken })
     });
 
     if (!response.ok) {
@@ -67,25 +66,36 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    const data = await response.json();
-    const contests = data.contests || [];
+    let contests = await response.json();
+    contests = contests.map(i => {
+      const contest = contestData.find(j => j.id == i.contestId);
+      return {
+        contest,
+        contestName: contest.name,
+        contestStage: contest.stage,
+        ...i
+      };
+    });
 
     if (contests.length === 0) {
       showEmptyState();
     } else {
       // Fetch contest scores for medal calculation
-      const contestKeys = contests.map(c => `${c.contest_name}|${c.contest_stage || ''}`);
+      const contestKeys = contests.map(c => c.contestId);
       let contestScores = {};
 
       try {
-        const scoresResponse = await fetch(`${apiUrl}/api/contest-scores?contests=${contestKeys.join(',')}`, {
-          method: 'GET',
+        const scoresResponse = await fetch('/data/virtual/scores', {
+          method: 'POST',
           credentials: 'include',
-          headers: { 'Authorization': `Bearer ${sessionToken}` }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contests: contestKeys })
         });
 
         if (scoresResponse.ok) {
           contestScores = await scoresResponse.json();
+          contestScores = contestScores.map(i => i.scores);
+          contestScores = Object.fromEntries(contestScores.map(i => [i.contestId, i]));
         }
       } catch (error) {
         console.error('Error fetching contest scores:', error);
@@ -132,20 +142,24 @@ function displayContests(contests, contestData, problemsData, contestScores) {
 }
 
 function createContestItem(contest, contestData, problemsData, contestScores) {
+  console.log(contest);
+  console.log(contestData);
+  console.log('problemsData: ', problemsData);
+  console.log(contestScores);
   const item = document.createElement('div');
   item.className = 'vc-history-item';
 
   // Calculate medal type
   // Calculate medal type (supports gold/silver/bronze or gold/prizer)
-  const contestKey = `${contest.contest_name}|${contest.contest_stage || ''}`;
-  const scoreData = contestScores[contestKey];
+  const scoreData = contestScores[contest.contestId];
+  console.log('scoreData: ', scoreData);
   let medalClass = '';
   let medalText = '';
 
-  if (scoreData && Array.isArray(scoreData.medal_cutoffs) && scoreData.medal_cutoffs.length > 0) {
-    const totalScore = contest.total_score || 0;
-    const cutoffs = scoreData.medal_cutoffs;
-    const labels = scoreData.medal_labels || scoreData.medal_types || [];
+  if (scoreData && Array.isArray(scoreData.medalCutoffs) && scoreData.medalCutoffs.length > 0) {
+    const totalScore = contest.score;
+    const cutoffs = scoreData.medalCutoffs;
+    const labels = scoreData.medalNames;
 
     const labelAt = (idx, fallback) => (labels[idx] ? String(labels[idx]).toLowerCase() : fallback);
 
@@ -188,8 +202,8 @@ function createContestItem(contest, contestData, problemsData, contestScores) {
   }
 
   // Calculate time used
-  const startTime = new Date(contest.started_at);
-  const endTime = new Date(contest.ended_at);
+  const startTime = new Date(contest.startedAt);
+  const endTime = new Date(contest.endedAt);
   const durationMs = endTime - startTime;
   const durationMinutes = Math.floor(durationMs / (1000 * 60));
   const hours = Math.floor(durationMinutes / 60);
@@ -197,7 +211,7 @@ function createContestItem(contest, contestData, problemsData, contestScores) {
   const timeUsed = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
 
   // Format date
-  const date = new Date(contest.started_at);
+  const date = new Date(contest.startedAt);
   const formattedDate = date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
@@ -207,10 +221,11 @@ function createContestItem(contest, contestData, problemsData, contestScores) {
   });
 
   // Calculate problem count and max score
-  const problemScores = JSON.parse(contest.per_problem_scores || '[]');
-  const problemCount = problemScores.length || 3;
+  const problemScores = contest.perProblemScores;
+  console.log('problemScores: ', problemScores);
+  const problemCount = problemScores.length;
   const maxScore = problemCount * 100;
-  const scoreRate = Math.round(((contest.total_score || 0) / maxScore) * 100);
+  const scoreRate = Math.round((contest.score / maxScore) * 100);
 
   // Calculate score variance (standard deviation)
   let variance = 0;
@@ -226,70 +241,26 @@ function createContestItem(contest, contestData, problemsData, contestScores) {
     const maxScore = Math.max(...problemScores);
     const maxIndex = problemScores.indexOf(maxScore);
 
-    // Try to get actual problem name
-    let problemName = `Problem ${maxIndex + 1}`;
-    try {
-      // Find the contest in contestData to get problems
-      for (const [olympiad, years] of Object.entries(contestData)) {
-        for (const [year, contests] of Object.entries(years)) {
-          const contestInfo = contests.find(c => c.name === contest.contest_name &&
-            (contest.contest_stage ? c.stage === contest.contest_stage : c.stage == null));
-          if (contestInfo && contestInfo.problems && contestInfo.problems[maxIndex]) {
-            const prob = contestInfo.problems[maxIndex];
-            // Find the problem in problemsData, considering extra if present
-            const olympiadProblems = problemsData[prob.source];
-            if (olympiadProblems && olympiadProblems[prob.year]) {
-              const hasExtra = prob.extra !== undefined && prob.extra !== null && prob.extra !== '';
-              const problem = olympiadProblems[prob.year].find(p =>
-                p.source === prob.source &&
-                p.year === prob.year &&
-                p.number === prob.number &&
-                (!hasExtra || p.extra === prob.extra)
-              );
-              if (problem) {
-                problemName = problem.name;
-              }
-            }
-            break;
-          }
-        }
-        if (problemName !== `Problem ${maxIndex + 1}`) break;
-      }
-    } catch (error) {
-      console.error('Error getting problem name:', error);
-    }
+    console.log('maxScore: ', maxScore, '; maxIndex: ', maxIndex);
 
+    // Get actual problem name
+    let id = contest.contest.problems.find(i => i.problemIndex == maxIndex).problemId;
+    let problemName = problemsData[contest.contest.source.toUpperCase()][contest.contest.year].find(i => i.id == id).name;
     bestProblem = `${problemName}: ${maxScore}pts`;
   }
 
   // Get contest metadata (location/website)
-  let contestLocation = '';
-  let contestWebsite = '';
-  try {
-    for (const [olympiad, years] of Object.entries(contestData)) {
-      for (const [year, contests] of Object.entries(years)) {
-        const contestInfo = contests.find(c => c.name === contest.contest_name &&
-          (contest.contest_stage ? c.stage === contest.contest_stage : c.stage == null));
-        if (contestInfo) {
-          contestLocation = contestInfo.location || '';
-          contestWebsite = contestInfo.website || '';
-          break;
-        }
-      }
-      if (contestLocation || contestWebsite) break;
-    }
-  } catch (error) {
-    console.error('Error getting contest metadata:', error);
-  }
+  let contestLocation = contest.contest.location;
+  let contestWebsite = contest.contest.website;
 
   item.innerHTML = `
     <div class="vc-history-item-header">
       <div>
-        <div class="vc-history-title">${contest.contest_source} ${contest.contest_year}${contest.contest_stage ? ` ${contest.contest_stage}` : ''}</div>
+        <div class="vc-history-title">${contest.contest.source.toUpperCase()} ${contest.contest.year}${contest.contestStage ? ` ${contest.contestStage}` : ''}</div>
         <div class="vc-history-date">${formattedDate} | ${problemCount} problems</div>
         <div class="vc-history-metadata">${contestLocation || contestWebsite ? `${contestLocation}${contestLocation && contestWebsite ? ' | ' : ''}${contestWebsite ? `<a href="${contestWebsite}" target="_blank">${contestWebsite}</a>` : ''}` : ''}</div>
       </div>
-      <div class="vc-history-score">${contest.total_score || 0}/${maxScore}</div>
+      <div class="vc-history-score">${contest.score}/${maxScore}</div>
     </div>
     <div class="vc-history-details">
       <div class="vc-history-detail">
@@ -323,7 +294,7 @@ function createContestItem(contest, contestData, problemsData, contestScores) {
       return;
     }
     // Use query parameters with clean slug
-    const slug = (contest.contest_name + (contest.contest_stage || '')).toLowerCase().replace(/\s+/g, '');
+    const slug = (contest.contestName + (contest.contestStage || '')).toLowerCase().replace(/\s+/g, '');
     window.location.href = `virtual-contest-detail?contest=${slug}`;
   });
 
@@ -339,8 +310,8 @@ function updateStats(contests) {
   // Calculate total time
   let totalMinutes = 0;
   contests.forEach(contest => {
-    const startTime = new Date(contest.started_at);
-    const endTime = new Date(contest.ended_at);
+    const startTime = new Date(contest.startedAt);
+    const endTime = new Date(contest.endedAt);
     const durationMs = endTime - startTime;
     const durationMinutes = Math.floor(durationMs / (1000 * 60));
     totalMinutes += durationMinutes;

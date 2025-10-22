@@ -4,5 +4,5 @@ import { virtual } from './virtual';
 
 export async function data(app: FastifyInstance) {
   app.register(problems);
-  app.register(virtual);
+  app.register(virtual, { prefix: '/virtual' });
 }

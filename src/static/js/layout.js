@@ -112,13 +112,13 @@ function saveOlympiadOrder() {
   fetch(apiUrl + '/user/settings', {
     method: 'POST',
     credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       token: sessionToken,
-      olympiadOrder: order,
-      hidden: hidden
+      updated: {
+        olympiadOrder: order,
+        hidden: hidden
+      }
     })
   })
     .then(response => response.json())
@@ -127,6 +127,7 @@ function saveOlympiadOrder() {
         messageBox.textContent = 'Olympiad order saved!';
         messageBox.style.color = 'green';
       } else {
+        console.log(result);
         messageBox.textContent = `Error saving order: ${result.error || 'unknown error'}`;
         messageBox.style.color = 'red';
       }

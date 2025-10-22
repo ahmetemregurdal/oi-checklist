@@ -705,14 +705,11 @@ async function onSubmitQojCookie(e) {
   }
 
   try {
-    const verifyRes = await fetch(`${apiUrl}/api/verify-qoj`, {
+    const verifyRes = await fetch(`${apiUrl}/user/link/qoj/verify`, {
       method: 'POST',
       credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionToken}`
-      },
-      body: JSON.stringify({ cookie: cookieVal })
+      headers: { 'Content-Type': 'application/json', },
+      body: JSON.stringify({ token: sessionToken, cookie: cookieVal })
     });
 
     if (!verifyRes.ok) {
@@ -727,17 +724,14 @@ async function onSubmitQojCookie(e) {
       messageBox.textContent = `Cookie is valid. Username: ${verifyResult.username}. Your problems will be updated shortly.`;
       messageBox.style.color = 'green';
 
-      fetch(`${apiUrl}/api/update-qoj`, {
+      fetch(`${apiUrl}/user/link/qoj/update`, {
         method: 'POST',
         credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${sessionToken}`
-        },
-        body: JSON.stringify({ cookie: cookieVal })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: sessionToken, cookie: cookieVal })
       })
         .then(res => res.json())
-        .then(result => {
+        .then(() => {
           console.log('QOJ problems update triggered.');
         })
         .catch(err => {

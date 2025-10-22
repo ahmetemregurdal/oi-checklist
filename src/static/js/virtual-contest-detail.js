@@ -27,10 +27,11 @@ async function loadContestDetails(slug) {
   try {
     // Fetch contest details using slug
     const response =
-      await fetch(`${apiUrl}/api/virtual-contests/detail/${slug}`, {
-        method: 'GET',
+      await fetch(`${apiUrl}/data/virtual/detail`, {
+        method: 'POST',
         credentials: 'include',
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: sessionToken, slug })
       });
 
     if (!response.ok) {
@@ -51,13 +52,13 @@ async function loadContestDetails(slug) {
 
 async function fetchAdditionalData(contest) {
   const sessionToken = localStorage.getItem('sessionToken');
-
   try {
     // Fetch contest metadata and problems data
-    const vcResponse = await fetch(`${apiUrl}/api/virtual-contests`, {
-      method: 'GET',
+    const vcResponse = await fetch(`${apiUrl}/data/virtual/summary`, {
+      method: 'POST',
       credentials: 'include',
-      headers: { 'Authorization': `Bearer ${sessionToken}` }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: sessionToken })
     });
 
     let contestMetadata = {};
@@ -66,16 +67,23 @@ async function fetchAdditionalData(contest) {
     if (vcResponse.ok) {
       const vcData = await vcResponse.json();
       const contestDataAll = vcData.contests;
+      // add those additional fields
+      const fullContest = contestDataAll.find(j => j.id == contest.contestId);
+      contest = {
+        contest: fullContest,
+        contestName: fullContest.name,
+        contestStage: fullContest.stage,
+        ...contest
+      };
 
       // Fetch problems data
-      const contestSources = Object.keys(contestDataAll);
       const problemsResponse = await fetch(`${apiUrl}/data/problems`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           token: sessionToken,
-          sources: contestSources.map(i => i.toLowerCase())
+          sources: [contest.contest.source]
         })
       });
 
@@ -84,38 +92,25 @@ async function fetchAdditionalData(contest) {
       }
 
       // Find contest metadata
-      for (const [olympiad, years] of Object.entries(contestDataAll)) {
-        for (const [year, contests] of Object.entries(years)) {
-          const contestInfo = contests.find(
-            c => c.name === contest.contest_name &&
-              (contest.contest_stage ? c.stage === contest.contest_stage :
-                c.stage == null));
-          if (contestInfo) {
-            contestMetadata = contestInfo;
-            break;
-          }
-        }
-        if (contestMetadata.name) break;
-      }
+      contestMetadata = contest.contest;
     }
 
     // Fetch contest scores for medal/rank data
-    const contestKey = `${contest.contest_name}|${contest.contest_stage || ''}`;
     const scoresResponse =
-      await fetch(`${apiUrl}/api/contest-scores?contests=${contestKey}`, {
-        method: 'GET',
+      await fetch(`${apiUrl}/data/virtual/scores`, {
+        method: 'POST',
         credentials: 'include',
-        headers: { 'Authorization': `Bearer ${sessionToken}` }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contests: [contest.contestId] })
       });
 
     let contestScores = {};
     if (scoresResponse.ok) {
       contestScores = await scoresResponse.json();
+      contestScores = contestScores.map(i => i.scores);
+      contestScores = Object.fromEntries(contestScores.map(i => [i.contestId, i]));
     }
-
-    displayContestDetails(
-      contest, contestMetadata, problemsData, contestScores[contestKey]);
-
+    displayContestDetails(contest, contestMetadata, problemsData, contestScores[contest.contestId]);
   } catch (error) {
     console.error('Error fetching additional data:', error);
     displayContestDetails(contest, {}, {}, {});
@@ -128,29 +123,23 @@ function formatOrdinal(n) {
   const mod100 = num % 100;
   if (mod100 >= 11 && mod100 <= 13) return `${num}th`;
   switch (num % 10) {
-    case 1:
-      return `${num}st`;
-    case 2:
-      return `${num}nd`;
-    case 3:
-      return `${num}rd`;
-    default:
-      return `${num}th`;
+    case 1: return `${num}st`;
+    case 2: return `${num}nd`;
+    case 3: return `${num}rd`;
+    default: return `${num}th`;
   }
 }
 
-function displayContestDetails(
-  contest, contestMetadata, problemsData, scoreData) {
-  const hasSubs =
-    Array.isArray(contest.submissions) && contest.submissions.length > 0;
+function displayContestDetails(contest, contestMetadata, problemsData, scoreData) {
+  const hasSubs = contest.submissions.length > 0;
   document.getElementById('vc-detail-loading').style.display = 'none';
   document.getElementById('vc-detail-content').style.display = 'block';
 
   // Parse problem scores
-  const problemScores = JSON.parse(contest.per_problem_scores || '[]');
-  const problemCount = problemScores.length || 3;
+  const problemScores = contest.perProblemScores;
+  const problemCount = problemScores.length;
   const maxScore = problemCount * 100;
-  const totalScore = contest.total_score || 0;
+  const totalScore = contest.score;
 
   // Calculate medal and rank
   let medalClass = '';
@@ -158,9 +147,12 @@ function displayContestDetails(
   let rank = 'N/A';
   let totalParticipants = 'N/A';
 
-  if (scoreData && Array.isArray(scoreData.medal_cutoffs) && scoreData.medal_cutoffs.length > 0) {
-    const cutoffs = scoreData.medal_cutoffs.map(Number);
-    const labels = scoreData.medal_labels || scoreData.medal_names || scoreData.medal_types || [];
+  // convert to regular array
+  scoreData.problemScores = Object.values(scoreData.problemScores);
+
+  if (scoreData && scoreData.medalCutoffs.length > 0) {
+    const cutoffs = scoreData.medalCutoffs.map(Number);
+    const labels = scoreData.medalNames;
     const labelAt = (idx, fallback) => (labels[idx] ? String(labels[idx]).toLowerCase() : fallback);
 
     if (cutoffs.length >= 3) {
@@ -180,15 +172,15 @@ function displayContestDetails(
     }
   }
 
-  // Rank/participants are based on problem_scores distribution if available
-  if (scoreData && Array.isArray(scoreData.problem_scores) && scoreData.problem_scores.length > 0) {
+  // Rank/participants are based on problemScores distribution if available
+  if (scoreData && scoreData.problemScores.length > 0) {
     const allTotalScores = [];
-    const numParticipants = scoreData.problem_scores[0].length;
+    const numParticipants = scoreData.problemScores[0].length;
 
     for (let i = 0; i < numParticipants; i++) {
       let participantTotal = 0;
-      for (let j = 0; j < scoreData.problem_scores.length; j++) {
-        participantTotal += scoreData.problem_scores[j][i] || 0;
+      for (let j = 0; j < scoreData.problemScores.length; j++) {
+        participantTotal += scoreData.problemScores[j][i];
       }
       allTotalScores.push(participantTotal);
     }
@@ -208,8 +200,8 @@ function displayContestDetails(
   }
 
   // Calculate time used
-  const startTime = new Date(contest.started_at);
-  const endTime = new Date(contest.ended_at);
+  const startTime = new Date(contest.startedAt);
+  const endTime = new Date(contest.endedAt);
   const durationMs = endTime - startTime;
   const durationMinutes = Math.floor(durationMs / (1000 * 60));
   const hours = Math.floor(durationMinutes / 60);
@@ -217,7 +209,7 @@ function displayContestDetails(
   const timeUsed = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
 
   // Format date
-  const date = new Date(contest.started_at);
+  const date = new Date(contest.startedAt);
   const formattedDate = date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -259,15 +251,15 @@ function displayContestDetails(
   }
 
   // Calculate contest-wide statistics
-  if (scoreData && scoreData.problem_scores) {
+  if (scoreData && scoreData.problemScores) {
     // Calculate percentile
     const allTotalScores = [];
-    const numParticipants = scoreData.problem_scores[0].length;
+    const numParticipants = scoreData.problemScores[0].length;
 
     for (let i = 0; i < numParticipants; i++) {
       let participantTotal = 0;
-      for (let j = 0; j < scoreData.problem_scores.length; j++) {
-        participantTotal += scoreData.problem_scores[j][i] || 0;
+      for (let j = 0; j < scoreData.problemScores.length; j++) {
+        participantTotal += scoreData.problemScores[j][i];
       }
       allTotalScores.push(participantTotal);
     }
@@ -278,57 +270,8 @@ function displayContestDetails(
       Math.round((betterThanCount / allTotalScores.length) * 100);
 
     // Calculate contest mean
-    contestMean = Math.round(
-      allTotalScores.reduce((a, b) => a + b, 0) / allTotalScores.length);
+    contestMean = Math.round(allTotalScores.reduce((a, b) => a + b, 0) / allTotalScores.length);
     aboveAverage = totalScore - contestMean;
-
-    // Find hardest and easiest problems based on average scores
-    if (scoreData.problem_scores.length > 0) {
-      const problemAverages =
-        scoreData.problem_scores.map((problemScores, idx) => {
-          const avg =
-            problemScores.reduce((a, b) => a + b, 0) / problemScores.length;
-          return { avg, idx };
-        });
-
-      problemAverages.sort((a, b) => a.avg - b.avg);
-      const hardestIdx = problemAverages[0].idx;
-      const easiestIdx = problemAverages[problemAverages.length - 1].idx;
-
-      // Get problem names
-      try {
-        if (contestMetadata && contestMetadata.problems) {
-          if (contestMetadata.problems[hardestIdx]) {
-            const prob = contestMetadata.problems[hardestIdx];
-            const olympiadProblems = problemsData[prob.source];
-            if (olympiadProblems && olympiadProblems[prob.year]) {
-              const hasExtra = prob.extra !== undefined && prob.extra !== null && prob.extra !== '';
-              const problem = olympiadProblems[prob.year].find(
-                p => p.source === prob.source && p.year === prob.year &&
-                  p.number === prob.number && (!hasExtra || p.extra === prob.extra));
-              hardestProblem =
-                problem ? problem.name : `Problem ${hardestIdx + 1}`;
-            }
-          }
-
-          if (contestMetadata.problems[easiestIdx]) {
-            const prob = contestMetadata.problems[easiestIdx];
-            const olympiadProblems = problemsData[prob.source];
-            if (olympiadProblems && olympiadProblems[prob.year]) {
-              const hasExtra = prob.extra !== undefined && prob.extra !== null && prob.extra !== '';
-              const problem = olympiadProblems[prob.year].find(
-                p => p.source === prob.source && p.year === prob.year &&
-                  p.number === prob.number && (!hasExtra || p.extra === prob.extra));
-              easiestProblem =
-                problem ? problem.name : `Problem ${easiestIdx + 1}`;
-            }
-          }
-        }
-      } catch (error) {
-        hardestProblem = `Problem ${hardestIdx + 1}`;
-        easiestProblem = `Problem ${easiestIdx + 1}`;
-      }
-    }
   }
 
   // Build the detail page content with proper styling
@@ -336,7 +279,7 @@ function displayContestDetails(
     <div class="vc-detail-main ${medalClass}">
       <div class="vc-detail-header-section">
         <div>
-          <div class="vc-detail-title">${contest.contest_source} ${contest.contest_year}${contest.contest_stage ? ` ${contest.contest_stage}` : ''}</div>
+          <div class="vc-detail-title">${contest.contest.source.toUpperCase()} ${contest.contest.year}${contest.contest.stage ? ` ${contest.contest.stage}` : ''}</div>
           <div class="vc-detail-subtitle">${problemCount} problems</div>
           ${contestMetadata.location || contestMetadata.website ?
       `<div class="vc-detail-location">${contestMetadata.location || ''}${contestMetadata.location && contestMetadata.website ? ' | ' :
@@ -478,10 +421,18 @@ function displayContestDetails(
     </div>
   `;
 
+  // make submissions richer by including a problemIndex field
+  contest.submissions = contest.submissions.map(i => {
+    const problem = contest.contest.problems.find(j => j.id == i.contestProblemId);
+    return {
+      ...i,
+      problemIndex: problem.problemIndex
+    };
+  });
+
   document.getElementById('vc-detail-content').innerHTML = content;
   try {
-    const hasSubs =
-      Array.isArray(contest.submissions) && contest.submissions.length > 0;
+    const hasSubs = contest.submissions.length > 0;
     if (hasSubs) {
       setupScoreTimeline({
         contest,
@@ -510,12 +461,12 @@ function setupContestTimeline(ctx) {
     document.body.appendChild(tooltip);
   }
 
-  const startMs = new Date(contest.started_at).getTime();
+  const startMs = new Date(contest.startedAt).getTime();
   const plannedMinutes =
-    Number(contestMetadata && contestMetadata.duration_minutes);
+    Number(contestMetadata && contestMetadata.duration);
   if (!Number.isFinite(plannedMinutes) || plannedMinutes <= 0) {
     console.error(
-      '[vc] contestMetadata.duration_minutes missing; contest timeline not rendered');
+      '[vc] contestMetadata.duration missing; contest timeline not rendered');
     return;
   }
   const endPlannedMs = startMs + plannedMinutes * 60000;
@@ -538,15 +489,15 @@ function setupContestTimeline(ctx) {
   const subs = (contest.submissions || [])
     .slice()
     .sort(
-      (a, b) => new Date(a.submission_time) -
-        new Date(b.submission_time));
+      (a, b) => new Date(a.time) -
+        new Date(b.time));
   const bestByProblem = new Map();
   for (let i = 1; i <= problemCount; i++) bestByProblem.set(i, []);
   const events = [];
   for (const s of subs) {
-    const idx = s.problem_index;
+    const idx = s.problemIndex;
     const prev = bestByProblem.get(idx);
-    const arr = Array.isArray(s.subtask_scores) ? s.subtask_scores : [];
+    const arr = Array.isArray(s.subtaskScores) ? s.subtaskScores : [];
     let delta = 0;
     for (let i = 0; i < arr.length; i++) {
       const before = prev[i] || 0;
@@ -555,14 +506,14 @@ function setupContestTimeline(ctx) {
       prev[i] = after;
     }
     events.push({
-      t: new Date(s.submission_time).getTime(),
+      t: new Date(s.time).getTime(),
       idx,
       delta,
       score: Number(s.score) || 0,
-      subtask_scores: arr
+      subtaskScores: arr
     });
-    if (s.submission_time) {
-      const tBin = new Date(s.submission_time).getTime();
+    if (s.time) {
+      const tBin = new Date(s.time).getTime();
       if (tBin >= startMs && tBin <= endPlannedMs) {
         const bi = Math.min(binCount - 1, Math.floor((tBin - startMs) / binMs));
         bins[bi]++;
@@ -747,7 +698,7 @@ function setupContestTimeline(ctx) {
     const h = Math.floor(whenMin / 60), m = whenMin % 60;
     const rel = h === 0 ? `${m}m` : (m === 0 ? `${h}h` : `${h}h${m}m`);
     const pname =
-      getProblemNameByIndex(eObj.idx, contestMetadata, problemsData) ||
+      getProblemNameByIndex(eObj.idx, contest, contestMetadata, problemsData) ||
       `Problem ${eObj.idx}`;
     const deltaNum = Math.round((Number(eObj.delta) || 0) * 10) / 10;
     const deltaStr =
@@ -867,22 +818,14 @@ function setupContestTimeline(ctx) {
 
 
 // Resolve a problem's display name by its 1-based index in the contest
-function getProblemNameByIndex(index, contestMetadata, problemsData) {
+function getProblemNameByIndex(index, contest, contestMetadata, problemsData) {
   try {
     if (!contestMetadata || !contestMetadata.problems) return `Problem ${index}`;
     const meta = contestMetadata.problems[index - 1];
     if (!meta) return `Problem ${index}`;
-
-    const bySource = problemsData?.[meta.source];
-    const byYear = bySource?.[meta.year];
-    if (!Array.isArray(byYear)) return `Problem ${index}`;
-
-    const hasExtra = meta.extra !== undefined && meta.extra !== null && meta.extra !== '';
-    const match = byYear.find(p =>
-      p.source === meta.source && p.year === meta.year && p.number === meta.number && (!hasExtra || p.extra === meta.extra)
-    );
-
-    return match?.name || `Problem ${index}`;
+    let id = contest.contest.problems.find(i => i.problemIndex == index - 1).problemId;
+    let problemName = problemsData[contest.contest.source.toUpperCase()][contest.contest.year].find(i => i.id == id).name;
+    return problemName;
   } catch {
     return `Problem ${index}`;
   }
@@ -907,11 +850,11 @@ function setupScoreTimeline(ctx) {
     dpr: window.devicePixelRatio || 1,
     maxScore,
     problemCount,
-    medalCutoffs: Array.isArray(scoreData?.medal_cutoffs) ?
-      scoreData.medal_cutoffs.map(Number) :
+    medalCutoffs: Array.isArray(scoreData?.medalCutoffs) ?
+      scoreData.medalCutoffs.map(Number) :
       null,
-    startMs: new Date(contest.started_at).getTime(),
-    endMs: new Date(contest.ended_at).getTime(),
+    startMs: new Date(contest.startedAt).getTime(),
+    endMs: new Date(contest.endedAt).getTime(),
     series: null,
     showTotal: true,
     showProblem: Array.from(
@@ -924,7 +867,7 @@ function setupScoreTimeline(ctx) {
   const controls =
     [{ id: 'toggle-total', label: 'Total', type: 'total', checked: true }];
   for (let i = 1; i <= problemCount; i++) {
-    const pname = getProblemNameByIndex(i, contestMetadata, problemsData) ||
+    const pname = getProblemNameByIndex(i, contest, contestMetadata, problemsData) ||
       `Problem ${i}`;
     controls.push({
       id: `toggle-prob-${i}`,
@@ -961,10 +904,10 @@ function setupScoreTimeline(ctx) {
   });
 
   const plannedMinutes =
-    Number(contestMetadata && contestMetadata.duration_minutes);
+    Number(contestMetadata && contestMetadata.duration);
   if (!Number.isFinite(plannedMinutes) || plannedMinutes <= 0) {
     console.error(
-      '[vc] contestMetadata.duration_minutes is missing/invalid; timeline will not render.');
+      '[vc] contestMetadata.duration is missing/invalid; timeline will not render.');
     // surface a tiny inline note and bail out
     togglesHost.innerHTML =
       '<span class="graph-legend off" aria-disabled="true">Timeline unavailable (missing duration)</span>';
@@ -1061,9 +1004,7 @@ function setCanvasSize(canvas, heightCss) {
 function buildSeriesData(contest, problemCount, startMs, endMs) {
   const subs = (contest.submissions || [])
     .slice()
-    .sort(
-      (a, b) => new Date(a.submission_time) -
-        new Date(b.submission_time));
+    .sort((a, b) => new Date(a.time) -new Date(b.time));
   const bestByProblem = new Map();
   const seriesByProblem = new Map();
   for (let i = 1; i <= problemCount; i++) {
@@ -1073,11 +1014,10 @@ function buildSeriesData(contest, problemCount, startMs, endMs) {
   const total = [{ t: startMs, y: 0 }];
   const totals = Array(problemCount + 1).fill(0);
   const sumTotals = () => totals.reduce((a, b) => a + b, 0);
-
   for (const s of subs) {
-    const idx = s.problem_index;
+    const idx = s.problemIndex;
     const best = bestByProblem.get(idx);
-    const arr = Array.isArray(s.subtask_scores) ? s.subtask_scores : [];
+    const arr = Array.isArray(s.subtaskScores) ? s.subtaskScores : [];
     let changed = false;
     for (let i = 0; i < arr.length; i++) {
       const prev = best[i] || 0;
@@ -1087,7 +1027,7 @@ function buildSeriesData(contest, problemCount, startMs, endMs) {
         changed = true;
       }
     }
-    const tMs = new Date(s.submission_time).getTime();
+    const tMs = new Date(s.time).getTime();
     if (changed) {
       const pTotal = best.reduce((a, b) => a + (b || 0), 0);
       totals[idx] = pTotal;
@@ -1310,73 +1250,49 @@ function drawSeriesLayer(canvas, state, colorTotal, probColors) {
   if (showTotal) draw(series.total, colorTotal);
 }
 
-function generateProblemsHTML(
-  problemScores, contest, contestMetadata, problemsData, scoreData) {
+function generateProblemsHTML(problemScores, contest, contestMetadata, problemsData, scoreData) {
   if (problemScores.length === 0) {
     return '<div class="vc-detail-problem-empty">No problem data available</div>';
   }
 
-  return problemScores
-    .map((score, index) => {
-      // Try to get actual problem name
-      let problemName = `Problem ${index + 1}`;
-      try {
-        if (contestMetadata && contestMetadata.problems &&
-          contestMetadata.problems[index]) {
-          const prob = contestMetadata.problems[index];
-          // Find the problem in problemsData
-          const olympiadProblems = problemsData[prob.source];
-          if (olympiadProblems && olympiadProblems[prob.year]) {
-            const hasExtra = prob.extra !== undefined && prob.extra !== null && prob.extra !== '';
-            const problem = olympiadProblems[prob.year].find(p =>
-              p.source === prob.source &&
-              p.year === prob.year &&
-              p.number === prob.number &&
-              (!hasExtra || p.extra === prob.extra)
-            );
-            if (problem) {
-              problemName = problem.name;
-            }
+  return problemScores.map((score, index) => {
+    // Try to get actual problem name
+    let problemName = getProblemNameByIndex(index + 1, contest, contestMetadata, problemsData);
+
+    // Calculate rank for this problem
+    let problemRank = 'N/A';
+    let problemTotal = 'N/A';
+    if (scoreData && scoreData.problemScores &&
+      scoreData.problemScores.length > index) {
+      const problemScoresList = scoreData.problemScores[index] || [];
+      if (problemScoresList.length > 0) {
+        const sortedScores = [...problemScoresList].sort((a, b) => b - a);
+
+        // Find rank (handle ties by using the highest possible rank)
+        let currentRank = 1;
+        for (let i = 0; i < sortedScores.length; i++) {
+          if (sortedScores[i] > score) {
+            currentRank = i + 1;
+          } else {
+            break;
           }
         }
-      } catch (error) {
-        console.error('Error getting problem name:', error);
+        problemRank = currentRank;
+        problemTotal = sortedScores.length;
       }
+    }
 
-      // Calculate rank for this problem
-      let problemRank = 'N/A';
-      let problemTotal = 'N/A';
-      if (scoreData && scoreData.problem_scores &&
-        scoreData.problem_scores.length > index) {
-        const problemScoresList = scoreData.problem_scores[index] || [];
-        if (problemScoresList.length > 0) {
-          const sortedScores = [...problemScoresList].sort((a, b) => b - a);
+    // Determine score color class
+    let scoreClass = '';
+    if (score === 100) {
+      scoreClass = 'score-perfect';  // Green
+    } else if (score > 0) {
+      scoreClass = 'score-partial';  // Yellow
+    } else {
+      scoreClass = 'score-zero';  // Red
+    }
 
-          // Find rank (handle ties by using the highest possible rank)
-          let currentRank = 1;
-          for (let i = 0; i < sortedScores.length; i++) {
-            if (sortedScores[i] > score) {
-              currentRank = i + 1;
-            } else {
-              break;
-            }
-          }
-          problemRank = currentRank;
-          problemTotal = sortedScores.length;
-        }
-      }
-
-      // Determine score color class
-      let scoreClass = '';
-      if (score === 100) {
-        scoreClass = 'score-perfect';  // Green
-      } else if (score > 0) {
-        scoreClass = 'score-partial';  // Yellow
-      } else {
-        scoreClass = 'score-zero';  // Red
-      }
-
-      return `
+    return `
       <div class="vc-detail-problem">
         <div class="vc-detail-problem-header">
           <div class="vc-detail-problem-info">
@@ -1387,7 +1303,7 @@ function generateProblemsHTML(
         </div>
       </div>
     `;
-    })
+  })
     .join('');
 }
 
