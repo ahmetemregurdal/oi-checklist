@@ -1,0 +1,12 @@
+- name: I split U in 3
+  number: 1
+  links:
+    - https://eolymp.com/en/compete/pnlfa3406t5t306ohrf79emris/problem/1
+- name: Poisonous nim
+  number: 2
+  links:
+    - https://eolymp.com/en/compete/pnlfa3406t5t306ohrf79emris/problem/2
+- name: PopSwap
+  number: 3
+  links:
+    - https://eolymp.com/en/compete/pnlfa3406t5t306ohrf79emris/problem/3
