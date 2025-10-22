@@ -1,12 +1,15 @@
 - name: Car Race
   number: 1
   links:
+    - https://qoj.ac/problem/12233
     - https://eolymp.com/en/compete/t26aup2g590ur5168tirg6k000/problem/1
 - name: Weights
   number: 2
   links:
+    - https://qoj.ac/problem/12234
     - https://eolymp.com/en/compete/t26aup2g590ur5168tirg6k000/problem/2
 - name: Permutations
   number: 3
   links:
+    - https://qoj.ac/problem/12235
     - https://eolymp.com/en/compete/t26aup2g590ur5168tirg6k000/problem/3
