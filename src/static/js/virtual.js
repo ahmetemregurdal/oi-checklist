@@ -284,34 +284,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       scoreSubtitle.textContent = 'Click on each problem to set your score.';
     }
 
-    // Calculate total score for oj.uz mode and update completion stats
-    if (isReadOnly && currentActiveContest.ojuz_data) {
-      const totalScore = currentActiveContest.ojuz_data.reduce((sum, submission) => sum + submission.score, 0);
-
-      // Add total score stat item
-      const completionStats = document.querySelector('.completion-stats');
-
-      // Check if total score stat already exists
-      let totalScoreStat = document.getElementById('total-score-stat');
-      if (!totalScoreStat) {
-        totalScoreStat = document.createElement('div');
-        totalScoreStat.id = 'total-score-stat';
-        totalScoreStat.className = 'stat-item';
-        totalScoreStat.innerHTML = `
-          <span class="stat-label">Total Score:</span>
-          <span class="stat-value" id="total-score-value">${totalScore}/300</span>
-        `;
-        completionStats.appendChild(totalScoreStat);
-      } else {
-        // Update existing stat
-        document.getElementById('total-score-value').textContent = `${totalScore}/300`;
-      }
-    }
-
-    // Generate score table with actual problem names using main page cell system
-    const scoreTbody = document.getElementById('score-problems-tbody');
-    scoreTbody.innerHTML = '';
-
     // Get the contest data to find problems
     const contestName = currentActiveContest.contest_name;
     const contestStage = currentActiveContest.contest_stage;
@@ -333,6 +305,34 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       if (contestProblems.length > 0) break;
     }
+
+    // Calculate total score for oj.uz mode and update completion stats
+    if (isReadOnly && currentActiveContest.ojuz_data) {
+      const totalScore = currentActiveContest.ojuz_data.reduce((sum, submission) => sum + submission.score, 0);
+
+      // Add total score stat item
+      const completionStats = document.querySelector('.completion-stats');
+
+      // Check if total score stat already exists
+      let totalScoreStat = document.getElementById('total-score-stat');
+      if (!totalScoreStat) {
+        totalScoreStat = document.createElement('div');
+        totalScoreStat.id = 'total-score-stat';
+        totalScoreStat.className = 'stat-item';
+        totalScoreStat.innerHTML = `
+          <span class="stat-label">Total Score:</span>
+          <span class="stat-value" id="total-score-value">${totalScore}/${problemCount * 100}</span>
+        `;
+        completionStats.appendChild(totalScoreStat);
+      } else {
+        // Update existing stat
+        document.getElementById('total-score-value').textContent = `${totalScore}/${problemCount * 100}`;
+      }
+    }
+
+    // Generate score table with actual problem names using main page cell system
+    const scoreTbody = document.getElementById('score-problems-tbody');
+    scoreTbody.innerHTML = '';
 
     // Get actual problem names and links
     const problemData = [];
@@ -398,11 +398,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // populate currentActiveContest.ojuz_data[i].problemIndex
-    currentActiveContest.ojuz_data = currentActiveContest.ojuz_data.map(i => {
-      const problem = currentActiveContest.problems.find(j => j.id == i.contestProblemId);
-      i.problemIndex = problem.problemIndex;
-      return i;
-    });
+    if (currentActiveContest.ojuz_data) {
+      currentActiveContest.ojuz_data = currentActiveContest.ojuz_data.map(i => {
+        const problem = currentActiveContest.problems.find(j => j.id == i.contestProblemId);
+        i.problemIndex = problem.problemIndex;
+        return i;
+      });
+    }
 
     // If we have oj.uz data, populate scores
     if (isReadOnly && currentActiveContest.ojuz_data) {
@@ -655,6 +657,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const item = document.createElement('div');
       item.className = 'past-vc-item';
       const date = new Date(contest.started_at);
+      const numProblems = contest.per_problem_scores.length;
       const formattedDate = date.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',
@@ -662,7 +665,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       item.innerHTML = `
               <div class="past-vc-title">${contest.contest_source.toUpperCase()} ${contest.contest_year}${contest.contest_stage ? ` ${contest.contest_stage}` : ''}</div>
-              <div class="past-vc-score">${contest.score}/300</div>
+              <div class="past-vc-score">${contest.score}/${numProblems * 100}</div>
               <div class="past-vc-date">${formattedDate}</div>
           `;
       item.addEventListener('click', (e) => {
@@ -1617,7 +1620,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const status = parseInt(cell.dataset.status) || 0;
 
         // Update problem score
-        const updateResponse = await fetch(`${apiUrl}/user/update`, {
+        const updateResponse = await fetch(`${apiUrl}/user/problems`, {
           method: 'POST',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
