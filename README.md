@@ -47,7 +47,7 @@ Try it live: [https://checklist.spoi.org.in](https://checklist.spoi.org.in) or e
 <p align="center"><i>Detailed breakdown of performance: rank, medal, percentile, and more</i></p>
 
 <p align="center">
-  <img src="./src/static/images/virtual-graphs.png" alt="Virtual contest graphs" width="80%">
+  <img src="./src/static/images/virtual-graphs.jpg" alt="Virtual contest graphs" width="80%">
 </p>
 <p align="center"><i>Graphs that show detailed submission data and an overall contest timeline</i></p>
 
