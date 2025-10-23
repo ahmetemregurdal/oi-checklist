@@ -1,6 +1,0 @@
-flask
-python-dotenv
-flask-cors
-pyjwt
-requests-oauthlib
-pyyaml
