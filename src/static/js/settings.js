@@ -132,6 +132,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     { key: 'codedrills', label: 'Codedrills', icon: 'images/codedrills-icon.ico' },
     { key: 'dmoj', label: 'DMOJ', icon: 'images/dmoj-icon.png' },
     { key: 'szkopuł', label: 'Szkopuł', icon: 'images/szkopul-icon.png' },
+    { key: 'eolymp', label: 'Eolymp', icon: 'images/eolymp-icon.png' }
   ];
 
   const pfToggle = document.getElementById('platform-pref-toggle');
