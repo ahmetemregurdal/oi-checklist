@@ -29,7 +29,7 @@ Try it live: [https://checklist.spoi.org.in](https://checklist.spoi.org.in) or e
 </p>
 <p align="center"><i>Dashboard after logging in</i></p>
 
-### Virutal Contests
+### Virtual Contests
 
 <p align="center">
   <img src="./src/static/images/virtual-contest-ongoing.png" alt="Ongoing virtual contest screen" width="80%">
