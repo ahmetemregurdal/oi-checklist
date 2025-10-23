@@ -1328,9 +1328,12 @@ window.onload = async () => {
 
     const namesParam = sources.join(',');
 
-    const res = await fetch(
-      `${apiUrl}/api/user?username=${uname}&problems=${namesParam}`,
-      { method: 'GET', credentials: 'include' });
+    const res = await fetch(`${apiUrl}/user/settings`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: uname })
+    });
 
     if (res.status === 404) {
       document.body.innerHTML = `<h2 style="text-align:center;margin-top:2em;">
@@ -1366,8 +1369,7 @@ window.onload = async () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sources: sources.map(i => i.toLowerCase()),
-          username: uname,
-          token: sessionToken
+          username: uname
         })
       });
       if (probRes.ok) {

@@ -25,14 +25,14 @@ export async function problems(app: FastifyInstance) {
     const { sources, token, username, allLinks } = req.body;
     const invalid = sources.find(i => !Olympiads.has(i));
     if (invalid) {
-      throw new createError.BadRequest(`Invalid olympiad: ${invalid}`);
+      throw createError.BadRequest(`Invalid olympiad: ${invalid}`);
     }
     let user: Prisma.UserGetPayload<{ include: { settings: true } }> | null = null;
     let hasAuth = true;
     if (token != null) {
       const session = await db.session.findUnique({ where: { id: token } });
       if (!session) {
-        throw new createError.Unauthorized('Invalid (or expired) token');
+        throw createError.Unauthorized('Invalid (or expired) token');
       }
       user = await db.user.findUnique({ where: { id: session.userId }, include: { settings: true } });
     }
@@ -42,11 +42,14 @@ export async function problems(app: FastifyInstance) {
       }
       user = await db.user.findUnique({ where: { username }, include: { settings: true } });
     }
+    if (!user) {
+      throw createError.NotFound('User not found');
+    }
     const problems = await db.problem.findMany({
       where: { source: { in: sources } },
       include: {
         problemLinks: true,
-        userProblemsData: hasAuth ? { where: { userId: user.id } } : false
+        userProblemsData: hasAuth || user.settings?.checklistPublic ? { where: { userId: user.id } } : false
       }
     });
     function pickLink(links: ProblemLink[]): string {

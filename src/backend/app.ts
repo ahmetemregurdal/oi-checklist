@@ -28,6 +28,10 @@ fs.readdirSync(path.join(__dirname, `../static/html`)).forEach(i => {
   });
 });
 
+app.get('/profile/:username', (_req, res) => {
+  return res.sendFile('index.html', path.join(__dirname, '../static/html'));
+});
+
 app.setNotFoundHandler((_req, res) => {
   res.code(404).sendFile('404.html', path.join(__dirname, '../static/html'));
 });
