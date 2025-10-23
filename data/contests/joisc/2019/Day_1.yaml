@@ -1,0 +1,15 @@
+name: JOISC 2019
+location: Yoyogi, Tokyo
+duration: 300
+website: https://contests.ioi-jp.org/joi-sp-2019/index-en
+link: https://oj.uz/problems/source/joisc2019day1
+problems:
+- source: joisc
+  year: 2019
+  number: 1
+- source: joisc
+  year: 2019
+  number: 2
+- source: joisc
+  year: 2019
+  number: 3

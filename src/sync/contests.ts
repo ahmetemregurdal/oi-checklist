@@ -162,9 +162,13 @@ async function main() {
       problemScores: Record<string, number[]>;
     };
     let data: ContestScoreData = { contestId: contest.id, medalNames: [], medalCutoffs: [], problemScores: i.scores };
-    for (const [medal, cutoff] of Object.entries(i.medalCutoffs)) {
-      data.medalNames.push(medal);
-      data.medalCutoffs.push(cutoff);
+    if (!i.medalCutoffs) {
+      console.warn(`Warning: contest ${i.name} ${i.stage ? i.stage : ''} does not have medalCutoffs`);
+    } else {
+      for (const [medal, cutoff] of Object.entries(i.medalCutoffs)) {
+        data.medalNames.push(medal);
+        data.medalCutoffs.push(cutoff);
+      }
     }
     await db.contestScores.upsert({
       where: { contestId: contest.id },

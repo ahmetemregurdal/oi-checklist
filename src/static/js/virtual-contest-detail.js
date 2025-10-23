@@ -426,7 +426,7 @@ function displayContestDetails(contest, contestMetadata, problemsData, scoreData
     const problem = contest.contest.problems.find(j => j.id == i.contestProblemId);
     return {
       ...i,
-      problemIndex: problem.problemIndex
+      problemIndex: problem.problemIndex + 1
     };
   });
 

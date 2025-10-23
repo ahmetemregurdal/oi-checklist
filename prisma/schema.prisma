@@ -18,7 +18,6 @@ model User {
   settings Settings?
   virtualContests UserVirtualContest[]
   activeVirtualContest ActiveVirtualContest?
-  @@map("users")
 }
 
 model AuthIdentity {
@@ -30,7 +29,6 @@ model AuthIdentity {
   createdAt DateTime @default(now())
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@unique([provider, providerUserId])
-  @@map("auth_identities")
 }
 
 model Problem {
@@ -45,7 +43,6 @@ model Problem {
   contests ContestProblem[]
   @@unique([source, year, number, extra])
   @@unique([name, source, year, extra])
-  @@map("problems")
 }
 
 model ProblemLink {
@@ -55,7 +52,6 @@ model ProblemLink {
   url String
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
   @@unique([problemId, platform, url]) 
-  @@map("problem_links")
 }
 
 model UserProblemData {
@@ -68,7 +64,6 @@ model UserProblemData {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
   @@id([userId, problemId])
-  @@map("user_problem_data")
 }
 
 model Settings {
@@ -81,7 +76,6 @@ model Settings {
   hiddenOlympiads Json?
   platformUsernames Json?
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@map("settings")
 }
 
 model Session {
@@ -89,7 +83,6 @@ model Session {
   userId Int
   createdAt DateTime @default(now())
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@map("sessions")
 }
 
 model Contest {
@@ -109,7 +102,6 @@ model Contest {
   userVirtualContests UserVirtualContest[]
   activeVirtualContests ActiveVirtualContest[]
   @@unique([name, stage])
-  @@map("contests")
 }
 
 model ContestProblem {
@@ -122,7 +114,6 @@ model ContestProblem {
   virtualSubmissions VirtualSubmission[]
   @@unique([contestId, problemId])
   @@unique([contestId, problemIndex])
-  @@map("contest_problems")
 }
 
 model ContestScores {
@@ -131,7 +122,6 @@ model ContestScores {
   medalCutoffs Json?
   problemScores Json
   contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
-  @@map("contest_scores")
 }
 
 model UserVirtualContest {
@@ -146,7 +136,6 @@ model UserVirtualContest {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
   @@unique([userId, contestId])
-  @@map("user_virtual_contests")
 }
 
 model VirtualSubmission {
@@ -160,7 +149,6 @@ model VirtualSubmission {
   contest UserVirtualContest? @relation(fields: [virtualContestId], references: [id], onDelete: Cascade)
   activeContest ActiveVirtualContest? @relation(fields: [activeVirtualContestUserId], references: [userId], onDelete: Cascade)
   problem ContestProblem @relation(fields: [contestProblemId], references: [id], onDelete: Cascade)
-  @@map("virtual_submissions")
 }
 
 // is not FK'd to UserVirtualContest which is an array of completed contests
@@ -175,13 +163,11 @@ model ActiveVirtualContest {
   submissions VirtualSubmission[]
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
-  @@map("active_virtual_contests")
 }
 
 model ScraperAuthToken {
   platform String @id
   token String
-  @@map("scraper_auth_tokens")
 }
 
 model OAuthState {
@@ -189,5 +175,4 @@ model OAuthState {
   userId Int?
   redirectUri String?
   createdAt DateTime @default(now())
-  @@map("oauth_states")
 }
