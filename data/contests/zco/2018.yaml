@@ -1,0 +1,27 @@
+name: ZCO 2018
+location: India
+duration: 180
+website: https://www.iarcs.org.in/inoi/2018/#zco2018
+problems:
+- source: zco
+  year: 2018
+  number: 1
+- source: zco
+  year: 2018
+  number: 2
+userContext: zco
+contextData:
+  male:
+    12: 1
+    11: 1
+    10: 1
+    9: 1
+    8: 1
+    7: 1
+  female:
+    12: 1
+    11: 1
+    10: 1
+    9: 1
+    8: 1
+    7: 1

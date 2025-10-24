@@ -1,0 +1,27 @@
+name: INOI 2020
+location: India
+duration: 180
+website: https://www.iarcs.org.in/inoi/2020/
+problems:
+- source: inoi
+  year: 2020
+  number: 1
+- source: inoi
+  year: 2020
+  number: 2
+userContext: inoi
+contextData:
+  male:
+    12: 200
+    11: 200
+    10: 200
+    9: 132
+    8: 132
+    7: 132
+  female:
+    12: 200
+    11: 200
+    10: 200
+    9: 132
+    8: 132
+    7: 132

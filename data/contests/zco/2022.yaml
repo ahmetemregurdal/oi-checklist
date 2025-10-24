@@ -1,0 +1,27 @@
+name: ZCO 2022
+location: India
+duration: 180
+website: https://www.iarcs.org.in/inoi/2022/#zco2022
+problems:
+- source: zco
+  year: 2022
+  number: 1
+- source: zco
+  year: 2022
+  number: 2
+userContext: zco
+contextData:
+  male:
+    12: 94
+    11: 83
+    10: 72
+    9: 65
+    8: 49
+    7: 34
+  female:
+    12: 87
+    11: 54
+    10: 48
+    9: 43
+    8: 28
+    7: 22

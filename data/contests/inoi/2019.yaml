@@ -1,0 +1,27 @@
+name: INOI 2019
+location: India
+duration: 180
+website: https://www.iarcs.org.in/inoi/2019/
+problems:
+- source: inoi
+  year: 2019
+  number: 1
+- source: inoi
+  year: 2019
+  number: 2
+userContext: inoi
+contextData:
+  male:
+    12: 39
+    11: 33
+    10: 29
+    9: 26
+    8: 26
+    7: 26
+  female:
+    12: 39
+    11: 33
+    10: 29
+    9: 26
+    8: 26
+    7: 26

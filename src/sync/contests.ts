@@ -42,27 +42,30 @@ function decrypt(payload: string) {
   return Buffer.concat([decipher.update(encrypted), decipher.final()]).toString('utf8');
 }
 
+async function fileExists(path: string) {
+  let ans = true;
+  try {
+    await fs.access(path, fs.constants.F_OK);
+  } catch {
+    ans = false;
+  }
+  return ans;
+}
+
 async function parseFile(dir: string, file: string) {
   let contest = YAML.parse(await fs.readFile(path.join(dir, file), 'utf8')) as ContestYAML;
-  contest = { ...contest, year: parseInt(file.replace(/\.yaml$/i, '')) };
+  contest = { ...contest, year: parseInt(file.replace(/\.yaml$/i, '')), isPrivate: false };
 
   // a corresponding scores_[].json might exist
-  const jsonFile = `scores_${file.replace(/\.ya?ml$/i, '')}.json`;
-  const jsonPath = path.join(dir, jsonFile);
-  let jsonExisted: boolean = false;
-  try {
-    await fs.access(jsonPath, fs.constants.F_OK);
-    jsonExisted = true;
+  const jsonPath = path.join(dir, `scores_${file.replace(/\.ya?ml$/i, '')}.json`);
+  let jsonExists = await fileExists(jsonPath);
+  if (jsonExists) {
     contest.scores = JSON.parse(await fs.readFile(jsonPath, 'utf8')) as Record<string, number[]>;
-  } catch {
   }
-  contest.isPrivate = false;
   // or a scores_[].enc file for ICO contests
-  const encFile = `scores_${file.replace(/\.ya?ml$/i, '')}.enc`;
-  const encPath = path.join(dir, encFile);
-  try {
-    await fs.access(encPath, fs.constants.F_OK);
-    if (jsonExisted) {
+  const encPath = path.join(dir, `scores_${file.replace(/\.ya?ml$/i, '')}.enc`);
+  if (await fileExists(encPath)) {
+    if (jsonExists) {
       throw Error(`fatal: unencrypted .json exists at ${jsonPath}`);
     }
     let decrypted = '';
@@ -75,7 +78,6 @@ async function parseFile(dir: string, file: string) {
       contest.scores = JSON.parse(decrypted) as Record<string, number[]>;
       contest.isPrivate = true;
     }
-  } catch {
   }
 
   return contest;

@@ -1,0 +1,27 @@
+name: INOI 2021
+location: India
+duration: 180
+website: https://www.iarcs.org.in/inoi/2021/
+problems:
+- source: inoi
+  year: 2021
+  number: 1
+- source: inoi
+  year: 2021
+  number: 2
+userContext: inoi
+contextData:
+  male:
+    12: 100
+    11: 100
+    10: 100
+    9: 100
+    8: 100
+    7: 100
+  female:
+    12: 100
+    11: 100
+    10: 100
+    9: 100
+    8: 100
+    7: 100

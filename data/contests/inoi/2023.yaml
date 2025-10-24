@@ -1,0 +1,34 @@
+name: INOI 2023
+location: India
+duration: 180
+website: https://www.iarcs.org.in/inoi/2023/
+problems:
+- source: inoi
+  year: 2023
+  number: 1
+- source: inoi
+  year: 2023
+  number: 2
+- source: inoi
+  year: 2023
+  number: 3
+medalCutoffs:
+  gold: 168
+  silver: 116
+  bronze: 60
+userContext: inoi
+contextData:
+  male:
+    12: 141
+    11: 124
+    10: 110
+    9: 79
+    8: 79
+    7: 79
+  female:
+    12: 40
+    11: 40
+    10: 40
+    9: 40
+    8: 40
+    7: 40

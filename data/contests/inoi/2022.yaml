@@ -1,0 +1,34 @@
+name: INOI 2022
+location: India
+duration: 180
+website: https://www.iarcs.org.in/inoi/2022/
+problems:
+- source: inoi
+  year: 2022
+  number: 1
+- source: inoi
+  year: 2022
+  number: 2
+- source: inoi
+  year: 2022
+  number: 3
+medalCutoffs:
+  gold: 175
+  silver: 120
+  bronze: 87
+userContext: inoi
+contextData:
+  male:
+    12: 138
+    11: 125
+    10: 120
+    9: 112
+    8: 87
+    7: 87
+  female:
+    12: 81
+    11: 81
+    10: 81
+    9: 81
+    8: 81
+    7: 81

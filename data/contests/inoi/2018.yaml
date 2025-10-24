@@ -1,0 +1,27 @@
+name: INOI 2018
+location: India
+duration: 180
+website: https://www.iarcs.org.in/inoi/2018/
+problems:
+- source: inoi
+  year: 2018
+  number: 1
+- source: inoi
+  year: 2018
+  number: 2
+userContext: inoi
+contextData:
+  male:
+    12: 120
+    11: 116
+    10: 112
+    9: 100
+    8: 100
+    7: 100
+  female:
+    12: 120
+    11: 116
+    10: 112
+    9: 100
+    8: 100
+    7: 100
