@@ -40,11 +40,11 @@ export const root = path.resolve(__dirname, '..');
 
 dotenv.config({ path: path.resolve(root, '.env') });
 
-function validateEnv(key: string) {
-  if (!process.env[key]) {
+function validateEnv(key: string, fatal: boolean = true) {
+  if (!process.env[key] && fatal) {
     throw new Error(`Environment variable ${key} is not set. You may want to check your .env`);
   }
-  return process.env[key];
+  return process.env[key] ?? '';
 }
 
 export const GithubClientId = validateEnv('GITHUB_CLIENT_ID');
@@ -55,7 +55,7 @@ export const DiscordClientId = validateEnv('DISCORD_CLIENT_ID');
 export const DiscordClientSecret = validateEnv('DISCORD_CLIENT_SECRET');
 export const QojUsername = validateEnv('QOJ_USER');
 export const QojPassword = validateEnv('QOJ_PASS');
-export const EncryptionKey = Buffer.from(validateEnv('ENCRYPTION_KEY'), 'hex');
+export const EncryptionKey = Buffer.from(validateEnv('ENCRYPTION_KEY', false), 'hex');
 
 export const RootUrl = validateEnv('ROOT_URL');
 

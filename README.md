@@ -180,6 +180,7 @@ Below is a brief overview of the key endpoints exposed by the backend.
   - `/detail`
   - `/history`
   - `/scores`
+  - `/stats`
   - `/summary`
 
 #### prefix: `/user`
