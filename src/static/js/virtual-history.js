@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (scoresResponse.ok) {
           contestScores = await scoresResponse.json();
-          contestScores = contestScores.map(i => i.scores);
+          contestScores = contestScores.filter(i => i.scores).map(i => i.scores);
           contestScores = Object.fromEntries(contestScores.map(i => [i.contestId, i]));
         }
       } catch (error) {

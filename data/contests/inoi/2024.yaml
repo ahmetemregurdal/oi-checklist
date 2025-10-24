@@ -17,3 +17,19 @@ medalCutoffs:
   gold: 156
   silver: 128
   bronze: 78
+userContext: inoi
+contextData:
+  male:
+    12: 141
+    11: 141
+    10: 123
+    9: 113
+    8: 113
+    7: 113
+  female:
+    12: 71
+    11: 71
+    10: 71
+    9: 71
+    8: 71
+    7: 71

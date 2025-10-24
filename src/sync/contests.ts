@@ -3,8 +3,9 @@ import readline from 'readline/promises';
 import { stdin, stdout } from 'process';
 import YAML from 'yaml';
 import path from 'path';
-import { root } from '@config';
+import { root, EncryptionKey } from '@config';
 import { db } from '@db';
+import crypto from 'crypto';
 
 interface ContestYAML {
   name: string;
@@ -18,6 +19,9 @@ interface ContestYAML {
   link?: string;
   note?: string;
   scores?: Record<string, number[]>;
+  isPrivate?: boolean;
+  userContext?: string;
+  contextData?: any;
   medalCutoffs?: Record<string, number>;
   problems?: {
     source: string;
@@ -28,6 +32,16 @@ interface ContestYAML {
   }[];
 }
 
+function decrypt(payload: string) {
+  const data = Buffer.from(payload, 'base64');
+  const iv = data.subarray(0, 12);
+  const tag = data.subarray(12, 28);
+  const encrypted = data.subarray(28);
+  const decipher = crypto.createDecipheriv('aes-256-gcm', EncryptionKey, iv);
+  decipher.setAuthTag(tag);
+  return Buffer.concat([decipher.update(encrypted), decipher.final()]).toString('utf8');
+}
+
 async function parseFile(dir: string, file: string) {
   let contest = YAML.parse(await fs.readFile(path.join(dir, file), 'utf8')) as ContestYAML;
   contest = { ...contest, year: parseInt(file.replace(/\.yaml$/i, '')) };
@@ -35,9 +49,32 @@ async function parseFile(dir: string, file: string) {
   // a corresponding scores_[].json might exist
   const jsonFile = `scores_${file.replace(/\.ya?ml$/i, '')}.json`;
   const jsonPath = path.join(dir, jsonFile);
+  let jsonExisted: boolean = false;
   try {
     await fs.access(jsonPath, fs.constants.F_OK);
+    jsonExisted = true;
     contest.scores = JSON.parse(await fs.readFile(jsonPath, 'utf8')) as Record<string, number[]>;
+  } catch {
+  }
+  contest.isPrivate = false;
+  // or a scores_[].enc file for ICO contests
+  const encFile = `scores_${file.replace(/\.ya?ml$/i, '')}.enc`;
+  const encPath = path.join(dir, encFile);
+  try {
+    await fs.access(encPath, fs.constants.F_OK);
+    if (jsonExisted) {
+      throw Error(`fatal: unencrypted .json exists at ${jsonPath}`);
+    }
+    let decrypted = '';
+    try {
+      decrypted = decrypt(await fs.readFile(encPath, 'utf8'));
+    } catch {
+      console.warn(`[warn] skipping ${encPath} due to invalid key`);
+    }
+    if (decrypted != '') {
+      contest.scores = JSON.parse(decrypted) as Record<string, number[]>;
+      contest.isPrivate = true;
+    }
   } catch {
   }
 
@@ -120,7 +157,7 @@ async function main() {
       });
       if (!dbProblem) {
         console.warn(`Error: the following problem is not in the database. Did you forget to run problems.ts?\n`, problem);
-        throw new Error('Aborting due to data invalidity');
+        throw Error('Aborting due to data invalidity');
       }
       problem.id = dbProblem.id;
     }
@@ -137,7 +174,9 @@ async function main() {
       ...(i.date ? { date: i.date } : {}),
       ...(i.website ? { website: i.website } : {}),
       ...(i.link ? { link: i.link } : {}),
-      ...(i.note ? { note: i.note } : {})
+      ...(i.note ? { note: i.note } : {}),
+      ...(i.userContext ? { userContext: i.userContext } : {}),
+      ...(i.contextData ? { contextData: i.contextData } : {})
     };
     // create contest
     const contest = await db.contest.upsert({
@@ -160,10 +199,11 @@ async function main() {
       medalNames: string[];
       medalCutoffs: number[];
       problemScores: Record<string, number[]>;
+      isPrivate: boolean;
     };
-    let data: ContestScoreData = { contestId: contest.id, medalNames: [], medalCutoffs: [], problemScores: i.scores };
+    let data: ContestScoreData = { contestId: contest.id, medalNames: [], medalCutoffs: [], problemScores: i.scores, isPrivate: i.isPrivate };
     if (!i.medalCutoffs) {
-      console.warn(`Warning: contest ${i.name} ${i.stage ? i.stage : ''} does not have medalCutoffs`);
+      console.warn(`[warn] contest ${i.name} ${i.stage ? i.stage : ''} does not have medalCutoffs`);
     } else {
       for (const [medal, cutoff] of Object.entries(i.medalCutoffs)) {
         data.medalNames.push(medal);

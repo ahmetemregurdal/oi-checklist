@@ -6,6 +6,7 @@ import createError from 'http-errors';
 import { auth } from './routes/auth';
 import { user } from './routes/user';
 import { data } from './routes/data';
+import { db } from '@db';
 
 const app = fastify();
 
@@ -28,7 +29,15 @@ fs.readdirSync(path.join(__dirname, `../static/html`)).forEach(i => {
   });
 });
 
-app.get('/profile/:username', (_req, res) => {
+app.get<{ Params: { username: string } }>('/profile/:username', async (req, res) => {
+  const username = req.params.username;
+  let user = await db.user.findUnique({
+    where: { username },
+    include: { settings: true }
+  });
+  if (!user || !user.settings.checklistPublic) {
+    return res.code(404).sendFile('404.html', path.join(__dirname, '../static/html'));
+  }
   return res.sendFile('index.html', path.join(__dirname, '../static/html'));
 });
 

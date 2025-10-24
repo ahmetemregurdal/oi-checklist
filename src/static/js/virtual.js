@@ -183,6 +183,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     }, 10);
   }
 
+  function showLinks(links) {
+    const messageContainer = document.getElementById('message-container');
+    const messageContent = document.getElementById('message-content');
+    const messageText = document.getElementById('message-text');
+
+    messageText.innerHTML = `<div style="font-weight:600;margin-bottom:0.5em">
+    Open the contest problems below:
+  </div>`;
+
+    const table = document.createElement('table');
+    table.className = 'problems-table links-table'; // same class as your main checklist table
+    const row = document.createElement('tr');
+
+    links.forEach(problem => {
+      const cell = document.createElement('td');
+      cell.className = 'problem-cell';
+      const content = document.createElement('div');
+      content.className = 'problem-cell-content';
+
+      const link = document.createElement('a');
+      link.href = problem.link;
+      link.target = '_blank';
+      link.textContent = problem.name;
+
+      content.appendChild(link);
+      cell.appendChild(content);
+      row.appendChild(cell);
+    });
+
+    table.appendChild(row);
+    messageText.appendChild(table);
+
+    messageContent.className = 'message-content info';
+    messageContainer.style.display = 'flex';
+    setTimeout(() => messageContainer.classList.add('show'), 10);
+  }
+
   function hideMessage() {
     const messageContainer = document.getElementById('message-container');
     messageContainer.classList.remove('show');
@@ -1399,7 +1436,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (currentActiveContest.link) {
         window.open(currentActiveContest.link, '_blank');
       } else {
-        showMessage('No contest link available for this contest.', 'warning');
+        let links = [];
+        for (let prob of currentActiveContest.problems) {
+          for (let [stage, years] of Object.entries(problemsData)) {
+            for (let [year, data] of Object.entries(years)) {
+              let relevant = data.find(i => i.id == prob.problemId);
+              if (relevant) {
+                links.push({ name: relevant.name, link: chooseProblemUrl(relevant) });
+              }
+            }
+          }
+        }
+        showLinks(links);
       }
       return;
     }

@@ -1,0 +1,27 @@
+name: ZCO 2023
+location: India
+duration: 180
+website: https://www.iarcs.org.in/inoi/2023/#zco2023
+problems:
+- source: zco
+  year: 2023
+  number: 1
+- source: zco
+  year: 2023
+  number: 2
+userContext: zco
+contextData:
+  male:
+    12: 27
+    11: 22
+    10: 20
+    9: 17
+    8: 16
+    7: 16
+  female:
+    12: 21
+    11: 16
+    10: 13
+    9: 12
+    8: 11
+    7: 11

@@ -104,17 +104,145 @@ async function fetchAdditionalData(contest) {
         body: JSON.stringify({ contests: [contest.contestId] })
       });
 
-    let contestScores = {};
+    let contestWithContextData = null;
+    let userContextInfo = null;
     if (scoresResponse.ok) {
-      contestScores = await scoresResponse.json();
-      contestScores = contestScores.map(i => i.scores);
-      contestScores = Object.fromEntries(contestScores.map(i => [i.contestId, i]));
+      const scoresData = await scoresResponse.json();
+      
+      // Find the contest data including userContext
+      contestWithContextData = scoresData.find(i => i.id === contest.contestId);
+      if (contestWithContextData) {
+        // Extract userContext if available
+        if (contestWithContextData.userContext) {
+          userContextInfo = contestWithContextData.userContext;
+        }
+      }
     }
-    displayContestDetails(contest, contestMetadata, problemsData, contestScores[contest.contestId]);
+
+    // Fetch contest stats for rank/participant data
+    const statsResponse = await fetch(`${apiUrl}/data/virtual/stats`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: sessionToken, contestId: contest.contestId })
+    });
+
+    let contestStats = null;
+    if (statsResponse.ok) {
+      contestStats = await statsResponse.json();
+    }
+
+    // Check if we need to show user context prompt
+    if (userContextInfo && !contest.userContextData) {
+      await showUserContextModal(contest, userContextInfo);
+    }
+
+    displayContestDetails(contest, contestMetadata, problemsData, contestWithContextData, contestStats);
   } catch (error) {
     console.error('Error fetching additional data:', error);
-    displayContestDetails(contest, {}, {}, {});
+    displayContestDetails(contest, {}, {}, null, null);
   }
+}
+
+async function showUserContextModal(contest, userContext) {
+  const section = document.getElementById('user-context-section');
+  const form = document.getElementById('user-context-form');
+  const submitBtn = document.getElementById('user-context-submit');
+  const description = document.getElementById('user-context-description');
+  const errorElement = document.getElementById('user-context-error');
+
+  // Hide loading, show context section
+  document.getElementById('vc-detail-loading').style.display = 'none';
+  
+  // Set dynamic description based on contest
+  const contestName = contest.contest ? `${contest.contest.source.toUpperCase()} ${contest.contest.year}${contest.contest.stage ? ` ${contest.contest.stage}` : ''}` : 'This contest';
+  description.textContent = `${contestName} requires some additional information since cutoffs differ by category.`;
+  
+  // Generate form fields
+  let formHTML = '';
+  for (const field of userContext.fields) {
+    formHTML += `
+      <div class="user-context-field">
+        <label for="context-${field.key}">${field.label}</label>
+        <select id="context-${field.key}" data-key="${field.key}">
+          <option value="">Select ${field.label}</option>
+          ${field.options.map((option, index) => 
+            `<option value="${option}">${field.optionLabels[index]}</option>`
+          ).join('')}
+        </select>
+      </div>
+    `;
+  }
+  form.innerHTML = formHTML;
+
+  // Show section with animation
+  section.style.display = 'block';
+  requestAnimationFrame(() => {
+    section.classList.add('visible');
+  });
+
+  // Handle form submission
+  return new Promise((resolve) => {
+    const handleSubmit = async () => {
+      const contextData = {};
+      let isValid = true;
+
+      // Collect form data
+      for (const field of userContext.fields) {
+        const select = document.getElementById(`context-${field.key}`);
+        const value = select.value;
+        if (!value) {
+          isValid = false;
+          break;
+        }
+        contextData[field.key] = value;
+      }
+
+      if (!isValid) {
+        // Show error message
+        errorElement.style.display = 'block';
+        return; // Don't submit if not all fields are filled, but keep listener active
+      }
+
+      // Hide error message if validation passes
+      errorElement.style.display = 'none';
+
+      try {
+        const sessionToken = localStorage.getItem('sessionToken');
+        const response = await fetch(`${apiUrl}/user/virtual/context`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token: sessionToken,
+            contestId: contest.contestId,
+            type: contest.contest.source == 'inoi' ? 'inoi' : contest.contest.source == 'zco' ? 'zco' : 'unknown',
+            context: contextData
+          })
+        });
+
+        if (response.ok) {
+          // Update the contest object with the user context data
+          contest.userContextData = contextData;
+          
+          // Remove listener only on successful submission
+          submitBtn.removeEventListener('click', handleSubmit);
+          
+          // Hide context section with animation
+          section.classList.remove('visible');
+          setTimeout(() => {
+            section.style.display = 'none';
+            resolve();
+          }, 300);
+        }
+      } catch (error) {
+        console.error('Error submitting context data:', error);
+      }
+    };
+
+    // Add listener without { once: true } so it persists until successful submission
+    submitBtn.addEventListener('click', handleSubmit);
+  });
 }
 
 // Helper to format ordinal suffixes
@@ -130,7 +258,7 @@ function formatOrdinal(n) {
   }
 }
 
-function displayContestDetails(contest, contestMetadata, problemsData, scoreData) {
+function displayContestDetails(contest, contestMetadata, problemsData, scoreData, contestStats) {
   const hasSubs = contest.submissions.length > 0;
   document.getElementById('vc-detail-loading').style.display = 'none';
   document.getElementById('vc-detail-content').style.display = 'block';
@@ -146,13 +274,64 @@ function displayContestDetails(contest, contestMetadata, problemsData, scoreData
   let medalText = 'No Medal';
   let rank = 'N/A';
   let totalParticipants = 'N/A';
+  let participantPercentile = 0;
+  let contestMean = 0;
+  let aboveAverage = 0;
+  let problemRanks = [];
 
-  // convert to regular array
-  scoreData.problemScores = Object.values(scoreData.problemScores);
+  // Use new stats API for rank/participant data
+  if (contestStats) {
+    rank = contestStats.rank;
+    totalParticipants = contestStats.total;
+    contestMean = Math.round(contestStats.average);
+    aboveAverage = totalScore - contestMean;
+    problemRanks = contestStats.ranks || [];
+    
+    // Calculate percentile from rank and total
+    participantPercentile = Math.round(((totalParticipants - rank) / totalParticipants) * 100);
+  }
 
-  if (scoreData && scoreData.medalCutoffs.length > 0) {
-    const cutoffs = scoreData.medalCutoffs.map(Number);
-    const labels = scoreData.medalNames;
+  // Calculate qualification status from user context data
+  let qualificationLabel = '';
+  let qualificationValue = '';
+  let qualificationClass = '';
+
+  // Check if we have both userContext definition and user's context data
+  if (scoreData && scoreData.userContext && scoreData.userContext.display && 
+      contest.userContextData && scoreData.contextData) {
+    
+    const { display, fields } = scoreData.userContext;
+    const { contextData } = scoreData;
+    const userContext = contest.userContextData;
+
+    try {
+      // Navigate through contextData using user's values in field order
+      let cutoff = contextData;
+      for (const field of fields) {
+        const userValue = userContext[field.key];
+        if (userValue && cutoff[userValue] !== undefined) {
+          cutoff = cutoff[userValue];
+        } else {
+          throw new Error('Missing user context value');
+        }
+      }
+
+      // cutoff should now be a number
+      if (typeof cutoff === 'number') {
+        qualificationLabel = display.label;
+        const isQualified = totalScore >= cutoff;
+        qualificationValue = isQualified ? display.positive : display.negative;
+        qualificationClass = isQualified ? 'positive' : 'negative';
+      }
+    } catch (error) {
+      console.warn('Failed to calculate qualification status:', error);
+    }
+  }
+
+  // Handle medal calculation from scoreData (still need this for cutoffs)
+  if (scoreData && scoreData.scores && scoreData.scores.medalCutoffs && scoreData.scores.medalCutoffs.length > 0) {
+    const cutoffs = scoreData.scores.medalCutoffs.map(Number);
+    const labels = scoreData.scores.medalNames;
     const labelAt = (idx, fallback) => (labels[idx] ? String(labels[idx]).toLowerCase() : fallback);
 
     if (cutoffs.length >= 3) {
@@ -170,33 +349,6 @@ function displayContestDetails(contest, contestMetadata, problemsData, scoreData
       const onlyLabel = labelAt(0, 'gold');
       if (totalScore >= cutoffs[0]) { medalClass = `medal-${onlyLabel}`; medalText = onlyLabel.charAt(0).toUpperCase() + onlyLabel.slice(1); }
     }
-  }
-
-  // Rank/participants are based on problemScores distribution if available
-  if (scoreData && scoreData.problemScores.length > 0) {
-    const allTotalScores = [];
-    const numParticipants = scoreData.problemScores[0].length;
-
-    for (let i = 0; i < numParticipants; i++) {
-      let participantTotal = 0;
-      for (let j = 0; j < scoreData.problemScores.length; j++) {
-        participantTotal += scoreData.problemScores[j][i];
-      }
-      allTotalScores.push(participantTotal);
-    }
-
-    allTotalScores.sort((a, b) => b - a);
-
-    let currentRank = 1;
-    for (let i = 0; i < allTotalScores.length; i++) {
-      if (allTotalScores[i] > totalScore) {
-        currentRank = i + 1;
-      } else {
-        break;
-      }
-    }
-    rank = currentRank;
-    totalParticipants = allTotalScores.length;
   }
 
   // Calculate time used
@@ -224,13 +376,10 @@ function displayContestDetails(contest, contestMetadata, problemsData, scoreData
   const bestScore = problemScores.length > 0 ? Math.max(...problemScores) : 0;
   const fullScores = problemScores.filter(score => score === 100).length;
 
-  // Calculate advanced statistics
+  // Calculate advanced statistics (our own performance only)
   let avgProblemScore = 0;
   let medianScore = 0;
-  let participantPercentile = 0;
   let solvedCount = problemScores.filter(score => score > 0).length;
-  let contestMean = 0;
-  let aboveAverage = 0;
 
   if (problemScores.length > 0) {
     avgProblemScore = Math.round(
@@ -248,30 +397,6 @@ function displayContestDetails(contest, contestMetadata, problemsData, scoreData
     perfectProblems = problemScores.map((score, idx) => ({ score, idx }))
       .filter(p => p.score === 100)
       .map(p => p.idx);
-  }
-
-  // Calculate contest-wide statistics
-  if (scoreData && scoreData.problemScores) {
-    // Calculate percentile
-    const allTotalScores = [];
-    const numParticipants = scoreData.problemScores[0].length;
-
-    for (let i = 0; i < numParticipants; i++) {
-      let participantTotal = 0;
-      for (let j = 0; j < scoreData.problemScores.length; j++) {
-        participantTotal += scoreData.problemScores[j][i];
-      }
-      allTotalScores.push(participantTotal);
-    }
-
-    const betterThanCount =
-      allTotalScores.filter(score => score < totalScore).length;
-    participantPercentile =
-      Math.round((betterThanCount / allTotalScores.length) * 100);
-
-    // Calculate contest mean
-    contestMean = Math.round(allTotalScores.reduce((a, b) => a + b, 0) / allTotalScores.length);
-    aboveAverage = totalScore - contestMean;
   }
 
   // Build the detail page content with proper styling
@@ -325,13 +450,19 @@ function displayContestDetails(contest, contestMetadata, problemsData, scoreData
           <div class="vc-detail-meta-label">Percentile</div>
           <div class="vc-detail-meta-value">${formatOrdinal(participantPercentile)}</div>
         </div>
+        ${qualificationLabel ? `
+        <div class="vc-detail-meta-item">
+          <div class="vc-detail-meta-label">${qualificationLabel}</div>
+          <div class="vc-detail-meta-value ${qualificationClass}">${qualificationValue}</div>
+        </div>
+        ` : ''}
       </div>
       
       <div class="vc-detail-problems-section">
         <h3>Problems</h3>
         <div class="vc-detail-problems">
           ${generateProblemsHTML(
-        problemScores, contest, contestMetadata, problemsData, scoreData)}
+        problemScores, contest, contestMetadata, problemsData, null, problemRanks, totalParticipants)}
         </div>
       </div>
       
@@ -413,7 +544,7 @@ function displayContestDetails(contest, contestMetadata, problemsData, scoreData
         </div>
         ${!hasSubs ? `
         <div class="info-warning" id="completion-warning" style="display: block;">
-            <div class="warning-text">No tracked submissions for this virtual contest, so detailed graphs aren’t available.</div>
+            <div class="warning-text">No tracked submissions for this virtual contest, so detailed graphs aren't available.</div>
         </div>
         ` :
       ``}
@@ -438,7 +569,7 @@ function displayContestDetails(contest, contestMetadata, problemsData, scoreData
         contest,
         contestMetadata,
         problemsData,
-        scoreData,
+        scoreData: scoreData?.scores, // Pass the actual scores object
         problemCount,
         maxScore
       });
@@ -1042,7 +1173,7 @@ function buildSeriesData(contest, problemCount, startMs, endMs) {
     if (!last || last.t !== endMs) arr.push({ t: endMs, y: last ? last.y : 0 });
   }
   const lastT = total[total.length - 1];
-  if (!lastT || lastT.t !== endMs)
+  if (!lastT || !lastT.t !== endMs)
     total.push({ t: endMs, y: total[total.length - 1]?.y || 0 });
 
   return { seriesByProblem, total };
@@ -1250,7 +1381,7 @@ function drawSeriesLayer(canvas, state, colorTotal, probColors) {
   if (showTotal) draw(series.total, colorTotal);
 }
 
-function generateProblemsHTML(problemScores, contest, contestMetadata, problemsData, scoreData) {
+function generateProblemsHTML(problemScores, contest, contestMetadata, problemsData, scoreData, problemRanks, totalParticipants) {
   if (problemScores.length === 0) {
     return '<div class="vc-detail-problem-empty">No problem data available</div>';
   }
@@ -1259,27 +1390,11 @@ function generateProblemsHTML(problemScores, contest, contestMetadata, problemsD
     // Try to get actual problem name
     let problemName = getProblemNameByIndex(index + 1, contest, contestMetadata, problemsData);
 
-    // Calculate rank for this problem
+    // Use rank from stats API instead of calculating from score distributions
     let problemRank = 'N/A';
-    let problemTotal = 'N/A';
-    if (scoreData && scoreData.problemScores &&
-      scoreData.problemScores.length > index) {
-      const problemScoresList = scoreData.problemScores[index] || [];
-      if (problemScoresList.length > 0) {
-        const sortedScores = [...problemScoresList].sort((a, b) => b - a);
-
-        // Find rank (handle ties by using the highest possible rank)
-        let currentRank = 1;
-        for (let i = 0; i < sortedScores.length; i++) {
-          if (sortedScores[i] > score) {
-            currentRank = i + 1;
-          } else {
-            break;
-          }
-        }
-        problemRank = currentRank;
-        problemTotal = sortedScores.length;
-      }
+    let problemTotal = totalParticipants;
+    if (problemRanks && problemRanks.length > index && problemRanks[index] !== undefined) {
+      problemRank = problemRanks[index];
     }
 
     // Determine score color class

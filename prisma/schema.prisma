@@ -97,6 +97,8 @@ model Contest {
   website String?
   link String?
   note String?
+  userContext String?
+  contextData Json?
   scores ContestScores?
   problems ContestProblem[]
   userVirtualContests UserVirtualContest[]
@@ -120,7 +122,8 @@ model ContestScores {
   contestId Int @id
   medalNames Json?
   medalCutoffs Json?
-  problemScores Json
+  problemScores Json?
+  isPrivate Boolean @default(false)
   contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)
 }
 
@@ -132,6 +135,7 @@ model UserVirtualContest {
   endedAt DateTime
   score Float
   perProblemScores Json?
+  userContextData Json?
   submissions VirtualSubmission[]
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   contest Contest @relation(fields: [contestId], references: [id], onDelete: Cascade)

@@ -190,6 +190,7 @@ Below is a brief overview of the key endpoints exposed by the backend.
   - `/qoj`
 - `/virtual`
   - `/confirm`
+  - `/context`
   - `/end`
   - `/start`
   - `/submit`

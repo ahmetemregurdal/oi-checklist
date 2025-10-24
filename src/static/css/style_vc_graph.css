@@ -94,3 +94,136 @@ body:not(.dark-mode) .timeline-tooltip .tip-accent{ box-shadow:0 0 0 1px rgba(0,
 .analysis-empty{ opacity:.9 }
 .analysis-empty-note{ font-size:.95rem; color:#6c757d; padding:.5rem 0 0 }
 .dark-mode .analysis-empty-note{ color:#c6c8ca }
+
+/* User Context Section - integrated into page flow */
+.user-context-section {
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  padding: 2rem;
+  margin: 2rem 0;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.user-context-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.user-context-section h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #212529;
+}
+
+.user-context-description {
+  color: #6c757d;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.user-context-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.user-context-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.user-context-field label {
+  font-weight: 500;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.user-context-field select {
+  padding: 0.75rem;
+  border: 1px solid #ced4da;
+  background: #ffffff;
+  font-size: 0.95rem;
+  color: #495057;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.user-context-field select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.user-context-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.user-context-actions .vc-button {
+  min-width: 100px;
+  padding: 0.75rem 1.5rem;
+  background: #007bff;
+  color: #ffffff;
+  border: 1px solid #007bff;
+}
+
+.user-context-actions .vc-button:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+}
+
+.user-context-actions .vc-button:focus {
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* Dark mode */
+.dark-mode .user-context-section {
+  background: #333333;
+  border-color: #444444;
+}
+
+.dark-mode .user-context-section h3 {
+  color: #eaeaea;
+}
+
+.dark-mode .user-context-description {
+  color: #c6c8ca;
+}
+
+.dark-mode .user-context-field label {
+  color: #e0e0e0;
+}
+
+.dark-mode .user-context-field select {
+  background: #2a2a2a;
+  border-color: #555555;
+  color: #e0e0e0;
+}
+
+.dark-mode .user-context-field select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.dark-mode .user-context-actions {
+  border-color: #555555;
+}
+
+.dark-mode .user-context-actions .vc-button {
+  background: #007bff;
+  color: #ffffff;
+  border-color: #007bff;
+}
+
+.dark-mode .user-context-actions .vc-button:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+}
