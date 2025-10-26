@@ -23,7 +23,7 @@ interface ContestYAML {
   userContext?: string;
   contextData?: any;
   medalCutoffs?: Record<string, number>;
-  problems?: {
+  problems: {
     source: string;
     year: number;
     number: number;
@@ -145,7 +145,9 @@ async function main() {
   }
 
   // verify that all problems referred to in the contests actually exist
+  // and that scores are appropriately labelled
   for (let contest of contests) {
+    // problem check
     for (let problem of contest.problems) {
       const dbProblem = await db.problem.findUnique({
         where: {
@@ -158,10 +160,29 @@ async function main() {
         }
       });
       if (!dbProblem) {
-        console.warn(`Error: the following problem is not in the database. Did you forget to run problems.ts?\n`, problem);
+        console.error(`Error: the following problem is not in the database. Did you forget to run problems.ts?\n`, problem);
         throw Error('Aborting due to data invalidity');
       }
       problem.id = dbProblem.id;
+    }
+    // scores check
+    if (contest.scores) {
+      const keys = Object.keys(contest.scores).map(i => parseInt(i, 10));
+      const set = new Set(keys);
+      const min = Math.min(...keys);
+      const max = Math.max(...keys);
+      if (min < 1 || max > contest.problems.length) {
+        console.error(`Error: the scores file for contest ${contest.name} ${contest.stage} has keys that are out of bounds (valid: [1, ${contest.problems.length}])`);
+        throw Error('Aborting due to data invalidity');
+      }
+      if (set.size != keys.length) {
+        console.error(`Error: contest ${contest.name} ${contest.stage} has duplicate keys its scores file`);
+        throw Error('Aborting due to data invalidity');
+      }
+      if ((new Set(Object.values(contest.scores).map(i => i.length))).size != 1) {
+        console.error(`Error: not all arrays in the score file of contest ${contest.name} ${contest.stage} have the same length`);
+        throw Error('Aborting due to data invalidity');
+      }
     }
   }
 
