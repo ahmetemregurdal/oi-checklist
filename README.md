@@ -138,7 +138,7 @@ However, they still need to be present in the `.env` file. If you’re not using
 
 ### Initialise the database
 
-To initialse the database, run `npx prisma migrate deploy`. This will create a `.db` file at the path we specified earlier.
+To initialse the database, run `npx prisma migrate deploy && npx prisma generate`. This will create a `.db` file at the path we specified earlier.
 
 ### Populate problems and contests
 
