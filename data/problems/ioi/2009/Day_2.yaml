@@ -1,0 +1,12 @@
+- name: Garage
+  number: 1
+  link: https://qoj.ac/problem/12789
+- name: Mecho
+  number: 2
+  link: https://qoj.ac/problem/12790
+- name: Regions
+  number: 3
+  link: https://qoj.ac/problem/12791
+- name: Salesman
+  number: 4
+  link: https://qoj.ac/problem/12792

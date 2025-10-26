@@ -1,0 +1,20 @@
+- name: Cluedo
+  number: 1
+  links:
+  - https://oj.uz/problem/view/IOI10_cluedo
+  - https://qoj.ac/problem/12643
+- name: Hotter Colder
+  number: 2
+  links:
+  - https://oj.uz/problem/view/IOI10_hottercolder
+  - https://qoj.ac/problem/12644
+- name: Quality Of Living
+  number: 3
+  links:
+  - https://oj.uz/problem/view/IOI10_quality
+  - https://qoj.ac/problem/12645
+- name: Languages
+  number: 4
+  links:
+  - https://oj.uz/problem/view/IOI10_languages
+  - https://qoj.ac/problem/12646

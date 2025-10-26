@@ -1,0 +1,20 @@
+- name: Memory
+  number: 1
+  links:
+  - https://oj.uz/problem/view/IOI10_memory
+  - https://qoj.ac/problem/12647
+- name: Traffic
+  number: 2
+  links:
+  - https://oj.uz/problem/view/IOI10_traffic
+  - https://qoj.ac/problem/12648
+- name: Maze
+  number: 3
+  links:
+  - https://oj.uz/problem/view/IOI10_maze
+  - https://qoj.ac/problem/12649
+- name: Saveit
+  number: 4
+  links:
+  - https://oj.uz/problem/view/IOI10_saveit
+  - https://qoj.ac/problem/12650
