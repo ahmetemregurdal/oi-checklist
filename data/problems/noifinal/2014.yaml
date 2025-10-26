@@ -1,12 +1,23 @@
 - name: Orchard
   number: 1
-  link: https://oj.uz/problem/view/NOI14_orchard
+  links:
+  - https://oj.uz/problem/view/NOI14_orchard
+  - https://acmicpc.net/problem/10077
 - name: Sightseeing
   number: 2
-  link: https://oj.uz/problem/view/NOI14_sightseeing
+  links:
+  - https://oj.uz/problem/view/NOI14_sightseeing
+  - https://acmicpc.net/problem/10078
 - name: CATS
   number: 3
-  link: https://oj.uz/problem/view/NOI14_cats
+  links:
+  - https://oj.uz/problem/view/NOI14_cats
+  - https://acmicpc.net/problem/10079
 - name: OBELISK
   number: 4
-  link: https://oj.uz/problem/view/NOI14_obelisk
+  links:
+  - https://oj.uz/problem/view/NOI14_obelisk
+- name: Obelisk
+  number: 4
+  links:
+  - https://acmicpc.net/problem/10080

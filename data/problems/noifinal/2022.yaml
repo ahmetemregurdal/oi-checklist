@@ -3,23 +3,31 @@
   links:
   - https://oj.uz/problem/view/NOI22_votingcity
   - https://qoj.ac/problem/3871
+- name: Voting Cities
+  number: 1
+  links:
+  - https://acmicpc.net/problem/27288
 - name: Gym Badges
   number: 2
   links:
   - https://oj.uz/problem/view/NOI22_gymbadges
   - https://qoj.ac/problem/3872
+  - https://acmicpc.net/problem/27289
 - name: Towers
   number: 3
   links:
   - https://oj.uz/problem/view/NOI22_towers
   - https://qoj.ac/problem/3873
+  - https://acmicpc.net/problem/27290
 - name: Grapevine
   number: 4
   links:
   - https://oj.uz/problem/view/NOI22_grapevine
   - https://qoj.ac/problem/3874
+  - https://acmicpc.net/problem/27291
 - name: Fruits
   number: 5
   links:
   - https://oj.uz/problem/view/NOI22_fruits
   - https://qoj.ac/problem/3875
+  - https://acmicpc.net/problem/27292

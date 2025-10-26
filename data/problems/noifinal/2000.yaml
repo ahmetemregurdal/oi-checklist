@@ -1,0 +1,20 @@
+- name: Route
+  number: 1
+  links:
+  - https://acmicpc.net/problem/9919
+- name: Image
+  number: 2
+  links:
+  - https://acmicpc.net/problem/9920
+- name: Coin
+  number: 3
+  links:
+  - https://acmicpc.net/problem/9921
+- name: Magic
+  number: 4
+  links:
+  - https://acmicpc.net/problem/9922
+- name: Triple
+  number: 5
+  links:
+  - https://acmicpc.net/problem/9923

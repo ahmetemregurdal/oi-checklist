@@ -1,0 +1,28 @@
+- name: Max
+  number: 1
+  links:
+  - https://acmicpc.net/problem/9913
+- name: Kansas
+  number: 2
+  links:
+  - https://acmicpc.net/problem/9914
+- name: Cars
+  number: 3
+  links:
+  - https://acmicpc.net/problem/9915
+- name: Zeros
+  number: 4
+  links:
+  - https://acmicpc.net/problem/9916
+- name: Rank
+  number: 5
+  links:
+  - https://acmicpc.net/problem/9917
+- name: Fax Problem
+  number: 6
+  links:
+  - https://acmicpc.net/problem/2341
+- name: Cube
+  number: 7
+  links:
+  - https://acmicpc.net/problem/9918

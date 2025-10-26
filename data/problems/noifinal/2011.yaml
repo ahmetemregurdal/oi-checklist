@@ -1,9 +1,23 @@
 - name: Change
   number: 1
-  link: https://codebreaker.xyz/problem/change
+  links:
+  - https://codebreaker.xyz/problem/change
+  - https://acmicpc.net/problem/9829
 - name: Paint
   number: 2
-  link: https://codebreaker.xyz/problem/paint
+  links:
+  - https://codebreaker.xyz/problem/paint
+  - https://acmicpc.net/problem/9830
 - name: Tour
   number: 3
-  link: https://codebreaker.xyz/problem/tour
+  links:
+  - https://codebreaker.xyz/problem/tour
+  - https://acmicpc.net/problem/9831
+- name: TUTOR
+  number: 4
+  links:
+  - https://acmicpc.net/problem/9832
+- name: Sequence
+  number: 5
+  links:
+  - https://acmicpc.net/problem/9833

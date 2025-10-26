@@ -1,3 +1,17 @@
 - name: Card
   number: 1
-  link: https://codebreaker.xyz/problem/card
+  links:
+  - https://codebreaker.xyz/problem/card
+  - https://acmicpc.net/problem/9834
+- name: BESTP
+  number: 2
+  links:
+  - https://acmicpc.net/problem/9835
+- name: Sailing
+  number: 3
+  links:
+  - https://acmicpc.net/problem/9836
+- name: Weather
+  number: 4
+  links:
+  - https://acmicpc.net/problem/9837

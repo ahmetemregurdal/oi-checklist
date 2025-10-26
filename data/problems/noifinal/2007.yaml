@@ -1,3 +1,25 @@
 - name: Gift
   number: 1
-  link: https://codebreaker.xyz/problem/gift
+  links:
+  - https://codebreaker.xyz/problem/gift
+  - https://acmicpc.net/problem/9848
+- name: Rect
+  number: 2
+  links:
+  - https://acmicpc.net/problem/9849
+- name: Cipher
+  number: 3
+  links:
+  - https://acmicpc.net/problem/9850
+- name: Hole
+  number: 4
+  links:
+  - https://acmicpc.net/problem/9851
+- name: Jawbreak
+  number: 5
+  links:
+  - https://acmicpc.net/problem/9852
+- name: Street
+  number: 6
+  links:
+  - https://acmicpc.net/problem/9853

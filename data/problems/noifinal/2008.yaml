@@ -1,15 +1,32 @@
 - name: Prime
   number: 1
-  link: https://codebreaker.xyz/problem/nprime
+  links:
+  - https://codebreaker.xyz/problem/nprime
+  - https://acmicpc.net/problem/9842
 - name: LVM
   number: 2
-  link: https://codebreaker.xyz/problem/lvm
+  links:
+  - https://codebreaker.xyz/problem/lvm
+  - https://acmicpc.net/problem/9843
 - name: Gecko
   number: 3
-  link: https://codebreaker.xyz/problem/gecko
+  links:
+  - https://codebreaker.xyz/problem/gecko
+  - https://acmicpc.net/problem/9844
 - name: 4sum
   number: 4
-  link: https://codebreaker.xyz/problem/4sum
+  links:
+  - https://codebreaker.xyz/problem/4sum
+- name: Housing
+  number: 4
+  links:
+  - https://acmicpc.net/problem/9845
 - name: Rank
   number: 5
-  link: https://codebreaker.xyz/problem/rank
+  links:
+  - https://codebreaker.xyz/problem/rank
+  - https://acmicpc.net/problem/9846
+- name: 4SUM
+  number: 6
+  links:
+  - https://acmicpc.net/problem/9847

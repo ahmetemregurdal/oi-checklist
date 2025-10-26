@@ -1,12 +1,16 @@
 - name: Ask One Get One Free
   number: 1
-  link: https://codebreaker.xyz/problem/askonegetonefree
+  links:
+  - https://codebreaker.xyz/problem/askonegetonefree
 - name: Sudoku
   number: 2
-  link: https://codebreaker.xyz/problem/sudoku
+  links:
+  - https://codebreaker.xyz/problem/sudoku
 - name: Radioactive
   number: 3
-  link: https://codebreaker.xyz/problem/radioactive
+  links:
+  - https://codebreaker.xyz/problem/radioactive
 - name: Banana Farm
   number: 4
-  link: https://codebreaker.xyz/problem/bananafarm
+  links:
+  - https://codebreaker.xyz/problem/bananafarm

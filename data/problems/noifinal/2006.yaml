@@ -1,0 +1,24 @@
+- name: Euclid
+  number: 1
+  links:
+  - https://acmicpc.net/problem/9884
+- name: Claws
+  number: 2
+  links:
+  - https://acmicpc.net/problem/9885
+- name: E-Casino
+  number: 3
+  links:
+  - https://acmicpc.net/problem/9886
+- name: Genome
+  number: 4
+  links:
+  - https://acmicpc.net/problem/9887
+- name: Fludtown
+  number: 5
+  links:
+  - https://acmicpc.net/problem/9888
+- name: Heng
+  number: 6
+  links:
+  - https://acmicpc.net/problem/9889

@@ -1,3 +1,20 @@
 - name: Xmas
   number: 1
-  link: https://codebreaker.xyz/problem/xmas
+  links:
+  - https://codebreaker.xyz/problem/xmas
+- name: XMAS
+  number: 1
+  links:
+  - https://acmicpc.net/problem/9838
+- name: Invest
+  number: 2
+  links:
+  - https://acmicpc.net/problem/9839
+- name: Lazycat
+  number: 3
+  links:
+  - https://acmicpc.net/problem/9840
+- name: Cipher
+  number: 4
+  links:
+  - https://acmicpc.net/problem/9841

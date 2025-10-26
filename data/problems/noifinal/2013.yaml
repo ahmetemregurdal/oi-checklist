@@ -1,9 +1,15 @@
 - name: Global Warming
   number: 1
-  link: https://oj.uz/problem/view/NOI13_gw
+  links:
+  - https://oj.uz/problem/view/NOI13_gw
+  - https://acmicpc.net/problem/9822
 - name: Trucking Diesel
   number: 2
-  link: https://codebreaker.xyz/problem/diesel
+  links:
+  - https://codebreaker.xyz/problem/diesel
+  - https://acmicpc.net/problem/9823
 - name: Ferries
   number: 3
-  link: https://oj.uz/problem/view/NOI13_ferries
+  links:
+  - https://oj.uz/problem/view/NOI13_ferries
+  - https://acmicpc.net/problem/9824

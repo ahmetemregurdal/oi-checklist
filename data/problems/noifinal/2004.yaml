@@ -1,0 +1,24 @@
+- name: Gray
+  number: 1
+  links:
+  - https://acmicpc.net/problem/9896
+- name: Lamp
+  number: 2
+  links:
+  - https://acmicpc.net/problem/9897
+- name: Domino
+  number: 3
+  links:
+  - https://acmicpc.net/problem/9898
+- name: Train
+  number: 4
+  links:
+  - https://acmicpc.net/problem/9899
+- name: Small
+  number: 5
+  links:
+  - https://acmicpc.net/problem/9900
+- name: RNA
+  number: 6
+  links:
+  - https://acmicpc.net/problem/9901

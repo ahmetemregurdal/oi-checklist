@@ -1,15 +1,25 @@
 - name: Best Place
   number: 1
-  link: https://oj.uz/problem/view/NOI17_bestplace
+  links:
+  - https://oj.uz/problem/view/NOI17_bestplace
+  - https://acmicpc.net/problem/19704
 - name: Roadside Advertisements
   number: 2
-  link: https://oj.uz/problem/view/NOI17_roadsideadverts
+  links:
+  - https://oj.uz/problem/view/NOI17_roadsideadverts
+  - https://acmicpc.net/problem/19705
 - name: Hotspot
   number: 3
-  link: https://oj.uz/problem/view/NOI17_hotspot
+  links:
+  - https://oj.uz/problem/view/NOI17_hotspot
+  - https://acmicpc.net/problem/19706
 - name: RMQ
   number: 4
-  link: https://oj.uz/problem/view/NOI17_rmq
+  links:
+  - https://oj.uz/problem/view/NOI17_rmq
+  - https://acmicpc.net/problem/19707
 - name: I want to be the very best too!
   number: 5
-  link: https://oj.uz/problem/view/NOI17_pokemonmaster
+  links:
+  - https://oj.uz/problem/view/NOI17_pokemonmaster
+  - https://acmicpc.net/problem/19708

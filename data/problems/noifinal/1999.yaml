@@ -1,0 +1,20 @@
+- name: The Euclidean Algorithm
+  number: 1
+  links:
+  - https://acmicpc.net/problem/9924
+- name: Scout Outing
+  number: 2
+  links:
+  - https://acmicpc.net/problem/9925
+- name: Shortest Time Move
+  number: 3
+  links:
+  - https://acmicpc.net/problem/9926
+- name: Rectangles
+  number: 4
+  links:
+  - https://acmicpc.net/problem/9927
+- name: Possible First Tiles
+  number: 5
+  links:
+  - https://acmicpc.net/problem/9928

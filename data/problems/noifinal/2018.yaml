@@ -3,23 +3,32 @@
   links:
   - https://oj.uz/problem/view/NOI18_collectmushrooms
   - https://qoj.ac/problem/13295
+  - https://acmicpc.net/problem/19689
 - name: Journey
   number: 2
   links:
   - https://oj.uz/problem/view/NOI18_journey
   - https://qoj.ac/problem/13296
+  - https://acmicpc.net/problem/19690
 - name: Lightning Rod
   number: 3
   links:
   - https://oj.uz/problem/view/NOI18_lightningrod
   - https://qoj.ac/problem/13297
+  - https://acmicpc.net/problem/19691
 - name: City Mapping
   number: 4
   links:
   - https://oj.uz/problem/view/NOI18_citymapping
   - https://qoj.ac/problem/13298
+  - https://acmicpc.net/problem/19692
 - name: Safety
   number: 5
   links:
   - https://oj.uz/problem/view/NOI18_safety
   - https://qoj.ac/problem/13299
+  - https://acmicpc.net/problem/19693
+- name: Sorting
+  number: 6
+  links:
+  - https://acmicpc.net/problem/19694
