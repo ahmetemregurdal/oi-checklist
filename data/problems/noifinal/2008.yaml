@@ -13,10 +13,6 @@
   links:
   - https://codebreaker.xyz/problem/gecko
   - https://acmicpc.net/problem/9844
-- name: 4sum
-  number: 4
-  links:
-  - https://codebreaker.xyz/problem/4sum
 - name: Housing
   number: 4
   links:
@@ -26,7 +22,8 @@
   links:
   - https://codebreaker.xyz/problem/rank
   - https://acmicpc.net/problem/9846
-- name: 4SUM
+- name: 4sum
   number: 6
   links:
+  - https://codebreaker.xyz/problem/4sum
   - https://acmicpc.net/problem/9847

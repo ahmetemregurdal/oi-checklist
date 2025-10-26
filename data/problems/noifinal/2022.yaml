@@ -1,11 +1,8 @@
-- name: Voting City
+- name: Voting Cities
   number: 1
   links:
   - https://oj.uz/problem/view/NOI22_votingcity
   - https://qoj.ac/problem/3871
-- name: Voting Cities
-  number: 1
-  links:
   - https://acmicpc.net/problem/27288
 - name: Gym Badges
   number: 2

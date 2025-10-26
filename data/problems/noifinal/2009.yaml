@@ -2,9 +2,6 @@
   number: 1
   links:
   - https://codebreaker.xyz/problem/xmas
-- name: XMAS
-  number: 1
-  links:
   - https://acmicpc.net/problem/9838
 - name: Invest
   number: 2

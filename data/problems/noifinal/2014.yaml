@@ -13,11 +13,8 @@
   links:
   - https://oj.uz/problem/view/NOI14_cats
   - https://acmicpc.net/problem/10079
-- name: OBELISK
-  number: 4
-  links:
-  - https://oj.uz/problem/view/NOI14_obelisk
 - name: Obelisk
   number: 4
   links:
+  - https://oj.uz/problem/view/NOI14_obelisk
   - https://acmicpc.net/problem/10080

@@ -2,9 +2,6 @@
   number: 1
   links:
   - https://oj.uz/problem/view/NOI12_modsum
-- name: MODSUM
-  number: 1
-  links:
   - https://acmicpc.net/problem/9825
 - name: Pancake
   number: 2

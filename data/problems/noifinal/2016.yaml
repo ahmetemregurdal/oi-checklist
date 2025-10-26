@@ -4,10 +4,6 @@
   - https://codebreaker.xyz/problem/lunchbox
   - https://acmicpc.net/problem/19709
   - https://qoj.ac/problem/13961
-- name: LunchBox
-  number: 1
-  links:
-  - https://acmicpc.net/problem/19709
 - name: Fabric
   number: 2
   links:
@@ -24,13 +20,11 @@
   number: 4
   links:
   - https://codebreaker.xyz/problem/pandaski
-  - https://www.acmicpc.net/problem/19712
   - https://qoj.ac/problem/13964
   - https://acmicpc.net/problem/19712
 - name: UnluckyFloors
   number: 5
   links:
   - https://codebreaker.xyz/problem/unluckyfloors
-  - https://www.acmicpc.net/problem/19713
   - https://qoj.ac/problem/13965
   - https://acmicpc.net/problem/19713
