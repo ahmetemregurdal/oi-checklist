@@ -1,5 +1,7 @@
 // Virtual Contest JavaScript
 
+let problemsData = {};
+
 // converts the data sent by the backend to the format expected by the frontend
 function convertData(newData) {
   if (!newData) return null;
@@ -27,7 +29,7 @@ function convertData(newData) {
       problems: (contest.problems || []).map((p) => ({
         source: source,
         year: contest.year,
-        number: p.problemIndex + 1,
+        problemId: p.problemId,
         index: p.problemIndex + 1,
         ...(p.extra ? { extra: p.extra } : {})
       }))
@@ -163,7 +165,46 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   const data = convertData(await response.json());
-  const contestData = data.contests;
+  let contestData = data.contests;
+
+  // Always fetch problems data (we need it for contest problem names)
+  const problemsResponse = await fetch(`${apiUrl}/data/problems`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      sources: Object.keys(contestData).map(i => i.toLowerCase()),
+      token: sessionToken,
+      allLinks: true
+    })
+  });
+
+  if (problemsResponse.ok) {
+    problemsData = await problemsResponse.json();
+  }
+
+  // flatten 
+  let flatData = [];
+  for (let [source, years] of Object.entries(problemsData)) {
+    for (let [year, data] of Object.entries(years)) {
+      flatData.push(data);
+    }
+  }
+  flatData = flatData.flat();
+
+  // for each contest problem, give it its id
+  for (let [source, years] of Object.entries(data.contests)) {
+    for (let [year, data] of Object.entries(years)) {
+      for (let contest of data) {
+        for (let problem of contest.problems) {
+          problem.number = flatData.find(i => i.id == problem.problemId).number;
+        }
+      }
+    }
+  }
+
+  contestData = data.contests;
+
   const completedContestKeys = new Set((data.completed_contests || []).map(String));
   let currentActiveContest = null; // Store active contest data
 
@@ -343,9 +384,28 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (contestProblems.length > 0) break;
     }
 
+    function calculateTotalScore(data) {
+      const uniqueIds = [...new Set(data.map(d => d.contestProblemId))].sort((a, b) => a - b);
+      const idMap = Object.fromEntries(uniqueIds.map((id, idx) => [id, idx]));
+      data = data.map(entry => ({
+        ...entry,
+        problemIndex: idMap[entry.contestProblemId]
+      }));
+      let n = Math.max(...data.map(i => i.problemIndex));
+      let arr = Array(n);
+      for (let submission of data) {
+        let cur = arr[submission.problemIndex] ?? [];
+        for (let i = 0; i < submission.subtaskScores.length; ++i) {
+          cur[i] = Math.max(cur[i] ?? 0, submission.subtaskScores[i]);
+        }
+        arr[submission.problemIndex] = cur;
+      }
+      return arr.reduce((sum, a) => sum + a.reduce((a, b) => a + b), 0);
+    }
+
     // Calculate total score for oj.uz mode and update completion stats
     if (isReadOnly && currentActiveContest.ojuz_data) {
-      const totalScore = currentActiveContest.ojuz_data.reduce((sum, submission) => sum + submission.score, 0);
+      const totalScore = calculateTotalScore(currentActiveContest.ojuz_data);
 
       // Add total score stat item
       const completionStats = document.querySelector('.completion-stats');
@@ -537,23 +597,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Fetch problems data for all contest sources to avoid lag
   const contestSources = Object.keys(contestData);
-  let problemsData = {};
-
-  // Always fetch problems data (we need it for contest problem names)
-  const problemsResponse = await fetch(`${apiUrl}/data/problems`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      sources: contestSources.map(i => i.toLowerCase()),
-      token: sessionToken,
-      allLinks: true
-    })
-  });
-
-  if (problemsResponse.ok) {
-    problemsData = await problemsResponse.json();
-  }
 
   // Check if user has an active contest
   if (data.active_contest) {
@@ -637,14 +680,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       const remainingSeconds = Math.max(0, maxElapsedSeconds - cappedElapsedSeconds);
       const remainingMinutes = Math.floor(remainingSeconds / 60);
-
-      console.log('Start time:', startTime);
-      console.log('Current time:', now);
-      console.log('Elapsed seconds:', elapsedSeconds);
-      console.log('Capped elapsed seconds:', cappedElapsedSeconds);
-      console.log('Elapsed minutes:', elapsedMinutes);
-      console.log('Remaining seconds:', remainingSeconds);
-      console.log('Remaining minutes:', remainingMinutes);
 
       // Start timer with remaining time and capped elapsed time (in seconds precision)
       startTimerWithSeconds(remainingSeconds, cappedElapsedSeconds);
@@ -1423,15 +1458,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Handle open contest button
   document.getElementById('open-contest-btn').addEventListener('click', () => {
-    console.log('Open contest button clicked!');
-    console.log('currentActiveContest:', currentActiveContest);
-
     // For active contests, use the stored active contest data
     const activeContestElement = document.getElementById('active-contest');
-    console.log('activeContestElement style.display:', activeContestElement.style.display);
-
     if (activeContestElement.style.display !== 'none' && currentActiveContest) {
-      console.log('Using active contest link:', currentActiveContest.link);
       // We're in an active contest, use the contest link
       if (currentActiveContest.link) {
         window.open(currentActiveContest.link, '_blank');
@@ -1455,7 +1484,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // For contest selection (not active), use the old logic
     const selectedOlympiad = olympiadSelect.value;
     const selectedContest = contestSelect.value;
-    console.log('Using form selection:', selectedOlympiad, selectedContest);
 
     if (!selectedOlympiad || !selectedContest || !contestData[selectedOlympiad]) {
       showMessage('No contest selected.', 'warning');
@@ -1481,8 +1509,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       selectedStage = daySelect.value;
       contest = contests.find(c => c.name === contestName && c.stage === selectedStage);
     }
-
-    console.log('Found contest:', contest);
 
     if (contest && contest.link) {
       window.open(contest.link, '_blank');
@@ -1655,8 +1681,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       scores.push(score);
       totalScore += score;
     }
-
-    console.log('Using manual scores:', scores, 'Total:', totalScore);
 
     try {
       // Update individual problem statuses and scores
