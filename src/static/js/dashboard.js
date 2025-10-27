@@ -1207,7 +1207,7 @@ function displayEmptyStateMessage() {
   `;
 }
 
-window.onload = async () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const sessionToken = localStorage.getItem('sessionToken');
   const fullPath = window.location.pathname;
   const basePath = document.querySelector('base')?.getAttribute('href') || '/';
@@ -1226,6 +1226,30 @@ window.onload = async () => {
   // Check session
   check_session();
   const username = localStorage.getItem('username');
+
+  // Create skeleton containers immediately to eliminate blank screen
+  const olympiadList = document.getElementById('olympiad-list');
+  sources.forEach(src => {
+    if (src === 'USACO') {
+      // Create USACO container with all its sub-containers
+      const usacoContainer = createOlympiadContainer('USACO');
+      olympiadList.appendChild(usacoContainer);
+    } else if (!src.startsWith('USACO')) {
+      // Create regular olympiad containers
+      const container = createOlympiadContainer(src);
+      olympiadList.appendChild(container);
+    }
+  });
+
+  // Set initial title
+  if (isProfilePage) {
+    const uname = relativePath.split('/')[1];
+    document.getElementById('page-title').textContent = document.title = `${uname}'s OI Checklist`;
+  } else {
+    document.getElementById('page-title').textContent = `OI Checklist`;
+    document.getElementById('welcome-message').textContent = `Welcome, ${username}`;
+  }
+
   // Attempt to fetch saved order
   try {
     let body = { token: sessionToken };
@@ -1244,7 +1268,22 @@ window.onload = async () => {
     if (resp.ok) {
       const { olympiadOrder, ascSort, platformPref } = await resp.json();
       if (Array.isArray(olympiadOrder)) {
-        sources = olympiadOrder.map(id => id.toUpperCase());
+        const newSources = olympiadOrder.map(id => id.toUpperCase());
+        // Only recreate containers if order actually changed
+        if (JSON.stringify(sources) !== JSON.stringify(newSources)) {
+          sources = newSources;
+          // Clear and recreate with new order
+          olympiadList.innerHTML = '';
+          sources.forEach(src => {
+            if (src === 'USACO') {
+              const usacoContainer = createOlympiadContainer('USACO');
+              olympiadList.appendChild(usacoContainer);
+            } else if (!src.startsWith('USACO')) {
+              const container = createOlympiadContainer(src);
+              olympiadList.appendChild(container);
+            }
+          });
+        }
       }
       if (typeof ascSort === "boolean") {
         yearSortOrder = ascSort ? "asc" : "desc";
@@ -1283,28 +1322,6 @@ window.onload = async () => {
     count.update('white', 0);
 
     return;  // Exit early, no need to load problems
-  }
-
-  // Create and render containers dynamically with skeletons
-  const olympiadList = document.getElementById('olympiad-list');
-  sources.forEach(src => {
-    if (src === 'USACO') {
-      // Create USACO container with all its sub-containers
-      const usacoContainer = createOlympiadContainer('USACO');
-      olympiadList.appendChild(usacoContainer);
-    } else if (!src.startsWith('USACO')) {
-      // Create regular olympiad containers
-      const container = createOlympiadContainer(src);
-      olympiadList.appendChild(container);
-    }
-  });
-
-  // Set title
-  if (isProfilePage) {
-    const uname = relativePath.split('/')[1];
-    document.getElementById('page-title').textContent = document.title = `${uname}'s OI Checklist`;
-  } else {
-    document.getElementById('page-title').textContent = `OI Checklist`;
   }
 
   // Fetch and render actual data
@@ -1479,7 +1496,7 @@ window.onload = async () => {
   document.querySelectorAll('.usaco-tab-buttons').forEach(el => {
     el.style.display = 'flex';
   });
-};
+});
 
 // Settings dropdown toggle
 document.addEventListener('DOMContentLoaded', function () {
