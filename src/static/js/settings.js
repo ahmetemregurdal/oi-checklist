@@ -274,6 +274,62 @@ document.addEventListener('DOMContentLoaded', async () => {
   // initial placement
   placePFButton();
 
+  /* -------- data export -------- */
+  const exportDataButton = document.getElementById('export-data-button');
+  if (exportDataButton) {
+    exportDataButton.addEventListener('click', async () => {
+      const originalText = exportDataButton.textContent;
+      exportDataButton.textContent = 'Exporting...';
+      exportDataButton.disabled = true;
+
+      try {
+        const response = await fetch(`${apiUrl}/user/export`, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ token: session_token })
+        });
+
+        if (response.ok) {
+          // Get the filename from the Content-Disposition header
+          const contentDisposition = response.headers.get('Content-Disposition');
+          let filename = 'export.json';
+          if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename=(.+)/);
+            if (filenameMatch) {
+              filename = filenameMatch[1];
+            }
+          }
+
+          // Create blob and download
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+
+          exportDataButton.textContent = 'Export Complete!';
+        } else {
+          exportDataButton.textContent = 'Export Failed';
+        }
+      } catch (error) {
+        console.error('Export error:', error);
+        exportDataButton.textContent = 'Export Failed';
+      } finally {
+        exportDataButton.disabled = false;
+        setTimeout(() => {
+          exportDataButton.textContent = originalText;
+        }, 2000);
+      }
+    });
+  }
+
   /* ------- helpers ------- */
   function updateVisibilityUI(itemElement, badgeElement, isPublic) {
     if (badgeElement) {
