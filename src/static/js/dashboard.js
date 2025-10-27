@@ -1269,6 +1269,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const { olympiadOrder, ascSort, platformPref } = await resp.json();
       if (Array.isArray(olympiadOrder)) {
         sources = olympiadOrder.map(id => id.toUpperCase());
+        // Note: We don't reorder containers here to avoid skeleton flicker
+        // We'll reorder after data loading is complete
       }
       if (typeof ascSort === "boolean") {
         yearSortOrder = ascSort ? "asc" : "desc";
@@ -1472,6 +1474,26 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
+
+  // REORDER CONTAINERS HERE - after all data is loaded, before revealing headers
+  // This ensures no flicker since skeleton phase is over
+  const existingContainers = new Map();
+  olympiadList.querySelectorAll('.table-container').forEach(container => {
+    const id = container.id.replace('-container', '').toUpperCase();
+    existingContainers.set(id, container);
+  });
+  
+  // Clear and re-append in the correct order
+  olympiadList.innerHTML = '';
+  sources.forEach(src => {
+    if (src === 'USACO') {
+      const container = existingContainers.get('USACO');
+      if (container) olympiadList.appendChild(container);
+    } else if (!src.startsWith('USACO')) {
+      const container = existingContainers.get(src);
+      if (container) olympiadList.appendChild(container);
+    }
+  });
 
   // Reveal headers now that loading is done
   document.querySelectorAll('#olympiad-list h2').forEach(h2 => {
