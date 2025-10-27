@@ -1268,22 +1268,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (resp.ok) {
       const { olympiadOrder, ascSort, platformPref } = await resp.json();
       if (Array.isArray(olympiadOrder)) {
-        const newSources = olympiadOrder.map(id => id.toUpperCase());
-        // Only recreate containers if order actually changed
-        if (JSON.stringify(sources) !== JSON.stringify(newSources)) {
-          sources = newSources;
-          // Clear and recreate with new order
-          olympiadList.innerHTML = '';
-          sources.forEach(src => {
-            if (src === 'USACO') {
-              const usacoContainer = createOlympiadContainer('USACO');
-              olympiadList.appendChild(usacoContainer);
-            } else if (!src.startsWith('USACO')) {
-              const container = createOlympiadContainer(src);
-              olympiadList.appendChild(container);
-            }
-          });
-        }
+        sources = olympiadOrder.map(id => id.toUpperCase());
       }
       if (typeof ascSort === "boolean") {
         yearSortOrder = ascSort ? "asc" : "desc";
