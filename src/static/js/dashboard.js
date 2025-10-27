@@ -656,16 +656,16 @@ function createOlympiadContainer(olympiadId) {
         <div class="progress-segment white"></div>
       </div>
       <div id="usacoplatinum-container" class="usaco-tab-content">
-        <table class="problem-table">${generateSkeletonRows(10)}</table>
+        <table class="problem-table"></table>
       </div>
       <div id="usacogold-container" class="usaco-tab-content hidden">
-        <table class="problem-table">${generateSkeletonRows(10)}</table>
+        <table class="problem-table"></table>
       </div>
       <div id="usacosilver-container" class="usaco-tab-content hidden">
-        <table class="problem-table">${generateSkeletonRows(10)}</table>
+        <table class="problem-table"></table>
       </div>
       <div id="usacobronze-container" class="usaco-tab-content hidden">
-        <table class="problem-table">${generateSkeletonRows(10)}</table>
+        <table class="problem-table"></table>
       </div>
     `;
 
