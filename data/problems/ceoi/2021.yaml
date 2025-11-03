@@ -13,13 +13,17 @@
   links:
   - https://oj.uz/problem/view/CEOI21_newspapers
   - https://qoj.ac/problem/2276
-- name: Tortoise
+- name: Stones
   number: 4
+  links:
+  - https://evaluator.hsin.hr/tasks/SC2021CEOI21stones/
+- name: Tortoise
+  number: 5
   links:
   - https://oj.uz/problem/view/CEOI21_tortoise
   - https://qoj.ac/problem/2278
 - name: Wells
-  number: 5
+  number: 6
   links:
   - https://oj.uz/problem/view/CEOI21_wells
   - https://qoj.ac/problem/2279
