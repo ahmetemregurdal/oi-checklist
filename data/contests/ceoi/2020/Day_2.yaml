@@ -1,0 +1,19 @@
+name: CEOI 2020
+location: Nagykanizsa, Hungary
+duration: 300
+website: https://ceoi2020.inf.elte.hu/
+link: https://oj.uz/problems/source/ceoi2020day1
+problems:
+- source: ceoi
+  year: 2020
+  number: 4
+- source: ceoi
+  year: 2020
+  number: 5
+- source: ceoi
+  year: 2020
+  number: 6
+medalCutoffs:
+  gold: 236
+  silver: 173
+  bronze: 55
