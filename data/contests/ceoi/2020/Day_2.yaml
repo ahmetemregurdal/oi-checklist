@@ -2,7 +2,7 @@ name: CEOI 2020
 location: Nagykanizsa, Hungary
 duration: 300
 website: https://ceoi2020.inf.elte.hu/
-link: https://oj.uz/problems/source/ceoi2020day1
+link: https://oj.uz/problems/source/ceoi2020day2
 problems:
 - source: ceoi
   year: 2020
