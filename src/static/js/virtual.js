@@ -384,7 +384,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (contestProblems.length > 0) break;
     }
 
-    function calculateTotalScore(data) {
+    function calculateScore(data) {
       const uniqueIds = [...new Set(data.map(d => d.contestProblemId))].sort((a, b) => a - b);
       const idMap = Object.fromEntries(uniqueIds.map((id, idx) => [id, idx]));
       data = data.map(entry => ({
@@ -400,12 +400,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         arr[submission.problemIndex] = cur;
       }
-      return arr.reduce((sum, a) => sum + a.reduce((a, b) => a + b), 0);
+      return arr;
+    }
+
+    function calculateTotalScore(data) {
+      return data.reduce((sum, a) => sum + a.reduce((a, b) => a + b), 0);
     }
 
     // Calculate total score for oj.uz mode and update completion stats
     if (isReadOnly && currentActiveContest.ojuz_data) {
-      const totalScore = calculateTotalScore(currentActiveContest.ojuz_data);
+      const scoreData = calculateScore(currentActiveContest.ojuz_data);
+      const totalScore = calculateTotalScore(scoreData);
 
       // Add total score stat item
       const completionStats = document.querySelector('.completion-stats');
@@ -503,25 +508,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
+    const scoreData = calculateScore(currentActiveContest.ojuz_data);
     // If we have oj.uz data, populate scores
     if (isReadOnly && currentActiveContest.ojuz_data) {
-      const ojuzData = currentActiveContest.ojuz_data;
-      ojuzData.forEach(submission => {
-        const problemIndex = submission.problemIndex;
-        if (problemIndex !== -1) {
-          problemData[problemIndex].score = submission.score;
-          problemData[problemIndex].subtaskScores = submission.subtaskScores;
-          problemData[problemIndex].time = submission.time;
-          // Set status based on score
-          if (submission.score === 100) {
-            problemData[problemIndex].status = 2; // solved
-          } else if (submission.score > 0) {
-            problemData[problemIndex].status = 1; // partial
-          } else {
-            problemData[problemIndex].status = 0; // failed
-          }
+      for (let problemIndex = 0; problemIndex < scoreData.length; ++problemIndex) {
+        problemData[problemIndex].score = scoreData[problemIndex].reduce((a, b) => a + b);
+        problemData[problemIndex].subtaskScores = scoreData[problemIndex];
+        if (problemData[problemIndex].score == 100) {
+          problemData[problemIndex].status = 2; // solved
+        } else if (problemData[problemIndex].score > 0) {
+          problemData[problemIndex].status = 1; // partial
+        } else {
+          problemData[problemIndex].status = 0; // failed
         }
-      });
+      }
     }
 
     // Create table row with problem cells (same as main page)
