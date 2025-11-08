@@ -384,15 +384,20 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (contestProblems.length > 0) break;
     }
 
-    function calculateScore(data) {
+    function calculateScore(data, n) {
+      let arr = [];
+      for (let i = 0; i < n; ++i) {
+        arr.push([]);
+      }
+      if (!data) {
+        return arr;
+      }
       const uniqueIds = [...new Set(data.map(d => d.contestProblemId))].sort((a, b) => a - b);
       const idMap = Object.fromEntries(uniqueIds.map((id, idx) => [id, idx]));
       data = data.map(entry => ({
         ...entry,
         problemIndex: idMap[entry.contestProblemId]
       }));
-      let n = Math.max(...data.map(i => i.problemIndex));
-      let arr = Array(n);
       for (let submission of data) {
         let cur = arr[submission.problemIndex] ?? [];
         for (let i = 0; i < submission.subtaskScores.length; ++i) {
@@ -404,12 +409,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function calculateTotalScore(data) {
-      return data.reduce((sum, a) => sum + a.reduce((a, b) => a + b), 0);
+      return data.reduce((sum, a) => sum + a.reduce((a, b) => a + b, 0), 0);
     }
 
     // Calculate total score for oj.uz mode and update completion stats
-    if (isReadOnly && currentActiveContest.ojuz_data) {
-      const scoreData = calculateScore(currentActiveContest.ojuz_data);
+    if (isReadOnly && currentActiveContest.autosynced) {
+      const scoreData = calculateScore(currentActiveContest.ojuz_data, currentActiveContest.problems.length);
       const totalScore = calculateTotalScore(scoreData);
 
       // Add total score stat item
@@ -508,11 +513,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
-    const scoreData = calculateScore(currentActiveContest.ojuz_data);
+    const scoreData = calculateScore(currentActiveContest.ojuz_data, currentActiveContest.problems.length);
     // If we have oj.uz data, populate scores
-    if (isReadOnly && currentActiveContest.ojuz_data) {
+    if (isReadOnly && currentActiveContest.autosynced) {
       for (let problemIndex = 0; problemIndex < scoreData.length; ++problemIndex) {
-        problemData[problemIndex].score = scoreData[problemIndex].reduce((a, b) => a + b);
+        problemData[problemIndex].score = scoreData[problemIndex].reduce((a, b) => a + b, 0);
         problemData[problemIndex].subtaskScores = scoreData[problemIndex];
         if (problemData[problemIndex].score == 100) {
           problemData[problemIndex].status = 2; // solved
@@ -633,8 +638,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
         }
       }
-
-      showScoreEntry(hasOjuzData || wasSynced);
+      showScoreEntry(currentActiveContest.autosynced);
     } else {
       // Contest is still running, show timer
       vcForm.style.display = 'none';
@@ -1632,7 +1636,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Check if we're in autosynced mode (with oj.uz data)
-    const isAutosynced = !!currentActiveContest.autosynced && currentActiveContest.ojuz_data;
+    const isAutosynced = !!currentActiveContest.autosynced;
 
     if (isAutosynced) {
       // autosynced mode - just confirm the contest completion

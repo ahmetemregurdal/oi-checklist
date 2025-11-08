@@ -63,10 +63,11 @@ async function main() {
   console.log(`Found ${problems.length} problems in .yaml files`);
 
   // so we don't nuke problems without warning
+  const dbProblems = await db.problem.findMany({ select: { source: true, year: true, number: true, extra: true, name: true, problemLinks: true } });
   const keys = new Set(problems.map(i => {
     return i.number ? `${i.source}|${i.year}|${i.number}|${i.extra ?? ''}` : `${i.name}|${i.source}|${i.year}|${i.extra ?? ''}`;
   }));
-  const dbKeys = (await db.problem.findMany({ select: { source: true, year: true, number: true, extra: true, name: true } })).map(i => ({
+  const dbKeys = dbProblems.map(i => ({
     name: i.name, source: i.source, year: i.year, number: i.number, extra: i.extra,
     key: i.number ? `${i.source}|${i.year}|${i.number}|${i.extra}` : `${i.name}|${i.source}|${i.year}|${i.extra ?? ''}`
   }));
