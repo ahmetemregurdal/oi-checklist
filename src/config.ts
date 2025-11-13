@@ -9,7 +9,7 @@ export const Olympiads = new Set([
   'joifr', 'joioc', 'joisc', 'noifinal',
   'noiprelim', 'noiqual', 'noisel', 'poi',
   'roi', 'usacobronze', 'usacogold', 'usacoplatinum',
-  'usacosilver', 'zco'
+  'usacosilver', 'zco', 'cnoi'
 ]);
 
 export const Platforms = new Set([

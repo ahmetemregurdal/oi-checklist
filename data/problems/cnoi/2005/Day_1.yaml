@@ -1,0 +1,15 @@
+- name: The Magnificent Waltz
+  number: 1
+  links:
+  - https://dmoj.ca/problem/noi05p1
+  - https://qoj.ac/contest/2219/problem/12679
+- name: Maintaining a Sequence
+  number: 2
+  links:
+  - https://dmoj.ca/problem/noi05p2
+  - https://qoj.ac/contest/2219/problem/12680
+- name: Wisdom Beads Game
+  number: 3
+  links:
+  - https://dmoj.ca/problem/noi05p3
+  - https://qoj.ac/contest/2219/problem/12681
