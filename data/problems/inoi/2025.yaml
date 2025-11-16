@@ -1,9 +1,15 @@
 - name: Neq Array
   number: 1
-  link: https://icpc.codedrills.io/contests/inoi-2025-main/problems/inoi-2025-p1---neq-array
+  links:
+  - https://icpc.codedrills.io/contests/inoi-2025-main/problems/inoi-2025-p1---neq-array
+  - https://codeforces.com/gym/105706/problem/A
 - name: Error of 2
   number: 2
-  link: https://icpc.codedrills.io/contests/inoi-2025-main/problems/inoi-2025-p2---error-of-2
+  links:
+  - https://icpc.codedrills.io/contests/inoi-2025-main/problems/inoi-2025-p2---error-of-2
+  - https://codeforces.com/gym/105706/problem/B
 - name: Virtual Tree Subsets
   number: 3
-  link: https://icpc.codedrills.io/contests/inoi-2025-main/problems/inoi-2025-p3---virtual-tree-subsets
+  links:
+  - https://icpc.codedrills.io/contests/inoi-2025-main/problems/inoi-2025-p3---virtual-tree-subsets
+  - https://codeforces.com/gym/105706/problem/C
