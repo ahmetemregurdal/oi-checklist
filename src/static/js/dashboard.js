@@ -900,7 +900,7 @@ async function loadProblems(from) {
       }
     }
     const isGroupedByExtra = prefix === 'GKS' || isUsaco || was_joioc || prefix === 'EJOI'
-      || prefix === 'IZHO' || prefix === 'ROI' || prefix === 'BKOI' || prefix === 'IOI' || prefix === 'CNOI';
+      || prefix === 'IZHO' || prefix === 'ROI' || prefix === 'BKOI' || prefix === 'IOI' || prefix === 'CNOI' || prefix === 'COCI';
 
     if (isGroupedByExtra) {
       // --- Year header row ---

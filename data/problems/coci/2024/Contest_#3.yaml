@@ -1,0 +1,15 @@
+- name: Autobus
+  number: 1
+  link: https://qoj.ac/contest/2086/problem/11429
+- name: Karte
+  number: 2
+  link: https://qoj.ac/contest/2086/problem/11430
+- name: Bojanje
+  number: 3
+  link: https://qoj.ac/contest/2086/problem/11431
+- name: Stablo
+  number: 4
+  link: https://qoj.ac/contest/2086/problem/11432
+- name: Procesor
+  number: 5
+  link: https://qoj.ac/contest/2086/problem/11433
