@@ -92,7 +92,7 @@ async function main() {
     }
   }
 
-  await Promise.all(problems.map(async i => {
+  for (const i of problems) {
     const update = {
       name: i.name,
       number: i.number,
@@ -124,7 +124,7 @@ async function main() {
         update: {}, create: data
       });
     }
-  }));
+  }
 
   console.log(`Updated database; new count: ${await db.problem.count()}`);
 }
