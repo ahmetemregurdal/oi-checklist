@@ -1738,17 +1738,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   function startTimerWithSeconds(remainingSeconds, alreadyElapsedSeconds = 0) {
-    // Use remaining seconds directly
-    let timeRemaining = remainingSeconds;
+    // Store the start timestamp for accurate time tracking
+    const timerStartTime = Date.now();
+    const initialTimeRemaining = remainingSeconds;
+    
     const timer = document.getElementById('contest-timer');
     const progressFill = document.getElementById('progress-fill');
     const progressText = document.getElementById('progress-text');
 
-    // Track how much time has passed since the timer started
-    let timerElapsedSeconds = 0;
-
     // Update display function
     const updateDisplay = () => {
+      // Calculate actual elapsed time since timer started
+      const actualElapsedMs = Date.now() - timerStartTime;
+      const actualElapsedSeconds = Math.floor(actualElapsedMs / 1000);
+      
+      // Calculate remaining time based on actual elapsed time
+      const timeRemaining = Math.max(0, initialTimeRemaining - actualElapsedSeconds);
+
       const hours = Math.floor(timeRemaining / 3600);
       const minutes = Math.floor((timeRemaining % 3600) / 60);
       const seconds = timeRemaining % 60;
@@ -1757,8 +1763,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Only update progress if we have contest data
       if (currentActiveContest && currentActiveContest.duration_minutes) {
-        // Total elapsed time = already elapsed + timer elapsed
-        const totalElapsedSeconds = alreadyElapsedSeconds + timerElapsedSeconds;
+        // Total elapsed time = already elapsed + actual elapsed from timer
+        const totalElapsedSeconds = alreadyElapsedSeconds + actualElapsedSeconds;
         const totalContestSeconds = currentActiveContest.duration_minutes * 60;
 
         // Cap elapsed time at contest duration
@@ -1771,16 +1777,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const elapsedMins = Math.floor((cappedElapsedSeconds % 3600) / 60);
         progressText.textContent = `${elapsedHours}h ${elapsedMins}m elapsed`;
       }
-    };
 
-    // Set initial display
-    updateDisplay();
-
-    const interval = setInterval(() => {
-      timeRemaining--;
-      timerElapsedSeconds++;
-      updateDisplay();
-
+      // Check if time is up
       if (timeRemaining <= 0) {
         clearInterval(interval);
         timer.textContent = '0:00:00';
@@ -1794,7 +1792,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           }, 100);
         }
       }
-    }, 1000);
+    };
+
+    // Set initial display
+    updateDisplay();
+
+    const interval = setInterval(updateDisplay, 1000);
   }
 
   function startTimer(remainingMinutes, alreadyElapsedMinutes = 0) {
