@@ -18,6 +18,8 @@ model User {
   settings Settings?
   virtualContests UserVirtualContest[]
   activeVirtualContest ActiveVirtualContest?
+  following Follow[] @relation("UserFollows")
+  followers Follow[] @relation("UserFollowedBy")
 }
 
 model AuthIdentity {
@@ -179,4 +181,13 @@ model OAuthState {
   userId Int?
   redirectUri String?
   createdAt DateTime @default(now())
+}
+
+model Follow {
+  followerId Int
+  followedId Int
+  createdAt DateTime @default(now())
+  follower User @relation("UserFollows", fields: [followerId], references: [id], onDelete: Cascade)
+  followed User @relation("UserFollowedBy", fields: [followedId], references: [id], onDelete: Cascade)
+  @@id([followerId, followedId])
 }

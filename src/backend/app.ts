@@ -21,7 +21,7 @@ app.register(fastifyStatic, {
 });
 
 fs.readdirSync(path.join(__dirname, `../static/html`)).forEach(i => {
-  if (!i.endsWith('.html') || i == '404.html') {
+  if (!i.endsWith('.html') || i == '404.html' || i == 'profile.html') {
     return;
   }
   app.get(`/${i.replace('index.html', '').replace(/\.html$/, '')}`, (_req, res) => {
@@ -30,6 +30,18 @@ fs.readdirSync(path.join(__dirname, `../static/html`)).forEach(i => {
 });
 
 app.get<{ Params: { username: string } }>('/profile/:username', async (req, res) => {
+  const username = req.params.username;
+  let user = await db.user.findUnique({
+    where: { username },
+    include: { settings: true }
+  });
+  if (!user) {
+    return res.code(404).sendFile('404.html', path.join(__dirname, '../static/html'));
+  }
+  return res.sendFile('profile.html', path.join(__dirname, '../static/html'));
+});
+
+app.get<{ Params: { username: string } }>('/checklist/:username', async (req, res) => {
   const username = req.params.username;
   let user = await db.user.findUnique({
     where: { username },

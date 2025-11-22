@@ -1215,7 +1215,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     fullPath.slice(basePath.length) :
     fullPath;
 
-  const isProfilePage = relativePath.startsWith('profile/');
+  const isProfilePage = relativePath.startsWith('checklist/');
 
   // Default order
   let sources = olympiadIds.flatMap(
@@ -1224,7 +1224,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       id);
 
   // Check session
-  check_session();
+  if (!isProfilePage) {
+    check_session();
+  }
   const username = localStorage.getItem('username');
 
   // Create skeleton containers immediately to eliminate blank screen
@@ -1482,7 +1484,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const id = container.id.replace('-container', '').toUpperCase();
     existingContainers.set(id, container);
   });
-  
+
   // Clear and re-append in the correct order
   olympiadList.innerHTML = '';
   sources.forEach(src => {

@@ -1,0 +1,397 @@
+/* Profile page styles */
+.profile-container {
+    max-width: 75%;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+}
+
+/* Loading skeleton */
+.profile-loading {
+    max-width: 75%;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+}
+
+.profile-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.skeleton-title {
+    height: 2rem;
+    width: 250px;
+    background-color: #eee;
+}
+
+.skeleton-stats {
+    display: flex;
+    gap: 1rem;
+}
+
+.skeleton-stat {
+    height: 80px;
+    width: 120px;
+    background-color: #eee;
+}
+
+.skeleton-chart {
+    height: 200px;
+    width: 100%;
+    background-color: #eee;
+}
+
+.skeleton-info {
+    height: 80px;
+    width: 100%;
+    background-color: #eee;
+}
+
+/* Profile header */
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Changed from flex-start to center for chart alignment */
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #ddd;
+    gap: 2rem; /* Increased gap */
+    flex-wrap: wrap; /* Allow wrapping */
+}
+
+.profile-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    flex-shrink: 0;
+    align-self: center; /* Center vertically with chart */
+}
+
+.header-action-button {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    background-color: #f5f5f5;
+    color: #333;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    border: 1px solid #ddd;
+}
+
+.header-action-button:hover {
+    background-color: #e0e0e0;
+}
+
+.profile-main-info {
+    flex: 1 1 300px; /* Allow growing/shrinking, base width 300px */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.profile-title-row {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.user-id-tag {
+    font-size: 1.5rem;
+    color: #007bff;
+    font-weight: normal;
+    font-family: monospace;
+}
+
+.profile-username {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+    color: #333;
+    line-height: 1.2;
+}
+
+.profile-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Increased gap to fix cramping */
+    font-size: 0.95rem;
+    margin-top: 0.5rem;
+}
+
+.profile-meta-item {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.meta-label {
+    font-weight: 600;
+    color: #666;
+    min-width: 110px;
+}
+
+.meta-value {
+    color: #333;
+}
+
+/* Follow button */
+.follow-button {
+    background-color: #0177CC;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 0; /* No rounded corners */
+}
+
+.follow-button:hover {
+    background-color: #0056b3;
+}
+
+.follow-button.following {
+    background-color: #28a745;
+}
+
+.follow-button.following:hover {
+    background-color: #dc3545;
+}
+
+/* Stats overview (Legend) */
+.stats-overview {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: auto;
+}
+
+/* Override margin from style.css for cleaner alignment with flex gap */
+.stats-overview .square {
+    margin-right: 0;
+}
+
+.solve-count-item {
+    font-size: 1rem;
+    color: #333;
+    padding: 2px 0;
+    white-space: nowrap;
+}
+
+/* Chart styles - Compact */
+.stats-chart {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 0 0 auto; /* Don't grow or shrink */
+}
+
+.chart-container {
+    position: relative;
+    width: 160px; /* Smaller chart */
+    height: 160px;
+}
+
+.chart-container canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.chart-center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.total-problems {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: #333;
+    line-height: 1;
+    margin-bottom: 0;
+}
+
+.total-label {
+    font-size: 0.75rem;
+    color: #666;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Connected accounts - Moved to top */
+.profile-identities {
+    margin-top: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.profile-identities h3 {
+    display: none; /* Hide title for compact header layout */
+}
+
+.identities-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.identity-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.6rem;
+    background-color: #f5f5f5;
+    font-size: 0.85rem;
+    color: #333;
+    border-radius: 0; /* No rounded corners */
+}
+
+.identity-icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* Dark mode styles */
+.dark-mode .profile-header {
+    border-bottom-color: #444;
+}
+
+.dark-mode .profile-username {
+    color: #fff;
+}
+
+.dark-mode .user-id-tag {
+    color: #4ea1f3;
+}
+
+.dark-mode .meta-label {
+    color: #aaa;
+}
+
+.dark-mode .meta-value {
+    color: #eee;
+}
+
+.dark-mode .profile-stats h2 {
+    color: #fff;
+}
+
+.dark-mode .solve-count-item {
+    color: #eee;
+}
+
+.dark-mode .total-problems {
+    color: #fff;
+}
+
+.dark-mode .total-label {
+    color: #aaa;
+}
+
+.dark-mode .identity-item {
+    background-color: #2b2b2b;
+    color: #eee;
+}
+
+.dark-mode .header-action-button {
+    background-color: #2b2b2b;
+    color: #eee;
+    border-color: #444;
+}
+
+.dark-mode .header-action-button:hover {
+    background-color: #333;
+}
+
+.dark-mode .skeleton-title,
+.dark-mode .skeleton-stat,
+.dark-mode .skeleton-chart,
+.dark-mode .skeleton-info {
+    background-color: #333;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .profile-header {
+        justify-content: center;
+        gap: 1.5rem;
+    }
+
+    .profile-main-info {
+        text-align: center;
+        align-items: center;
+        flex-basis: 100%; /* Force full width on smaller screens */
+    }
+
+    .profile-title-row {
+        justify-content: center;
+    }
+
+    .profile-meta {
+        align-items: center;
+    }
+
+    .stats-chart {
+        order: 3; /* Move chart to bottom of header on mobile */
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .stats-overview {
+        order: 4;
+        width: 100%;
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-header-actions {
+        order: 2;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .profile-header-actions {
+        align-self: center;
+        margin-top: 0.5rem;
+        width: 100%;
+    }
+
+    .header-action-button, .follow-button {
+        flex: 1;
+        justify-content: center;
+    }
+
+    .stats-content {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    
+    .stats-overview {
+        width: 100%;
+        max-width: none;
+    }
+}

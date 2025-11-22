@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Profile - OI Checklist</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Profile - OI Checklist">
+    <meta property="og:description" content="View progress and statistics on OI Checklist.">
+    <meta property="og:type" content="profile">
+    <meta property="og:image" content="/images/favicon.png">
+    <meta property="og:site_name" content="OI Checklist">
+
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/profile.css">
+    <script src="/js/init_darkmode.js"></script>
+</head>
+
+<body>
+    <nav class="navbar" id="navbar">
+        <div class="navbar-content">
+            <div class="navbar-left">
+                <a href="/" class="home-icon">
+                    <svg class="home-icon-svg" width="36" height="36" viewBox="0 0 24 24" stroke="none">
+                        <path d="M12 3l9 7v11h-6v-8h-6v8H3V10l9-7z" />
+                    </svg>
+                </a>
+                <div class="navbar-title" id="page-title">Profile</div>
+            </div>
+            <div class="navbar-user" id="navbar-user" style="display: none;">
+                <span class="welcome-message" id="welcome-message"></span>
+                <a href="#" class="logout-button" id="logout-button">Logout</a>
+                <div class="dark-mode-toggle">
+                    <label class="switch">
+                        <input type="checkbox" id="dark-mode-switch">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Loading skeleton -->
+    <div class="profile-loading" id="profile-loading">
+        <div class="profile-skeleton">
+            <div class="skeleton-line skeleton-title"></div>
+            <div class="skeleton-stats">
+                <div class="skeleton-line skeleton-stat"></div>
+                <div class="skeleton-line skeleton-stat"></div>
+                <div class="skeleton-line skeleton-stat"></div>
+            </div>
+            <div class="skeleton-line skeleton-chart"></div>
+            <div class="skeleton-line skeleton-info"></div>
+        </div>
+    </div>
+
+    <!-- Profile content -->
+    <div class="profile-container" id="profile-container" style="display: none;">
+        <div class="profile-header">
+            <div class="profile-main-info">
+                <div class="profile-title-row">
+                    <span id="profile-user-id" class="user-id-tag"></span>
+                    <h1 class="profile-username" id="profile-username"></h1>
+                </div>
+                
+                <!-- Connected Accounts moved here -->
+                <div class="profile-identities" id="profile-identities" style="display: none;">
+                    <div class="identities-list" id="identities-list"></div>
+                </div>
+
+                <div class="profile-meta">
+                    <div class="profile-meta-item">
+                        <span class="meta-label">Member since:</span>
+                        <span class="meta-value" id="profile-join-date"></span>
+                    </div>
+                    <div class="profile-meta-item" id="last-activity-item">
+                        <span class="meta-label">Last activity:</span>
+                        <span class="meta-value" id="profile-last-activity"></span>
+                    </div>
+                    <div class="profile-meta-item">
+                        <span class="meta-label">Followers:</span>
+                        <span class="meta-value" id="profile-followers"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart moved to header -->
+            <div class="stats-chart header-chart">
+                <div class="chart-container">
+                    <canvas id="progress-chart" width="400" height="400"></canvas>
+                    <div class="chart-center-text">
+                        <div class="total-problems" id="total-problems">0</div>
+                        <div class="total-label">Total</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend moved to header -->
+            <div class="stats-overview header-legend">
+                <div class="solve-count-item">
+                    <div class="square green"></div>
+                    <span><span id="solved-count">0</span> Solved</span>
+                </div>
+                <div class="solve-count-item">
+                    <div class="square yellow"></div>
+                    <span><span id="progress-count">0</span> In Progress</span>
+                </div>
+                <div class="solve-count-item">
+                    <div class="square red"></div>
+                    <span><span id="failed-count">0</span> Failed</span>
+                </div>
+            </div>
+
+            <div class="profile-header-actions">
+                <a href="#" class="header-action-button" id="checklist-link">
+                    Checklist
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+                <button class="follow-button" id="follow-button" style="display: none;">Follow</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message System -->
+    <div id="message-container" class="message-container" style="display: none;">
+        <div id="message-content" class="message-content">
+            <div id="message-text"></div>
+            <button id="message-close" class="message-close">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script src='/js/utils.js'></script>
+    <script src='/js/profile.js'></script>
+</body>
+
+</html>
