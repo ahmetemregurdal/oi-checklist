@@ -513,9 +513,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
 
-    const scoreData = calculateScore(currentActiveContest.ojuz_data, currentActiveContest.problems.length);
     // If we have oj.uz data, populate scores
     if (isReadOnly && currentActiveContest.autosynced) {
+      const scoreData = calculateScore(currentActiveContest.ojuz_data, currentActiveContest.problems.length);
       for (let problemIndex = 0; problemIndex < scoreData.length; ++problemIndex) {
         problemData[problemIndex].score = scoreData[problemIndex].reduce((a, b) => a + b, 0);
         problemData[problemIndex].subtaskScores = scoreData[problemIndex];
@@ -1449,7 +1449,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else {
         throw new Error('Failed to end contest');
       }
-    } catch (error) {
+    }
+    catch (error) {
       // Hide loading spinner and restore UI on error
       if (isAutosynced) {
         document.getElementById('ojuz-sync-loading').style.display = 'none';
