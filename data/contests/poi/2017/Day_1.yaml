@@ -1,0 +1,19 @@
+name: POI 2017
+location: Warsaw, Poland
+duration: 300
+website: https://oi.edu.pl/l/24oi_aktualnosci/
+link: https://qoj.ac/contest/19
+problems:
+- source: poi
+  year: 2017
+  number: 1
+- source: poi
+  year: 2017
+  number: 2
+- source: poi
+  year: 2017
+  number: 3
+medalCutoffs:
+  gold: 292
+  silver: 216
+  bronze: 149
