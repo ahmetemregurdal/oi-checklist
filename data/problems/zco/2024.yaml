@@ -1,6 +1,10 @@
 - name: Vegetables
   number: 1
-  link: https://codedrills.io/contests/zco-2024-main/problems/zco2024-p1---vegetables
+  links:
+  - https://codedrills.io/contests/zco-2024-main/problems/zco2024-p1---vegetables
+  - https://codeforces.com/gym/106223/problem/A
 - name: Fruits
   number: 2
-  link: https://codedrills.io/contests/zco-2024-main/problems/zco2024-p2---fruits
+  links:
+  - https://codedrills.io/contests/zco-2024-main/problems/zco2024-p2---fruits
+  - https://codeforces.com/gym/106223/problem/B
