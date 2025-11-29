@@ -1779,6 +1779,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         progressText.textContent = `${elapsedHours}h ${elapsedMins}m elapsed`;
       }
 
+      const interval = setInterval(updateDisplay, 1000);
+
       // Check if time is up
       if (timeRemaining <= 0) {
         clearInterval(interval);
@@ -1797,8 +1799,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Set initial display
     updateDisplay();
-
-    const interval = setInterval(updateDisplay, 1000);
   }
 
   function startTimer(remainingMinutes, alreadyElapsedMinutes = 0) {
