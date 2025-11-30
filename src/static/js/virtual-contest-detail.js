@@ -288,7 +288,7 @@ function displayContestDetails(contest, contestMetadata, problemsData, scoreData
     problemRanks = contestStats.ranks || [];
     
     // Calculate percentile from rank and total
-    participantPercentile = Math.round(((totalParticipants - rank) / totalParticipants) * 100);
+    participantPercentile = Math.round(((totalParticipants - rank + 1) / totalParticipants) * 100);
   }
 
   // Calculate qualification status from user context data
@@ -428,7 +428,7 @@ function displayContestDetails(contest, contestMetadata, problemsData, scoreData
           </div>
         </div>
         <div class="vc-detail-rank">
-          <div class="rank-number">#${rank}</div>
+          <div class="rank-number">#${Math.min(rank, totalParticipants)}</div>
           <div class="rank-text">out of ${totalParticipants}</div>
         </div>
       </div>
