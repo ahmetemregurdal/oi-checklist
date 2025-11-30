@@ -2,7 +2,6 @@ name: INOI 2024
 location: India
 duration: 180
 website: https://www.iarcs.org.in/inoi/2024/
-link: https://codedrills.io/contests/inoi-2024-final
 problems:
 - source: inoi
   year: 2024
