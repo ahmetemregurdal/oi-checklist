@@ -1231,12 +1231,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Create skeleton containers immediately to eliminate blank screen
   const olympiadList = document.getElementById('olympiad-list');
+  let usacoSkeletonCreated = false;
+
   sources.forEach(src => {
-    if (src === 'USACO') {
-      // Create USACO container with all its sub-containers
-      const usacoContainer = createOlympiadContainer('USACO');
-      olympiadList.appendChild(usacoContainer);
-    } else if (!src.startsWith('USACO')) {
+    if (src === 'USACO' || src.startsWith('USACO')) {
+      if (!usacoSkeletonCreated) {
+        // Create USACO container with all its sub-containers
+        const usacoContainer = createOlympiadContainer('USACO');
+        olympiadList.appendChild(usacoContainer);
+        usacoSkeletonCreated = true;
+      }
+    } else {
       // Create regular olympiad containers
       const container = createOlympiadContainer(src);
       olympiadList.appendChild(container);
@@ -1484,14 +1489,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     const id = container.id.replace('-container', '').toUpperCase();
     existingContainers.set(id, container);
   });
-
+  
   // Clear and re-append in the correct order
   olympiadList.innerHTML = '';
+  let usacoReordered = false;
+
   sources.forEach(src => {
-    if (src === 'USACO') {
-      const container = existingContainers.get('USACO');
-      if (container) olympiadList.appendChild(container);
-    } else if (!src.startsWith('USACO')) {
+    if (src === 'USACO' || src.startsWith('USACO')) {
+      if (!usacoReordered) {
+        const container = existingContainers.get('USACO');
+        if (container) olympiadList.appendChild(container);
+        usacoReordered = true;
+      }
+    } else {
       const container = existingContainers.get(src);
       if (container) olympiadList.appendChild(container);
     }
