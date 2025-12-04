@@ -63,6 +63,57 @@ body.dark-mode .tab-switcher .tab.active {
   border-color: #28a745;
 }
 
+/* CodeChef section styles */
+.codechef-section {
+  background-color: #efebe9; /* Brown 50 */
+  border: 1px solid #795548; /* Brown 500 */
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
+
+.dark-mode .codechef-section {
+  background-color: #3e2723; /* Brown 900 */
+  border-color: #8d6e63; /* Brown 400 */
+}
+
+.codechef-section .form-row label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+.codechef-section .vc-input {
+  width: 100%;
+  max-width: 520px;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.dark-mode .codechef-section .vc-input {
+  background: #222;
+  color: #eee;
+  border-color: #555;
+}
+
+/* CodeChef connect button style */
+.connect-button.codechef {
+    background-color: #795548;
+}
+
+.connect-button.codechef:hover {
+    background-color: #5d4037;
+}
+
+body.dark-mode .connect-button.codechef {
+    background-color: #8d6e63;
+}
+
+body.dark-mode .connect-button.codechef:hover {
+    background-color: #6d4c41;
+}
+
 /* Better spacing between label and input */
 .ojuz-section .form-row label {
   display: block;

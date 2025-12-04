@@ -52,7 +52,8 @@ function convertData(newData) {
       duration_minutes: ac.contest.duration ?? null,
       location: ac.contest.location ?? "",
       website: ac.contest.website ?? "",
-      link: ac.contest.link ?? ""
+      link: ac.contest.link ?? "",
+      ojuz_data: ac.submissions ?? ac.ojuz_data ?? []
     };
   }
 
@@ -1340,7 +1341,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       location: contest.location || '',
       website: contest.website || '',
       link: contest.link || '',
-      autosynced: !!wantsAutoTrack
+      autosynced: !!wantsAutoTrack,
+      problems: contest.problems || [] // Ensure problems are copied from the selected contest
     };
 
     // Hide form and show active contest
@@ -1747,6 +1749,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const progressFill = document.getElementById('progress-fill');
     const progressText = document.getElementById('progress-text');
 
+    let intervalId = null;
+
     // Update display function
     const updateDisplay = () => {
       // Calculate actual elapsed time since timer started
@@ -1779,11 +1783,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         progressText.textContent = `${elapsedHours}h ${elapsedMins}m elapsed`;
       }
 
-      const interval = setInterval(updateDisplay, 1000);
-
       // Check if time is up
       if (timeRemaining <= 0) {
-        clearInterval(interval);
+        if (intervalId) clearInterval(intervalId);
         timer.textContent = '0:00:00';
         progressFill.style.width = '100%';
 
@@ -1799,6 +1801,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Set initial display
     updateDisplay();
+    
+    // Start interval - run only once!
+    intervalId = setInterval(updateDisplay, 1000);
   }
 
   function startTimer(remainingMinutes, alreadyElapsedMinutes = 0) {

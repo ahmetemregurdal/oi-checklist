@@ -11,7 +11,7 @@ Try it live: [https://checklist.spoi.org.in](https://checklist.spoi.org.in) or e
 - Start official past contests with a live timer and full performance tracking.
 - For contests on [oj.uz](https://oj.uz) and [qoj.ac](https://qoj.ac), submissions are auto-synced and scored per subtask.
 - Post-contest screens show rank, percentile, medal, and more. Based on actual historical results.
-- oj.uz and qoj.ac sync: Automatically update your checklist progress using your past submissions from two major platforms.
+- oj.uz, qoj.ac, and codechef.com sync: Automatically update your checklist progress using your past submissions from three platforms.
 - Arrange olympiads in any order you like, and hide those you don't want cluttering your view.
 - Attach personal notes to problems for strategy, hints, or reminders, enhanced with a rudimentary markdown editor.
 
@@ -107,7 +107,7 @@ cd oi-checklist
 
 ### Ensure `python3` and python dependencies are installed
 
-Install `python3` and `pip` from [python.org](https://www.python.org/). Then run `pip install bs4 requests cloudscraper`. You will need these packages for scraping (oj.uz and qoj.ac sync).
+Install `python3` and `pip` from [python.org](https://www.python.org/). Then run `pip install bs4 requests cloudscraper`. You will need these packages for scraping (oj.uz, qoj.ac, codechef.com sync).
 
 ### Install `npm` and node dependencies
 

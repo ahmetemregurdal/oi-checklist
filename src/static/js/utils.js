@@ -26,7 +26,7 @@ const olympiadIds = [
 ];
 
 const auto_synced_platforms = [
-  'oj.uz', 'qoj.ac'
+  'oj.uz', 'qoj.ac', 'codechef'
 ];
 
 let yearSortOrder = 'asc';

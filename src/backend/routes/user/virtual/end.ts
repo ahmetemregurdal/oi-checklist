@@ -2,7 +2,7 @@ import { db } from '@db';
 import { FastifyInstance } from 'fastify';
 import createError from 'http-errors';
 import { addMinutes, min } from 'date-fns';
-import { ojuz, qoj } from '@bridge';
+import { ojuz, qoj, codechef } from '@bridge';
 import { VirtualSubmission } from '@prisma/client';
 
 function isFulfilled<T>(r: PromiseSettledResult<T>): r is PromiseFulfilledResult<T> {
@@ -72,6 +72,9 @@ export async function end(app: FastifyInstance) {
     }
     if (usernames?.['qoj.ac']) {
       platforms.push(qoj.fetchContestScores(usernames['qoj.ac'], contest));
+    }
+    if (usernames?.['codechef']) {
+      platforms.push(codechef.fetchContestScores(usernames['codechef'], contest));
     }
     const submissions = (await Promise.allSettled(platforms))
       .filter(isFulfilled)

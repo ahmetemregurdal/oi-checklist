@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', function () {
       button.addEventListener('click', () => handleDiscordClick());
     } else if (providerName === 'google') {
       button.addEventListener('click', () => handleGoogleClick());
+    } else if (providerName === 'codechef') {
+      button.addEventListener('click', () => showCodechefPopup());
     }
   });
 
@@ -787,6 +789,209 @@ async function onSubmitQojUsername(e) {
     }
 
     messageBox.textContent = 'qoj.ac username saved.';
+    messageBox.style.color = 'green';
+    setTimeout(closeProviderPopup, 800);
+  } catch (err) {
+    console.error(err);
+    messageBox.textContent = 'Unexpected error saving username.';
+    messageBox.style.color = 'red';
+  }
+}
+
+// Codechef connection popup and handlers
+function showCodechefPopup() {
+  showProviderPopup('Connect to Codechef', `
+      <div class="tab-switcher">
+        <button id="codechef-tab-cookie" class="tab active">Link via cookie</button>
+        <button id="codechef-tab-username" class="tab">Username only</button>
+      </div>
+      <div id="codechef-cookie-pane">
+        <p>
+          Connect your <strong>Codechef</strong> account to automatically update your OI checklist.
+        </p>
+        <p>
+          This performs a <strong>one-time fetch</strong> of your solved problems to sync them with your checklist.
+        </p>
+        <p>
+          Please log in to Codechef in your browser, and paste the following cookie value here:
+        </p>
+        <div class="cookie-instruction">
+          <code>Type: COOKIE &nbsp;&nbsp; Domain: codechef.com &nbsp;&nbsp; Name: SESS93b6022d778ee317bf48f7dbffe03173</code>
+        </div>
+        <input type="text" class="cookie-input" id="codechef-cookie-input"
+          placeholder="Paste your 'SESS93b6022d778ee317bf48f7dbffe03173' cookie value here" required>
+        <div id="popup-message-codechef-cookie" class="popup-inline-message"></div>
+        <button class="primary-button" id="submit-codechef-cookie-button">Submit</button>
+      </div>
+      <div id="codechef-username-pane" style="display:none;">
+        <p>Optionally, just set your Codechef username.</p>
+        <div class="codechef-section" id="codechef-section" style="display: block;">
+          <div class="form-row">
+            <label for="codechef-username">Codechef Username</label>
+            <input type="text" id="codechef-username" class="vc-input" placeholder="Enter your Codechef username">
+          </div>
+          <div class="form-note" id="codechef-username-note">Not set yet.</div>
+        </div>
+        <div id="popup-message-codechef-username" class="popup-inline-message"></div>
+        <button class="primary-button" id="submit-codechef-username-button">Submit</button>
+      </div>
+    `);
+
+  const tabCookie = document.getElementById('codechef-tab-cookie');
+  const tabUsername = document.getElementById('codechef-tab-username');
+  const paneCookie = document.getElementById('codechef-cookie-pane');
+  const paneUsername = document.getElementById('codechef-username-pane');
+
+  function activate(tab) {
+    if (tab === 'cookie') {
+      tabCookie.classList.add('active');
+      tabUsername.classList.remove('active');
+      paneCookie.style.display = '';
+      paneUsername.style.display = 'none';
+    } else {
+      tabUsername.classList.add('active');
+      tabCookie.classList.remove('active');
+      paneUsername.style.display = '';
+      paneCookie.style.display = 'none';
+    }
+  }
+
+  tabCookie.addEventListener('click', () => activate('cookie'));
+  tabUsername.addEventListener('click', () => activate('username'));
+
+  document.getElementById('submit-codechef-cookie-button')
+    .addEventListener('click', onSubmitCodechefCookie);
+
+  document.getElementById('submit-codechef-username-button')
+    .addEventListener('click', onSubmitCodechefUsername);
+
+  // Load and display any saved Codechef username for the current user
+  (async () => {
+    try {
+      const uname = window.currentUsername;
+      if (!uname) return;
+      const settings = await fetchUserSettings();
+      const existing = settings && settings.platformUsernames && settings.platformUsernames['codechef'];
+      const input = document.getElementById('codechef-username');
+      const note = document.getElementById('codechef-username-note');
+      if (existing) {
+        if (input) input.value = existing;
+        if (note) note.textContent = `Currently set to @${existing}`;
+      } else {
+        if (note) note.textContent = 'Not set yet.';
+      }
+    } catch (e) {
+      console.error('Failed to load saved codechef username', e);
+    }
+  })();
+}
+
+async function onSubmitCodechefCookie(e) {
+  e.preventDefault();
+
+  const cookieVal = document.getElementById('codechef-cookie-input').value.trim();
+  const messageBox = document.getElementById('popup-message-codechef-cookie');
+  messageBox.style.display = 'block';
+  messageBox.textContent = 'Validating cookie...';
+  messageBox.style.color =
+    (localStorage.getItem('theme') || 'light-mode') === 'light-mode' ? 'black' : 'white';
+
+  if (!cookieVal) {
+    messageBox.textContent = 'Please paste your Codechef session cookie value.';
+    messageBox.style.color = 'red';
+    return;
+  }
+
+  const sessionToken = localStorage.getItem('sessionToken');
+  if (!sessionToken) {
+    messageBox.textContent = 'You are not logged in.';
+    messageBox.style.color = 'red';
+    return;
+  }
+
+  try {
+    const verifyRes = await fetch(`${apiUrl}/user/link/codechef/verify`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json', },
+      body: JSON.stringify({ token: sessionToken, cookie: cookieVal })
+    });
+
+    if (!verifyRes.ok) {
+      const text = await verifyRes.text();
+      messageBox.textContent = `Cookie validation failed: ${text}`;
+      messageBox.style.color = 'red';
+      return;
+    }
+
+    const verifyResult = await verifyRes.json();
+    if (verifyResult.valid) {
+      messageBox.textContent = `Cookie is valid. Username: ${verifyResult.username}. Your problems will be updated shortly.`;
+      messageBox.style.color = 'green';
+
+      fetch(`${apiUrl}/user/link/codechef/update`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: sessionToken, cookie: cookieVal })
+      })
+        .then(res => res.json())
+        .then(() => {
+          console.log('Codechef problems update triggered.');
+        })
+        .catch(err => {
+          console.error('Error updating Codechef problems:', err);
+        });
+    } else {
+      messageBox.textContent = `Invalid cookie. Please check and try again.`;
+      messageBox.style.color = 'red';
+    }
+  } catch (err) {
+    console.error(err);
+    messageBox.textContent = 'Something went wrong while validating the cookie.';
+    messageBox.style.color = 'red';
+  }
+}
+
+async function onSubmitCodechefUsername(e) {
+  e.preventDefault();
+  const username = document.getElementById('codechef-username').value.trim();
+  const messageBox = document.getElementById('popup-message-codechef-username');
+  messageBox.style.display = 'block';
+  messageBox.textContent = 'Saving username...';
+  messageBox.style.color =
+    (localStorage.getItem('theme') || 'light-mode') === 'light-mode' ? 'black' : 'white';
+
+  if (!username) {
+    messageBox.textContent = 'Please enter your Codechef username.';
+    messageBox.style.color = 'red';
+    return;
+  }
+
+  const sessionToken = localStorage.getItem('sessionToken');
+  if (!sessionToken) {
+    messageBox.textContent = 'You are not logged in.';
+    messageBox.style.color = 'red';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${apiUrl}/user/settings`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ token: sessionToken, updated: { platformUsernames: { 'codechef': username } } })
+    });
+
+    const body = await res.json();
+    if (!res.ok || body.success !== true) {
+      messageBox.textContent = (body && (body.error || body.message)) || 'Failed to save username.';
+      messageBox.style.color = 'red';
+      return;
+    }
+
+    messageBox.textContent = 'Codechef username saved.';
     messageBox.style.color = 'green';
     setTimeout(closeProviderPopup, 800);
   } catch (err) {
