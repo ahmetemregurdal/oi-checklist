@@ -7,7 +7,7 @@ export const Olympiads = new Set([
   'coi', 'egoi', 'ejoi', 'gks',
   'inoi', 'ioi', 'ioitc', 'izho',
   'joifr', 'joioc', 'joisc', 'noifinal',
-  'noiprelim', 'noiqual', 'noisel', 'poi', 'rmi,
+  'noiprelim', 'noiqual', 'noisel', 'poi', 'rmi',
   'roi', 'usacobronze', 'usacogold', 'usacoplatinum',
   'usacosilver', 'zco', 'cnoi', 'coci'
 ]);
