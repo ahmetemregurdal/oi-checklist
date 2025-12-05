@@ -85,6 +85,7 @@ The checklist contains a wide range of Olympiads in Informatics:
 * Polish Olympiad in Informatics (POI)
 * Baltic Olympiad in Informatics (BOI)
 * Balkan Olympiad in Informatics (BKOI)
+* Romanian Master of Informatics (RMI)
 
 ### Miscellaneous
 

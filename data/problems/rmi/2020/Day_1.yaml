@@ -1,0 +1,9 @@
+- name: Floppy
+  number: 1
+  link: https://qoj.ac/contest/168/problem/147
+- name: Brperm
+  number: 2
+  link: https://qoj.ac/contest/168/problem/148
+- name: Peru
+  number: 3
+  link: https://qoj.ac/contest/168/problem/149
