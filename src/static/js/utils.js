@@ -22,7 +22,7 @@ function check_session() {
 const olympiadIds = [
   'APIO', 'EGOI', 'INOI', 'ZCO', 'IOI', 'JOISC', 'JOIOC', 'IOITC', 'NOISEL',
   'NOIPRELIM', 'NOIQUAL', 'NOIFINAL', 'JOIFR', 'POI', 'CEOI', 'COI', 'BOI', 'USACO',
-  'GKS', 'EJOI', 'IZHO', 'ROI', 'BKOI', 'CNOI', 'COCI'
+  'GKS', 'EJOI', 'IZHO', 'ROI', 'BKOI', 'CNOI', 'COCI', 'RMI'
 ];
 
 const auto_synced_platforms = [
@@ -57,7 +57,8 @@ function getFullOlympiadName(id) {
     ROI: 'Russian Olympiad in Informatics',
     BKOI: 'Balkan Olympiad in Informatics',
     CNOI: 'Chinese National Olympiad in Informatics',
-    COCI: 'Croatian Open Competition in Informatics'
+    COCI: 'Croatian Open Competition in Informatics',
+    RMI: 'Romanian Master of Informatics'
   };
   return names[id] || id;
 }
