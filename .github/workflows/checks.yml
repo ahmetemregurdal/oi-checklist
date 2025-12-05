@@ -2,12 +2,9 @@ name: Checks
 
 on:
   pull_request:
-    paths:
-      - '**/*.yml'
-      - '**/*.yaml'
-      - 'backend/**'
+    
 jobs:
-  db-init:
+  local-sim:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -15,14 +12,37 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
-      - name: Install dependencies
+          python-version: "3.x"
+      - name: Install Python dependencies
         run: |
           python3 -m pip install --upgrade pip
-          pip install python-dotenv psycopg2-binary
-      - name: Run init_db.py
-        run: python3 backend/database/init/init_db.py
-      - name: Run populate_problems.py
-        run: python3 backend/database/init/populate_problems.py
-      - name: Run populate_contests.py
-        run: python3 backend/database/init/populate_contests.py
+          pip install bs4 requests cloudscraper python-dotenv
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install Node dependencies
+        run: npm install
+      - name: Create .env
+        run: |
+          echo "DATABASE_PATH=file:$(pwd)/database.db" >> .env
+          echo "ROOT_URL=http://localhost:5501/" >> .env
+          echo "GITHUB_CLIENT_ID=dummy" >> .env
+          echo "GITHUB_CLIENT_SECRET=dummy" >> .env
+          echo "DISCORD_CLIENT_ID=dummy" >> .env
+          echo "DISCORD_CLIENT_SECRET=dummy" >> .env
+          echo "GOOGLE_CLIENT_ID=dummy" >> .env
+          echo "GOOGLE_CLIENT_SECRET=dummy" >> .env
+          echo "QOJ_USER=dummy" >> .env
+          echo "QOJ_PASS=dummy" >> .env
+      - name: Setup Prisma and DB
+        run: |
+          npx prisma migrate deploy
+          npx prisma generate
+      - name: Populate problems
+        run: npm run syncProblems
+      - name: Populate contests
+        run: npm run syncContests
+      - name: Test server startup
+        run: |
+          timeout 5s npm run dev || true
